@@ -10,10 +10,21 @@
           class="menu"
           router
         >
-          <el-menu-item index="/dashboard">
-            <el-icon><Odometer /></el-icon>
-            <span>首页</span>
-          </el-menu-item>
+          <el-sub-menu index="/dashboard">
+            <template #title>
+              <el-icon><Odometer /></el-icon>
+              <span>数据看板</span>
+            </template>
+            <el-menu-item index="/dashboard/overview">
+              <span>运营概览</span>
+            </el-menu-item>
+            <el-menu-item index="/dashboard/orders">
+              <span>订单分析</span>
+            </el-menu-item>
+            <el-menu-item index="/dashboard/users">
+              <span>用户分析</span>
+            </el-menu-item>
+          </el-sub-menu>
         </el-menu>
       </el-aside>
       <el-container>
@@ -75,6 +86,12 @@ const activeMenu = computed(() => route.path)
       }
       &.is-active {
         color: #409eff;
+      }
+    }
+    :deep(.el-sub-menu__title) {
+      color: #bfcbd9;
+      &:hover {
+        background: #263445;
       }
     }
   }

@@ -10,12 +10,22 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/',
     component: () => import('@/layout/index.vue'),
-    redirect: '/dashboard',
+    redirect: '/dashboard/overview',
     children: [
       {
-        path: '/dashboard',
-        name: 'Dashboard',
-        component: () => import('@/views/Dashboard.vue')
+        path: '/dashboard/overview',
+        name: 'DashboardOverview',
+        component: () => import('@/views/dashboard/Overview.vue')
+      },
+      {
+        path: '/dashboard/orders',
+        name: 'OrderAnalytics',
+        component: () => import('@/views/dashboard/OrderAnalytics.vue')
+      },
+      {
+        path: '/dashboard/users',
+        name: 'UserAnalytics',
+        component: () => import('@/views/dashboard/UserAnalytics.vue')
       }
     ]
   }
