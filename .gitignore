@@ -1,0 +1,41 @@
+# IDE
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build outputs
+target/
+dist/
+build/
+
+# Logs
+*.log
+logs/
+
+# Node
+node_modules/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Test coverage
+coverage/
+
+# Backend
+backend/src/main/resources/application-local.yml
+backend/src/main/resources/application-dev.yml
+
+# Miniprogram
+miniprogram/server/node_modules/
+
+# Admin UI
+admin-ui/node_modules/
+admin-ui/dist/
