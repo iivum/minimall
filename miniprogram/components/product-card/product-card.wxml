@@ -1,0 +1,10 @@
+<view class="product-card" bindtap="goDetail">
+  <image class="product-image" src="{{goods.image}}" mode="aspectFill" />
+  <view class="product-info">
+    <text class="product-name">{{goods.name}}</text>
+    <view class="product-bottom">
+      <text class="product-price">¥{{goods.price}}</text>
+      <text class="product-original">¥{{goods.originalPrice}}</text>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,16 @@
+<view class="cart-item">
+  <checkbox checked="{{item.selected}}" bindtap="toggleSelect" />
+  <image class="item-image" src="{{item.image}}" mode="aspectFill" />
+  <view class="item-info">
+    <text class="item-name">{{item.name}}</text>
+    <view class="item-bottom">
+      <text class="item-price">¥{{item.price}}</text>
+      <view class="count-control">
+        <text bindtap="reduceCount">-</text>
+        <text class="count">{{item.count}}</text>
+        <text bindtap="addCount">+</text>
+      </view>
+    </view>
+  </view>
+  <view class="btn-delete" bindtap="deleteItem">删除</view>
+</view>

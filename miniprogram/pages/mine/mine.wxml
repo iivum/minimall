@@ -1,0 +1,46 @@
+<view class="container">
+  <view class="user-section">
+    <view class="user-info" bindtap="goLogin">
+      <image class="avatar" src="{{userInfo.avatar}}" mode="aspectFill" />
+      <view class="user-detail">
+        <text class="nickname">{{userInfo.nickname}}</text>
+        <text class="login-tip">点击登录</text>
+      </view>
+    </view>
+  </view>
+  <view class="order-section">
+    <view class="order-header">
+      <text class="section-title">我的订单</text>
+      <text class="look-all">查看全部 ></text>
+    </view>
+    <view class="order-tabs">
+      <view class="order-tab-item" bindtap="goMenuItem" data-url="/pages/order/order?status=0">
+        <text class="tab-icon">📋</text>
+        <text class="tab-name">待付款</text>
+      </view>
+      <view class="order-tab-item" bindtap="goMenuItem" data-url="/pages/order/order?status=1">
+        <text class="tab-icon">📦</text>
+        <text class="tab-name">待发货</text>
+      </view>
+      <view class="order-tab-item" bindtap="goMenuItem" data-url="/pages/order/order?status=2">
+        <text class="tab-icon">🚚</text>
+        <text class="tab-name">待收货</text>
+      </view>
+      <view class="order-tab-item" bindtap="goMenuItem" data-url="/pages/order/order?status=3">
+        <text class="tab-icon">⭐</text>
+        <text class="tab-name">已完成</text>
+      </view>
+    </view>
+  </view>
+  <block wx:for="{{menuList}}" wx:key="id">
+    <view class="menu-section">
+      <block wx:for="{{item}}" wx:key="id">
+        <view class="menu-item" bindtap="goMenuItem" data-url="{{item.url}}">
+          <text class="menu-icon">{{item.icon}}</text>
+          <text class="menu-name">{{item.name}}</text>
+          <text class="menu-arrow">></text>
+        </view>
+      </block>
+    </view>
+  </block>
+</view>

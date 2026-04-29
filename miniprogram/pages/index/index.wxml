@@ -1,0 +1,59 @@
+<view class="container">
+  <view class="search-bar" bindtap="goSearch">
+    <text class="search-placeholder">搜索商品</text>
+  </view>
+  <swiper class="banner-swiper" indicator-dots indicator-color="rgba(255,255,255,0.5)" indicator-active-color="#fff" autoplay circular>
+    <block wx:for="{{bannerList}}" wx:key="id">
+      <swiper-item>
+        <image class="banner-image" src="{{item.image}}" mode="aspectFill" />
+      </swiper-item>
+    </block>
+  </swiper>
+  <view class="category-nav">
+    <block wx:for="{{categoryList}}" wx:key="id">
+      <view class="category-item" bindtap="goCategory" data-id="{{item.id}}">
+        <view class="category-icon" style="background-color: {{item.color}}">{{item.icon}}</view>
+        <text class="category-name">{{item.name}}</text>
+      </view>
+    </block>
+  </view>
+  <view class="section">
+    <view class="section-header">
+      <text class="section-title">{{flashSale.title}}</text>
+      <view class="flash-timer">
+        <text class="timer-label">距结束</text>
+        <text class="timer-value">{{flashSale.endTime}}</text>
+      </view>
+    </view>
+    <scroll-view class="goods-scroll" scroll-x enable-flex>
+      <block wx:for="{{flashSale.goods}}" wx:key="id">
+        <view class="goods-card small" bindtap="goDetail" data-id="{{item.id}}">
+          <image class="goods-image" src="{{item.image}}" mode="aspectFill" />
+          <view class="goods-info">
+            <text class="goods-price">¥{{item.price}}</text>
+            <text class="goods-original-price">¥{{item.originalPrice}}</text>
+          </view>
+        </view>
+      </block>
+    </scroll-view>
+  </view>
+  <view class="section">
+    <view class="section-header">
+      <text class="section-title">为你推荐</text>
+    </view>
+    <view class="goods-grid">
+      <block wx:for="{{recommendGoods}}" wx:key="id">
+        <view class="goods-card" bindtap="goDetail" data-id="{{item.id}}">
+          <image class="goods-image" src="{{item.image}}" mode="aspectFill" />
+          <view class="goods-info">
+            <text class="goods-name">{{item.name}}</text>
+            <view class="goods-price-row">
+              <text class="goods-price">¥{{item.price}}</text>
+              <text class="goods-original-price">¥{{item.originalPrice}}</text>
+            </view>
+          </view>
+        </view>
+      </block>
+    </view>
+  </view>
+</view>

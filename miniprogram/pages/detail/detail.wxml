@@ -1,0 +1,28 @@
+<view class="container">
+  <swiper class="detail-swiper" indicator-dots current="{{currentImageIndex}}" bindchange="swiperChange">
+    <block wx:for="{{goods.images}}" wx:key="index">
+      <swiper-item>
+        <image class="detail-image" src="{{item}}" mode="aspectFill" />
+      </swiper-item>
+    </block>
+  </swiper>
+  <view class="goods-info">
+    <view class="price-row">
+      <text class="price">¥{{goods.price}}</text>
+      <text class="original-price">¥{{goods.originalPrice}}</text>
+    </view>
+    <text class="goods-name">{{goods.name}}</text>
+    <text class="goods-desc">{{goods.description}}</text>
+  </view>
+  <view class="action-bar">
+    <view class="count-control">
+      <text bindtap="reduceCount">-</text>
+      <text class="count">{{selectedCount}}</text>
+      <text bindtap="addCount">+</text>
+    </view>
+    <view class="action-btns">
+      <view class="btn-add-cart" bindtap="addToCart">加入购物车</view>
+      <view class="btn-buy" bindtap="buyNow">立即购买</view>
+    </view>
+  </view>
+</view>

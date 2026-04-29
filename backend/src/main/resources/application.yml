@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: minimall-backend
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/minimall
+    username: minimall
+    password: minimall123
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema.sql
+
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/**/*.xml
+  type-aliases-package: com.minimall.domain.entity
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      id-type: assign_uuid
+      logic-delete-field: deletedAt
+      logic-delete-value: NOW()
+
+server:
+  port: 8080

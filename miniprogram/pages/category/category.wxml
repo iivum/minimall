@@ -1,0 +1,23 @@
+<view class="container">
+  <view class="category-container">
+    <scroll-view class="category-left" scroll-y>
+      <block wx:for="{{categories}}" wx:key="id">
+        <view class="category-item {{currentIndex === index ? 'active' : ''}}" bindtap="switchCategory" data-index="{{index}}">
+          <text>{{item.name}}</text>
+        </view>
+      </block>
+    </scroll-view>
+    <scroll-view class="category-right" scroll-y>
+      <view class="subcategory-title">
+        <text>{{categories[currentIndex].name}}</text>
+      </view>
+      <view class="subcategory-grid">
+        <block wx:for="{{categories[currentIndex].children}}" wx:key="id">
+          <view class="subcategory-item" bindtap="goDetail" data-id="{{item.id}}">
+            <text>{{item.name}}</text>
+          </view>
+        </block>
+      </view>
+    </scroll-view>
+  </view>
+</view>

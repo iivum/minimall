@@ -1,0 +1,46 @@
+<view class="container">
+  <view class="tab-bar">
+    <block wx:for="{{tabs}}" wx:key="index">
+      <view class="tab-item {{currentTab === index ? 'active' : ''}}" bindtap="switchTab" data-index="{{index}}">
+        <text>{{item}}</text>
+      </view>
+    </block>
+  </view>
+  <view class="order-list">
+    <block wx:for="{{orderList}}" wx:key="id">
+      <view class="order-card" bindtap="goDetail" data-id="{{item.id}}">
+        <view class="order-header">
+          <text class="order-id">订单号: {{item.id}}</text>
+          <text class="order-status">{{item.status}}</text>
+        </view>
+        <view class="order-goods">
+          <block wx:for="{{item.goods}}" wx:for-item="good" wx:key="name">
+            <view class="good-item">
+              <image class="good-image" src="{{good.image}}" mode="aspectFill" />
+              <view class="good-info">
+                <text class="good-name">{{good.name}}</text>
+                <view class="good-price-row">
+                  <text class="good-price">¥{{good.price}}</text>
+                  <text class="good-count">x{{good.count}}</text>
+                </view>
+              </view>
+            </view>
+          </block>
+        </view>
+        <view class="order-footer">
+          <text class="order-time">{{item.createTime}}</text>
+          <view class="order-total">
+            <text>合计:</text>
+            <text class="total-price">¥{{item.totalPrice}}</text>
+          </view>
+        </view>
+        <view class="order-actions" catchtap="stopPropagation">
+          <view wx:if="{{item.status === '待付款'}}" class="btn-pay" bindtap="payOrder" data-id="{{item.id}}">去支付</view>
+        </view>
+      </view>
+    </block>
+    <view class="empty-state" wx:if="{{orderList.length === 0}}">
+      <text>暂无订单</text>
+    </view>
+  </view>
+</view>
