@@ -59,7 +59,7 @@ public class PayService {
         amount.setCurrency("CNY");
         request.setAmount(amount);
 
-        request.setAppid(config.getMchId());
+        request.setAppid(weChatPayConfig.getAppid());
         request.setMchid(config.getMchId());
         request.setDescription("MiniMall Order: " + order.getOrderNo());
         request.setNotifyUrl(weChatPayConfig.getCallbackUrl());

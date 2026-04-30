@@ -73,6 +73,10 @@
             <artifactId>httpclient5</artifactId>
             <version>5.3</version>
         </dependency>
+
+
+
+
         <!-- JWT -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
@@ -91,11 +95,14 @@
             <version>0.12.5</version>
             <scope>runtime</scope>
         </dependency>
+
         <!-- Micrometer for MetricsConfig -->
         <dependency>
             <groupId>io.micrometer</groupId>
             <artifactId>micrometer-core</artifactId>
         </dependency>
+
+
     </dependencies>
     <build>
         <plugins>
