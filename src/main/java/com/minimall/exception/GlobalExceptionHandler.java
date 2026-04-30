@@ -9,15 +9,19 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<Map<String, String>> handleRuntime(RuntimeException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-            .body(Map.of("error", ex.getMessage()));
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<Map<String, String>> handleUnauthorized(UnauthorizedException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(Map.of("error", "Forbidden", "message", ex.getMessage()));
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<Map<String, String>> handleGeneral(Exception ex) {
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<Map<String, String>> handleRuntime(RuntimeException ex) {
+        if (ex.getMessage() != null && ex.getMessage().contains("not found")) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", "Not Found", "message", ex.getMessage()));
+        }
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .body(Map.of("error", "Internal server error"));
+                .body(Map.of("error", "Internal Server Error", "message", ex.getMessage()));
     }
 }

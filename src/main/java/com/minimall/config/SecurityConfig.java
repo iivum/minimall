@@ -23,11 +23,13 @@ public class SecurityConfig {
         http
             .csrf(AbstractHttpConfigurer::disable)
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**", "/health", "/swagger-ui/**", "/api-docs/**", "/h2-console/**").permitAll()
+                .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/swagger-ui/**", "/api-docs/**", "/h2-console/**").permitAll()
+                .requestMatchers("/health").permitAll()
                 .anyRequest().authenticated()
             )
-            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
             .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()));
         return http.build();
     }
