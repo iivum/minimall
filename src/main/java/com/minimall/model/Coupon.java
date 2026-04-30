@@ -5,7 +5,10 @@ import java.math.BigDecimal;
 import java.time.Instant;
 
 @Entity
-@Table(name = "coupons")
+@Table(name = "coupons", indexes = {
+    @Index(name = "idx_coupon_code", columnList = "code"),
+    @Index(name = "idx_coupon_valid_until", columnList = "validUntil")
+})
 public class Coupon {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

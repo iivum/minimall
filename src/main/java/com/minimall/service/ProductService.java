@@ -4,13 +4,18 @@ import com.minimall.model.Product;
 import com.minimall.repository.ProductRepository;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProductService {
     private final ProductRepository productRepository;
+    private final CacheService cacheService;
 
-    public ProductService(ProductRepository productRepository) {
+    private static final String PRODUCT_CACHE_PREFIX = "product:";
+
+    public ProductService(ProductRepository productRepository, CacheService cacheService) {
         this.productRepository = productRepository;
+        this.cacheService = cacheService;
     }
 
     public List<Product> findAllActive() {
@@ -22,8 +27,15 @@ public class ProductService {
     }
 
     public Product findById(String id) {
-        return productRepository.findById(id)
+        String cacheKey = PRODUCT_CACHE_PREFIX + id;
+        Optional<Product> cached = cacheService.get(cacheKey, Product.class);
+        if (cached.isPresent()) {
+            return cached.get();
+        }
+        Product product = productRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("Product not found: " + id));
+        cacheService.set(cacheKey, product);
+        return product;
     }
 
     public Product create(Product product) {
@@ -38,12 +50,15 @@ public class ProductService {
         existing.setStock(updated.getStock());
         existing.setImageUrl(updated.getImageUrl());
         existing.setActive(updated.getActive());
-        return productRepository.save(existing);
+        Product saved = productRepository.save(existing);
+        cacheService.evict(PRODUCT_CACHE_PREFIX + id);
+        return saved;
     }
 
     public void delete(String id) {
         Product product = findById(id);
         product.setActive(false);
         productRepository.save(product);
+        cacheService.evict(PRODUCT_CACHE_PREFIX + id);
     }
 }

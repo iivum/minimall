@@ -7,7 +7,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "orders")
+@Table(name = "orders", indexes = {
+    @Index(name = "idx_order_user_id", columnList = "user_id"),
+    @Index(name = "idx_order_status", columnList = "status"),
+    @Index(name = "idx_order_created_at", columnList = "createdAt")
+})
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
