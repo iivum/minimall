@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: minimall-postgres
+    environment:
+      POSTGRES_DB: minimall
+      POSTGRES_USER: minimall
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-minimall123}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U minimall"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - minimall-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: minimall-backend
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/minimall
+      SPRING_DATASOURCE_USERNAME: minimall
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-minimall123}
+      SERVER_PORT: 8080
+      WECHATPAY_MCHID: ${WECHATPAY_MCHID}
+      WECHATPAY_SERIAL_NO: ${WECHATPAY_SERIAL_NO}
+      WECHATPAY_PRIVATE_KEY_PATH: classpath:cert/apiclient_key.pem
+      WECHATPAY_API_V3_KEY: ${WECHATPAY_API_V3_KEY}
+      WECHATPAY_CALLBACK_URL: ${WECHATPAY_CALLBACK_URL}
+      WECHATPAY_SANDBOX: ${WECHATPAY_SANDBOX:-false}
+    ports:
+      - "${BACKEND_PORT:-8080}:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    networks:
+      - minimall-network
+
+networks:
+  minimall-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
