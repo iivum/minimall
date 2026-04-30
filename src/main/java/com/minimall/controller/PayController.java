@@ -34,10 +34,11 @@ public class PayController {
         String sign = payService.getJsApiSign(prepayId, timestamp, nonceStr);
 
         Map<String, Object> result = new HashMap<>();
-        result.put("prepayId", prepayId);
-        result.put("timestamp", timestamp);
+        result.put("timeStamp", timestamp);
         result.put("nonceStr", nonceStr);
-        result.put("sign", sign);
+        result.put("package", "prepay_id=" + prepayId);
+        result.put("signType", "RSA");
+        result.put("paySign", sign);
 
         return ResponseEntity.ok(result);
     }

@@ -13,6 +13,7 @@ import java.nio.charset.StandardCharsets;
 @Configuration
 @ConfigurationProperties(prefix = "wechatpay")
 public class WeChatPayConfig {
+    private String appid;
     private String mchid;
     private String serialNo;
     private String privateKeyPath;
@@ -37,6 +38,8 @@ public class WeChatPayConfig {
         return config;
     }
 
+    public String getAppid() { return appid; }
+    public void setAppid(String appid) { this.appid = appid; }
     public String getMchid() { return mchid; }
     public void setMchid(String mchid) { this.mchid = mchid; }
     public String getSerialNo() { return serialNo; }

@@ -33,6 +33,7 @@
 在 `application.properties` 中配置：
 
 ```properties
+wechatpay.appid=YOUR_APPID
 wechatpay.mchid=YOUR_MCHID
 wechatpay.serialNo=YOUR_SERIAL_NO
 wechatpay.privateKeyPath=classpath:cert/apiclient_key.pem
