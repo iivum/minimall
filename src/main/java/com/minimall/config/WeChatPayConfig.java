@@ -39,6 +39,7 @@ public class WeChatPayConfig {
             .privateKey(privateKeyContent)
             .merchantSerialNumber(serialNo)
             .apiV3Key(apiV3Key)
+            .appid(appid)
             .build();
         return config;
     }
