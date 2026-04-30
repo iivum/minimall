@@ -1,0 +1,90 @@
+<view class="container">
+  <view class="share-header">
+    <view class="share-config" wx:if="{{shareConfig}}">
+      <text class="share-title">{{shareConfig.title}}</text>
+      <text class="share-desc">{{shareConfig.description}}</text>
+    </view>
+  </view>
+
+  <view class="poster-section">
+    <view class="poster-container">
+      <image
+        class="poster-image"
+        src="{{posterUrl}}"
+        mode="aspectFit"
+        bindtap="previewPoster"
+      />
+      <view class="poster-overlay" wx:if="{{isGenerating}}">
+        <text class="generating-text">海报生成中...</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="action-section">
+    <button class="action-btn save-btn" bindtap="savePoster" wx:if="{{posterUrl}}">
+      保存海报
+    </button>
+    <button class="action-btn share-btn" open-type="share" bindtap="shareToFriend">
+      分享给好友
+    </button>
+  </view>
+
+  <view class="statistics-section">
+    <view class="statistics-title">分享数据</view>
+    <view class="statistics-list" wx:if="{{statistics}}">
+      <view class="statistics-item">
+        <text class="statistics-value">{{statistics.totalShares}}</text>
+        <text class="statistics-label">分享次数</text>
+      </view>
+      <view class="statistics-item">
+        <text class="statistics-value">{{statistics.validShares}}</text>
+        <text class="statistics-label">有效分享</text>
+      </view>
+      <view class="statistics-item">
+        <text class="statistics-value">{{statistics.rewardEarned}}</text>
+        <text class="statistics-label">已获奖励</text>
+      </view>
+    </view>
+    <view class="statistics-list" wx:if="{{!statistics}}">
+      <view class="statistics-item">
+        <text class="statistics-value">0</text>
+        <text class="statistics-label">分享次数</text>
+      </view>
+      <view class="statistics-item">
+        <text class="statistics-value">0</text>
+        <text class="statistics-label">有效分享</text>
+      </view>
+      <view class="statistics-item">
+        <text class="statistics-value">0</text>
+        <text class="statistics-label">已获奖励</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="reward-section" wx:if="{{canClaim}}">
+    <view class="reward-info">
+      <text class="reward-text">恭喜！您有可领取的奖励</text>
+      <text class="reward-amount" wx:if="{{rewardInfo}}">{{rewardInfo.amount}}元优惠券</text>
+    </view>
+    <button class="claim-btn" bindtap="claimReward" loading="{{isClaiming}}">
+      立即领取
+    </button>
+  </view>
+
+  <view class="tips-section">
+    <view class="tips-title">分享规则</view>
+    <view class="tips-list">
+      <text class="tips-item">1. 分享海报给好友或朋友圈</text>
+      <text class="tips-item">2. 好友通过您的链接注册并下单</text>
+      <text class="tips-item">3. 好友确认收货后，您可获得优惠券奖励</text>
+      <text class="tips-item">4. 奖励可在"我的优惠券"中查看和使用</text>
+    </view>
+  </view>
+
+  <view class="nav-section">
+    <view class="nav-item" bindtap="goCoupon">
+      <text class="nav-text">查看我的优惠券</text>
+      <text class="nav-arrow">></text>
+    </view>
+  </view>
+</view>

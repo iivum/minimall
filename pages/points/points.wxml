@@ -1,0 +1,112 @@
+<view class="container">
+  <view class="header-section">
+    <view class="points-card">
+      <view class="points-balance">
+        <text class="balance-label">我的积分</text>
+        <text class="balance-value">{{pointsInfo.balance || 0}}</text>
+      </view>
+      <view class="points-detail">
+        <view class="detail-item">
+          <text class="detail-value">{{pointsInfo.totalEarned || 0}}</text>
+          <text class="detail-label">累计获得</text>
+        </view>
+        <view class="detail-divider"></view>
+        <view class="detail-item">
+          <text class="detail-value">{{pointsInfo.totalSpent || 0}}</text>
+          <text class="detail-label">累计消耗</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="level-card">
+      <view class="level-info">
+        <text class="level-name">{{pointsInfo.levelName || '普通会员'}}</text>
+        <text class="level-tip" wx:if="{{pointsInfo.nextLevelPoints}}">再获得{{pointsInfo.nextLevelPoints}}积分升级</text>
+      </view>
+      <view class="level-progress">
+        <view class="progress-bar">
+          <view class="progress-fill" style="width: {{pointsInfo.levelProgress || 0}}%"></view>
+        </view>
+      </view>
+    </view>
+
+    <view class="action-row">
+      <button class="redeem-btn" bindtap="showRedeemModal">积分兑换</button>
+      <button class="coupon-btn" bindtap="goCoupon">优惠券</button>
+    </view>
+  </view>
+
+  <view class="history-section">
+    <view class="section-title">积分明细</view>
+
+    <view class="tabs">
+      <view class="tab {{activeTab === 'all' ? 'active' : ''}}" bindtap="switchTab" data-tab="all">
+        <text class="tab-text">全部</text>
+      </view>
+      <view class="tab {{activeTab === 'earn' ? 'active' : ''}}" bindtap="switchTab" data-tab="earn">
+        <text class="tab-text">获得</text>
+      </view>
+      <view class="tab {{activeTab === 'spend' ? 'active' : ''}}" bindtap="switchTab" data-tab="spend">
+        <text class="tab-text">消耗</text>
+      </view>
+    </view>
+
+    <view class="history-list">
+      <view class="loading-view" wx:if="{{isLoading}}">
+        <text>加载中...</text>
+      </view>
+
+      <view class="empty-view" wx:if="{{!isLoading && historyList.length === 0}}">
+        <text class="empty-text">暂无积分记录</text>
+      </view>
+
+      <view class="history-item" wx:for="{{historyList}}" wx:key="id">
+        <view class="history-left">
+          <text class="history-title">{{item.description}}</text>
+          <text class="history-time">{{formatDate(item.createdAt)}}</text>
+        </view>
+        <view class="history-right {{item.type}}">
+          <text class="history-change">{{getHistoryChangeText(item)}}</text>
+          <text class="history-type">{{getHistoryTypeText(item.type)}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="modal-overlay" wx:if="{{showRedeemModal}}" bindtap="hideRedeemModal">
+    <view class="redeem-modal" catchtap="noop">
+      <view class="modal-header">
+        <text class="modal-title">积分兑换</text>
+        <text class="modal-close" bindtap="hideRedeemModal">×</text>
+      </view>
+
+      <view class="modal-balance">
+        <text class="balance-tip">可用积分</text>
+        <text class="balance-num">{{pointsInfo.balance}}</text>
+      </view>
+
+      <view class="reward-list">
+        <view
+          class="reward-item {{selectedReward.id === item.id ? 'selected' : ''}}"
+          wx:for="{{rewardOptions}}"
+          wx:key="id"
+          bindtap="selectReward"
+          data-reward="{{item}}"
+        >
+          <view class="reward-info">
+            <text class="reward-name">{{item.name}}</text>
+            <text class="reward-desc">{{item.desc}}</text>
+          </view>
+          <view class="reward-points">
+            <text class="points-num">{{item.requiredPoints}}</text>
+            <text class="points-unit">积分</text>
+          </view>
+        </view>
+      </view>
+
+      <button class="confirm-btn" bindtap="confirmRedeem" loading="{{isRedeeming}}">
+        确认兑换
+      </button>
+    </view>
+  </view>
+</view>
