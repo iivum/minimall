@@ -36,6 +36,12 @@ public class UserController {
         return ResponseEntity.ok(userService.findByOpenid(openid));
     }
 
+    @PostMapping
+    @Operation(summary = "Create a new user")
+    public ResponseEntity<User> createUser(@RequestBody User user) {
+        return ResponseEntity.ok(userService.create(user));
+    }
+
     @PutMapping("/{id}")
     @Operation(summary = "Update user info")
     public ResponseEntity<User> updateUser(@PathVariable String id, @RequestBody User user) {

@@ -1,5 +1,4 @@
 version: '3.8'
-
 services:
   postgres:
     image: postgres:15-alpine
@@ -20,7 +19,6 @@ services:
       start_period: 30s
     networks:
       - minimall-network
-
   backend:
     build:
       context: ./backend
@@ -51,7 +49,6 @@ services:
       start_period: 60s
     networks:
       - minimall-network
-
   prometheus:
     image: prom/prometheus:v2.50.0
     container_name: minimall-prometheus
@@ -69,7 +66,6 @@ services:
       - "9090:9090"
     networks:
       - minimall-network
-
   grafana:
     image: grafana/grafana:10.4.0
     container_name: minimall-grafana
@@ -87,7 +83,6 @@ services:
       - prometheus
     networks:
       - minimall-network
-
   alertmanager:
     image: prom/alertmanager:v0.27.0
     container_name: minimall-alertmanager
@@ -101,13 +96,12 @@ services:
       - "9093:9093"
     networks:
       - minimall-network
-
 networks:
   minimall-network:
     driver: bridge
-
 volumes:
   postgres_data:
   prometheus_data:
   grafana_data:
   alertmanager_data:
+  postgres_data:

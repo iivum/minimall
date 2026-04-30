@@ -3,98 +3,102 @@ package com.minimall.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.minimall.config.WeChatPayConfig;
 import com.minimall.model.Order;
+import com.wechat.pay.java.core.RSAAutoCertificateConfig;
+import com.wechat.pay.java.core.util.PemUtil;
+import com.wechat.pay.java.service.payments.PaymentsService;
+import com.wechat.pay.java.service.payments.model.*;
+import com.wechat.pay.java.core.http.Environment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.Signature;
-import java.util.Base64;
+import java.io.IOException;
+import java.io.InputStream;
+import java.math.BigDecimal;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 @Service
 public class PayService {
     private static final Logger log = LoggerFactory.getLogger(PayService.class);
-    private static final String SIGN_ALGORITHM = "SHA256withRSA";
 
+    private final RSAAutoCertificateConfig config;
     private final WeChatPayConfig weChatPayConfig;
     private final OrderService orderService;
     private final ObjectMapper objectMapper;
+    private PaymentsService paymentsService;
 
-    public PayService(WeChatPayConfig weChatPayConfig, OrderService orderService) {
+    public PayService(RSAAutoCertificateConfig config, WeChatPayConfig weChatPayConfig, OrderService orderService) {
+        this.config = config;
         this.weChatPayConfig = weChatPayConfig;
         this.orderService = orderService;
         this.objectMapper = new ObjectMapper();
+        initPaymentsService();
+    }
+
+    private void initPaymentsService() {
+        if (weChatPayConfig.isSandbox()) {
+            this.paymentsService = new PaymentsService.Builder()
+                .config(config)
+                .environment(Environment.SANDBOX)
+                .build();
+        } else {
+            this.paymentsService = new PaymentsService.Builder()
+                .config(config)
+                .environment(Environment.PRODUCTION)
+                .build();
+        }
     }
 
     public String createUnifiedOrder(Order order, String openid) {
-        String prepayId = "prepay_" + UUID.randomUUID().toString().replace("-", "");
-        log.info("Created prepay order: {} for order: {}", prepayId, order.getOrderNo());
-        return prepayId;
+        com.wechat.pay.java.service.payments.model.PrepayRequest request = new PrepayRequest();
+
+        Amount amount = new Amount();
+        amount.setTotal(order.getTotalAmount().multiply(BigDecimal.valueOf(100)).intValue());
+        amount.setCurrency("CNY");
+        request.setAmount(amount);
+
+        request.setAppid(config.getMchId());
+        request.setMchid(config.getMchId());
+        request.setDescription("MiniMall Order: " + order.getOrderNo());
+        request.setNotifyUrl(weChatPayConfig.getCallbackUrl());
+        request.setOutTradeNo(order.getOrderNo());
+
+        Payer payer = new Payer();
+        payer.setOpenid(openid);
+        request.setPayer(payer);
+
+        try {
+            PrepayResponse response = paymentsService.prepay(request);
+            return response.getPrepayId();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to create unified order: " + e.getMessage(), e);
+        }
     }
 
     public String getJsApiSign(String prepayId, long timestamp, String nonceStr) {
-        String message = weChatPayConfig.getMchid() + "\n" + timestamp + "\n" + nonceStr + "\n" + prepayId + "\n";
         try {
-            Signature signature = Signature.getInstance(SIGN_ALGORITHM);
-            signature.initSign(getPrivateKey());
-            signature.update(message.getBytes(StandardCharsets.UTF_8));
-            return Base64.getEncoder().encodeToString(signature.sign());
+            String message = config.getMchId() + "\n" + timestamp + "\n" + nonceStr + "\n" + prepayId + "\n";
+            return com.wechat.pay.java.core.util.PemUtil.encodeBase64(
+                com.wechat.pay.java.core.util.SignatureUtil.sign(
+                    config.getPrivateKey(),
+                    "RSA256",
+                    message.getBytes(java.nio.charset.StandardCharsets.UTF_8)
+                )
+            );
         } catch (Exception e) {
-            log.error("Failed to sign JSAPI request: {}", e.getMessage());
-            throw new RuntimeException("Failed to sign JSAPI request", e);
+            throw new RuntimeException("Failed to sign JSAPI payload: " + e.getMessage(), e);
         }
     }
 
     public boolean verifyCallback(String body, String signature, String serialNo) {
         try {
-            if (serialNo == null || !serialNo.equals(weChatPayConfig.getSerialNo())) {
-                log.warn("Callback serial number mismatch: expected={}, actual={}",
-                    weChatPayConfig.getSerialNo(), serialNo);
-                return false;
-            }
-
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hash = digest.digest(body.getBytes(StandardCharsets.UTF_8));
-
-            Signature verifier = Signature.getInstance(SIGN_ALGORITHM);
-            verifier.initVerify(getWeChatPayCertificate());
-            verifier.update(hash);
-            return verifier.verify(Base64.getDecoder().decode(signature));
+            return paymentsService.callback(body, signature, serialNo);
         } catch (Exception e) {
             log.error("Callback verification failed: {}", e.getMessage());
             return false;
         }
-    }
-
-    private java.security.PrivateKey getPrivateKey() throws Exception {
-        String privateKeyContent = weChatPayConfig.getPrivateKeyContent();
-        if (privateKeyContent == null || privateKeyContent.isEmpty()) {
-            throw new IllegalStateException("WeChat Pay private key not configured");
-        }
-        String keyPem = privateKeyContent
-            .replace("-----BEGIN PRIVATE KEY-----", "")
-            .replace("-----END PRIVATE KEY-----", "")
-            .replaceAll("\\s", "");
-        byte[] keyBytes = Base64.getDecoder().decode(keyPem);
-        return java.security.KeyFactory.getInstance("RSA").generatePrivate(
-            new java.security.spec.PKCS8EncodedKeySpec(keyBytes));
-    }
-
-    private java.security.cert.X509Certificate getWeChatPayCertificate() throws Exception {
-        String certContent = weChatPayConfig.getPlatformCertificateContent();
-        if (certContent == null || certContent.isEmpty()) {
-            throw new IllegalStateException("WeChat Pay platform certificate not configured");
-        }
-        String certPem = certContent
-            .replace("-----BEGIN CERTIFICATE-----", "")
-            .replace("-----END CERTIFICATE-----", "")
-            .replaceAll("\\s", "");
-        byte[] certBytes = Base64.getDecoder().decode(certPem);
-        return (java.security.cert.X509Certificate) java.security.cert.CertificateFactory.getInstance("X.509")
-            .generateCertificate(new java.io.ByteArrayInputStream(certBytes));
     }
 
     @SuppressWarnings("unchecked")
