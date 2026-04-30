@@ -14,6 +14,7 @@ public class WeChatPayConfig {
     private String callbackUrl;
     private boolean sandbox;
     private String privateKeyContent;
+    private String platformCertificateContent;
 
     public String getAppid() { return appid; }
     public void setAppid(String appid) { this.appid = appid; }
@@ -31,4 +32,6 @@ public class WeChatPayConfig {
     public void setSandbox(boolean sandbox) { this.sandbox = sandbox; }
     public String getPrivateKeyContent() { return privateKeyContent; }
     public void setPrivateKeyContent(String privateKeyContent) { this.privateKeyContent = privateKeyContent; }
+    public String getPlatformCertificateContent() { return platformCertificateContent; }
+    public void setPlatformCertificateContent(String platformCertificateContent) { this.platformCertificateContent = platformCertificateContent; }
 }
