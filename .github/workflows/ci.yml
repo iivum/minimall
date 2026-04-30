@@ -28,7 +28,21 @@ jobs:
       - name: Checkstyle
         run: ./mvnw -B checkstyle:check
 
-  frontend-lint:
+      - name: Run Tests
+        run: ./mvnw -B test
+
+      - name: Generate Coverage Report
+        run: ./mvnw -B jacoco:report
+
+      - name: Upload Coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          files: backend/target/site/jacoco/jacoco.xml
+          flags: unittests
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+  frontend:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -47,6 +61,17 @@ jobs:
 
       - name: Lint
         run: npm run lint
+
+      - name: Run Tests
+        run: npm run test:run
+
+      - name: Upload Coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          files: admin-ui/coverage/coverage-final.json
+          flags: frontend
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   miniprogram:
     runs-on: ubuntu-latest
