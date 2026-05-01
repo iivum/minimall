@@ -7,9 +7,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserService {
     private final UserRepository userRepository;
+    private final AnalyticsService analyticsService;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, AnalyticsService analyticsService) {
         this.userRepository = userRepository;
+        this.analyticsService = analyticsService;
     }
 
     public User findById(String id) {
@@ -23,7 +25,9 @@ public class UserService {
     }
 
     public User create(User user) {
-        return userRepository.save(user);
+        User saved = userRepository.save(user);
+        analyticsService.track("USER_REGISTER", saved.getId(), "USER", saved.getId(), null);
+        return saved;
     }
 
     public User update(String id, User updated) {
@@ -31,6 +35,8 @@ public class UserService {
         existing.setNickname(updated.getNickname());
         existing.setAvatarUrl(updated.getAvatarUrl());
         existing.setPhone(updated.getPhone());
-        return userRepository.save(existing);
+        User saved = userRepository.save(existing);
+        analyticsService.track("USER_UPDATE", id, "USER", id, null);
+        return saved;
     }
 }

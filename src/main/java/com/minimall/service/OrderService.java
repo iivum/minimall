@@ -4,6 +4,8 @@ import com.minimall.model.Order;
 import com.minimall.model.OrderItem;
 import com.minimall.model.User;
 import com.minimall.repository.OrderRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
@@ -13,19 +15,26 @@ import java.util.UUID;
 
 @Service
 public class OrderService {
+    private static final Logger logger = LoggerFactory.getLogger(OrderService.class);
     private final OrderRepository orderRepository;
     private final UserService userService;
     private final ProductService productService;
     private final WeChatSubscribeService subscribeService;
+    private final AnalyticsService analyticsService;
+    private final RepurchaseReminderService repurchaseReminderService;
 
     public OrderService(OrderRepository orderRepository,
                        UserService userService,
                        ProductService productService,
-                       WeChatSubscribeService subscribeService) {
+                       WeChatSubscribeService subscribeService,
+                       AnalyticsService analyticsService,
+                       RepurchaseReminderService repurchaseReminderService) {
         this.orderRepository = orderRepository;
         this.userService = userService;
         this.productService = productService;
         this.subscribeService = subscribeService;
+        this.analyticsService = analyticsService;
+        this.repurchaseReminderService = repurchaseReminderService;
     }
 
     public List<Order> findByUserId(String userId) {
@@ -59,6 +68,7 @@ public class OrderService {
         order.setTotalAmount(total);
 
         Order savedOrder = orderRepository.save(order);
+        analyticsService.track("ORDER_CREATE", userId, "ORDER", savedOrder.getId(), null);
 
         // Send subscription message for order creation
         subscribeService.sendOrderCreatedMessage(savedOrder, user);
@@ -72,6 +82,7 @@ public class OrderService {
         Order.Status oldStatus = order.getStatus();
         order.setStatus(status);
         Order savedOrder = orderRepository.save(order);
+        analyticsService.track("ORDER_STATUS_UPDATE", order.getUser().getId(), "ORDER", id, null);
 
         // Send notification based on status transition
         if (status == Order.Status.SHIPPED) {
@@ -92,9 +103,21 @@ public class OrderService {
         order.setPayTime(Instant.now());
         order.setTradeNo(tradeNo);
         Order savedOrder = orderRepository.save(order);
+        analyticsService.track("ORDER_PAID", order.getUser().getId(), "ORDER", id, null);
 
         // Send subscription message for payment
         subscribeService.sendOrderPaidMessage(savedOrder, order.getUser());
+
+        // Trigger repurchase reminder
+        try {
+            repurchaseReminderService.createPurchaseCompleteReminder(
+                order.getUser().getId(),
+                order.getId()
+            );
+        } catch (Exception e) {
+            logger.warn("Failed to create repurchase reminder for order {}: {}",
+                order.getId(), e.getMessage());
+        }
 
         return savedOrder;
     }

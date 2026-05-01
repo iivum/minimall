@@ -1,6 +1,8 @@
 package com.minimall.service;
 
+import com.minimall.model.AnalyticsEvent;
 import com.minimall.model.Product;
+import com.minimall.repository.AnalyticsEventRepository;
 import com.minimall.repository.ProductRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,16 +14,20 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ProductServiceTest {
     @Mock private ProductRepository productRepository;
+    @Mock private AnalyticsEventRepository analyticsEventRepository;
     private ProductService productService;
+    private AnalyticsService analyticsService;
 
     @BeforeEach
     void setUp() {
-        productService = new ProductService(productRepository);
+        analyticsService = new AnalyticsService(analyticsEventRepository);
+        productService = new ProductService(productRepository, analyticsService);
     }
 
     @Test
@@ -53,11 +59,13 @@ class ProductServiceTest {
         product.setName("Test");
         product.setPrice(BigDecimal.valueOf(99.99));
         when(productRepository.save(product)).thenReturn(product);
+        when(analyticsEventRepository.save(any(AnalyticsEvent.class))).thenAnswer(i -> i.getArgument(0));
 
         Product result = productService.create(product);
 
         assertNotNull(result);
         verify(productRepository).save(product);
+        verify(analyticsEventRepository).save(any(AnalyticsEvent.class));
     }
 
     @Test
@@ -67,10 +75,12 @@ class ProductServiceTest {
         product.setActive(true);
         when(productRepository.findById("1")).thenReturn(Optional.of(product));
         when(productRepository.save(product)).thenReturn(product);
+        when(analyticsEventRepository.save(any(AnalyticsEvent.class))).thenAnswer(i -> i.getArgument(0));
 
         productService.delete("1");
 
         assertFalse(product.getActive());
         verify(productRepository).save(product);
+        verify(analyticsEventRepository).save(any(AnalyticsEvent.class));
     }
 }
