@@ -1,3 +1,7 @@
-com/minimall/service/JwtServiceTest.class
-com/minimall/config/SecurityUtilsTest.class
+com/minimall/model/RepurchaseReminderTest.class
+com/minimall/model/UserSubscriptionTest.class
 com/minimall/service/ProductServiceTest.class
+com/minimall/repository/RepurchaseReminderRepositoryTest.class
+com/minimall/service/JwtServiceTest.class
+com/minimall/dto/ReminderDtoTest.class
+com/minimall/config/SecurityUtilsTest.class
