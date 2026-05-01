@@ -1,4 +1,5 @@
 com/minimall/controller/CustomerServiceControllerTest.class
+com/minimall/service/WeChatSubscribeServiceTest.class
 com/minimall/repository/CustomerServiceMessageRepositoryTest.class
 com/minimall/model/UserSubscriptionTest.class
 com/minimall/service/ProductServiceTest.class

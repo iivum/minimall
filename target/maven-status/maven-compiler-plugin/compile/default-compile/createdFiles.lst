@@ -1,5 +1,6 @@
 com/minimall/repository/CustomerServiceMessageRepository.class
 com/minimall/model/UserCoupon.class
+com/minimall/config/RestTemplateConfig.class
 com/minimall/model/CustomerServiceMessage.class
 com/minimall/controller/AuthController.class
 com/minimall/model/Coupon.class

@@ -1,8 +1,8 @@
 -------------------------------------------------------------------------------
 Test set: com.minimall.config.SecurityUtilsTest
 -------------------------------------------------------------------------------
-Tests run: 5, Failures: 0, Errors: 3, Skipped: 0, Time elapsed: 0.441 s <<< FAILURE! -- in com.minimall.config.SecurityUtilsTest
-com.minimall.config.SecurityUtilsTest.isCurrentUser_returnsFalseWhenDifferentUserId -- Time elapsed: 0.409 s <<< ERROR!
+Tests run: 5, Failures: 0, Errors: 3, Skipped: 0, Time elapsed: 0.084 s <<< FAILURE! -- in com.minimall.config.SecurityUtilsTest
+com.minimall.config.SecurityUtilsTest.isCurrentUser_returnsFalseWhenDifferentUserId -- Time elapsed: 0.048 s <<< ERROR!
 org.mockito.exceptions.base.MockitoException: 
 
 Mockito cannot mock this class: interface org.springframework.security.core.Authentication.
@@ -23,12 +23,12 @@ OS version         : 26.4.1
 You are seeing this disclaimer because Mockito is configured to create inlined mocks.
 You can learn about inline mocks and their limitations under item #39 of the Mockito class javadoc.
 
-Underlying exception : org.mockito.exceptions.base.MockitoException: Could not modify all classes [interface java.security.Principal, interface org.springframework.security.core.Authentication, interface java.io.Serializable]
+Underlying exception : org.mockito.exceptions.base.MockitoException: Could not modify all classes [interface org.springframework.security.core.Authentication, interface java.security.Principal, interface java.io.Serializable]
 	at com.minimall.config.SecurityUtilsTest.isCurrentUser_returnsFalseWhenDifferentUserId(SecurityUtilsTest.java:67)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:565)
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1604)
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1604)
-Caused by: org.mockito.exceptions.base.MockitoException: Could not modify all classes [interface java.security.Principal, interface org.springframework.security.core.Authentication, interface java.io.Serializable]
+Caused by: org.mockito.exceptions.base.MockitoException: Could not modify all classes [interface org.springframework.security.core.Authentication, interface java.security.Principal, interface java.io.Serializable]
 	at net.bytebuddy.TypeCache.findOrInsert(TypeCache.java:168)
 	at net.bytebuddy.TypeCache$WithInlineExpunction.findOrInsert(TypeCache.java:399)
 	at net.bytebuddy.TypeCache.findOrInsert(TypeCache.java:190)
@@ -72,7 +72,7 @@ Caused by: java.lang.IllegalArgumentException: Java 25 (69) is not supported by 
 	at org.mockito.internal.creation.bytebuddy.InlineBytecodeGenerator.triggerRetransformation(InlineBytecodeGenerator.java:281)
 	... 19 more
 
-com.minimall.config.SecurityUtilsTest.isCurrentUser_returnsTrueWhenMatchingUserId -- Time elapsed: 0.009 s <<< ERROR!
+com.minimall.config.SecurityUtilsTest.isCurrentUser_returnsTrueWhenMatchingUserId -- Time elapsed: 0.016 s <<< ERROR!
 org.mockito.exceptions.base.MockitoException: 
 
 Mockito cannot mock this class: interface org.springframework.security.core.Authentication.
@@ -93,12 +93,12 @@ OS version         : 26.4.1
 You are seeing this disclaimer because Mockito is configured to create inlined mocks.
 You can learn about inline mocks and their limitations under item #39 of the Mockito class javadoc.
 
-Underlying exception : org.mockito.exceptions.base.MockitoException: Could not modify all classes [interface java.security.Principal, interface org.springframework.security.core.Authentication, interface java.io.Serializable]
+Underlying exception : org.mockito.exceptions.base.MockitoException: Could not modify all classes [interface org.springframework.security.core.Authentication, interface java.security.Principal, interface java.io.Serializable]
 	at com.minimall.config.SecurityUtilsTest.isCurrentUser_returnsTrueWhenMatchingUserId(SecurityUtilsTest.java:51)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:565)
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1604)
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1604)
-Caused by: org.mockito.exceptions.base.MockitoException: Could not modify all classes [interface java.security.Principal, interface org.springframework.security.core.Authentication, interface java.io.Serializable]
+Caused by: org.mockito.exceptions.base.MockitoException: Could not modify all classes [interface org.springframework.security.core.Authentication, interface java.security.Principal, interface java.io.Serializable]
 	at net.bytebuddy.TypeCache.findOrInsert(TypeCache.java:168)
 	at net.bytebuddy.TypeCache$WithInlineExpunction.findOrInsert(TypeCache.java:399)
 	at net.bytebuddy.TypeCache.findOrInsert(TypeCache.java:190)
@@ -142,7 +142,7 @@ Caused by: java.lang.IllegalArgumentException: Java 25 (69) is not supported by 
 	at org.mockito.internal.creation.bytebuddy.InlineBytecodeGenerator.triggerRetransformation(InlineBytecodeGenerator.java:281)
 	... 19 more
 
-com.minimall.config.SecurityUtilsTest.getCurrentUserId_returnsUserIdFromPrincipal -- Time elapsed: 0.007 s <<< ERROR!
+com.minimall.config.SecurityUtilsTest.getCurrentUserId_returnsUserIdFromPrincipal -- Time elapsed: 0.015 s <<< ERROR!
 org.mockito.exceptions.base.MockitoException: 
 
 Mockito cannot mock this class: interface org.springframework.security.core.Authentication.
@@ -163,12 +163,12 @@ OS version         : 26.4.1
 You are seeing this disclaimer because Mockito is configured to create inlined mocks.
 You can learn about inline mocks and their limitations under item #39 of the Mockito class javadoc.
 
-Underlying exception : org.mockito.exceptions.base.MockitoException: Could not modify all classes [interface java.security.Principal, interface org.springframework.security.core.Authentication, interface java.io.Serializable]
+Underlying exception : org.mockito.exceptions.base.MockitoException: Could not modify all classes [interface org.springframework.security.core.Authentication, interface java.security.Principal, interface java.io.Serializable]
 	at com.minimall.config.SecurityUtilsTest.getCurrentUserId_returnsUserIdFromPrincipal(SecurityUtilsTest.java:35)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:565)
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1604)
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1604)
-Caused by: org.mockito.exceptions.base.MockitoException: Could not modify all classes [interface java.security.Principal, interface org.springframework.security.core.Authentication, interface java.io.Serializable]
+Caused by: org.mockito.exceptions.base.MockitoException: Could not modify all classes [interface org.springframework.security.core.Authentication, interface java.security.Principal, interface java.io.Serializable]
 	at net.bytebuddy.TypeCache.findOrInsert(TypeCache.java:168)
 	at net.bytebuddy.TypeCache$WithInlineExpunction.findOrInsert(TypeCache.java:399)
 	at net.bytebuddy.TypeCache.findOrInsert(TypeCache.java:190)
