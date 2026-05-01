@@ -16,11 +16,16 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final UserService userService;
     private final ProductService productService;
+    private final WeChatSubscribeService subscribeService;
 
-    public OrderService(OrderRepository orderRepository, UserService userService, ProductService productService) {
+    public OrderService(OrderRepository orderRepository,
+                       UserService userService,
+                       ProductService productService,
+                       WeChatSubscribeService subscribeService) {
         this.orderRepository = orderRepository;
         this.userService = userService;
         this.productService = productService;
+        this.subscribeService = subscribeService;
     }
 
     public List<Order> findByUserId(String userId) {
@@ -43,7 +48,7 @@ public class OrderService {
         Order order = new Order();
         order.setOrderNo(UUID.randomUUID().toString());
         order.setUser(user);
-        
+
         BigDecimal total = BigDecimal.ZERO;
         for (OrderItem item : items) {
             item.setOrder(order);
@@ -52,15 +57,31 @@ public class OrderService {
         }
         order.setItems(items);
         order.setTotalAmount(total);
-        
-        return orderRepository.save(order);
+
+        Order savedOrder = orderRepository.save(order);
+
+        // Send subscription message for order creation
+        subscribeService.sendOrderCreatedMessage(savedOrder, user);
+
+        return savedOrder;
     }
 
     @Transactional
     public Order updateStatus(String id, Order.Status status) {
         Order order = findById(id);
+        Order.Status oldStatus = order.getStatus();
         order.setStatus(status);
-        return orderRepository.save(order);
+        Order savedOrder = orderRepository.save(order);
+
+        // Send notification based on status transition
+        if (status == Order.Status.SHIPPED) {
+            // For shipped status, express number should be set separately
+            subscribeService.sendOrderShippedMessage(savedOrder, order.getUser(), "");
+        } else if (status == Order.Status.COMPLETED && oldStatus != Order.Status.COMPLETED) {
+            subscribeService.sendOrderCompletedMessage(savedOrder, order.getUser());
+        }
+
+        return savedOrder;
     }
 
     @Transactional
@@ -70,6 +91,11 @@ public class OrderService {
         order.setStatus(Order.Status.PAID);
         order.setPayTime(Instant.now());
         order.setTradeNo(tradeNo);
-        return orderRepository.save(order);
+        Order savedOrder = orderRepository.save(order);
+
+        // Send subscription message for payment
+        subscribeService.sendOrderPaidMessage(savedOrder, order.getUser());
+
+        return savedOrder;
     }
 }
