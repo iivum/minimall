@@ -17,15 +17,18 @@ public class OrderService {
     private final UserService userService;
     private final ProductService productService;
     private final WeChatSubscribeService subscribeService;
+    private final AnalyticsService analyticsService;
 
     public OrderService(OrderRepository orderRepository,
                        UserService userService,
                        ProductService productService,
-                       WeChatSubscribeService subscribeService) {
+                       WeChatSubscribeService subscribeService,
+                       AnalyticsService analyticsService) {
         this.orderRepository = orderRepository;
         this.userService = userService;
         this.productService = productService;
         this.subscribeService = subscribeService;
+        this.analyticsService = analyticsService;
     }
 
     public List<Order> findByUserId(String userId) {
@@ -59,6 +62,7 @@ public class OrderService {
         order.setTotalAmount(total);
 
         Order savedOrder = orderRepository.save(order);
+        analyticsService.track("ORDER_CREATE", userId, "ORDER", savedOrder.getId(), null);
 
         // Send subscription message for order creation
         subscribeService.sendOrderCreatedMessage(savedOrder, user);
@@ -72,6 +76,7 @@ public class OrderService {
         Order.Status oldStatus = order.getStatus();
         order.setStatus(status);
         Order savedOrder = orderRepository.save(order);
+        analyticsService.track("ORDER_STATUS_UPDATE", order.getUser().getId(), "ORDER", id, null);
 
         // Send notification based on status transition
         if (status == Order.Status.SHIPPED) {
@@ -92,6 +97,7 @@ public class OrderService {
         order.setPayTime(Instant.now());
         order.setTradeNo(tradeNo);
         Order savedOrder = orderRepository.save(order);
+        analyticsService.track("ORDER_PAID", order.getUser().getId(), "ORDER", id, null);
 
         // Send subscription message for payment
         subscribeService.sendOrderPaidMessage(savedOrder, order.getUser());

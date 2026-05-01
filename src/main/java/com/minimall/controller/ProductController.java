@@ -1,6 +1,7 @@
 package com.minimall.controller;
 
 import com.minimall.model.Product;
+import com.minimall.service.AnalyticsService;
 import com.minimall.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -13,9 +14,11 @@ import java.util.List;
 @Tag(name = "Product", description = "Product management APIs")
 public class ProductController {
     private final ProductService productService;
+    private final AnalyticsService analyticsService;
 
-    public ProductController(ProductService productService) {
+    public ProductController(ProductService productService, AnalyticsService analyticsService) {
         this.productService = productService;
+        this.analyticsService = analyticsService;
     }
 
     @GetMapping
@@ -27,13 +30,19 @@ public class ProductController {
     @GetMapping("/{id}")
     @Operation(summary = "Get product by ID")
     public ResponseEntity<Product> getProduct(@PathVariable String id) {
-        return ResponseEntity.ok(productService.findById(id));
+        Product product = productService.findById(id);
+        analyticsService.track("PRODUCT_VIEW", null, "PRODUCT", id, null);
+        return ResponseEntity.ok(product);
     }
 
     @GetMapping("/search")
     @Operation(summary = "Search products by name")
     public ResponseEntity<List<Product>> searchProducts(@RequestParam String name) {
-        return ResponseEntity.ok(productService.searchByName(name));
+        List<Product> products = productService.searchByName(name);
+        for (Product p : products) {
+            analyticsService.track("PRODUCT_SEARCH", null, "PRODUCT", p.getId(), null);
+        }
+        return ResponseEntity.ok(products);
     }
 
     @PostMapping
