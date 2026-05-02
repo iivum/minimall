@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Collections;
@@ -24,7 +25,11 @@ class CustomerServiceControllerTest {
     @MockBean
     private CustomerServiceService customerService;
 
+    @MockBean
+    private com.minimall.service.JwtService jwtService;
+
     @Test
+    @WithMockUser
     void getPendingMessages_returnsMessageList() throws Exception {
         when(customerService.getPendingMessages()).thenReturn(List.of());
 
