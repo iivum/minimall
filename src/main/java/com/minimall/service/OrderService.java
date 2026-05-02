@@ -17,15 +17,18 @@ public class OrderService {
     private final UserService userService;
     private final ProductService productService;
     private final WeChatSubscribeService subscribeService;
+    private final PointService pointService;
 
     public OrderService(OrderRepository orderRepository,
                        UserService userService,
                        ProductService productService,
-                       WeChatSubscribeService subscribeService) {
+                       WeChatSubscribeService subscribeService,
+                       PointService pointService) {
         this.orderRepository = orderRepository;
         this.userService = userService;
         this.productService = productService;
         this.subscribeService = subscribeService;
+        this.pointService = pointService;
     }
 
     public List<Order> findByUserId(String userId) {
@@ -79,6 +82,9 @@ public class OrderService {
             subscribeService.sendOrderShippedMessage(savedOrder, order.getUser(), "");
         } else if (status == Order.Status.COMPLETED && oldStatus != Order.Status.COMPLETED) {
             subscribeService.sendOrderCompletedMessage(savedOrder, order.getUser());
+            // Award points for completed order (1% of order amount)
+            String userId = order.getUser().getId();
+            pointService.earnOrderPoints(userId, order.getOrderNo(), order.getTotalAmount());
         }
 
         return savedOrder;
