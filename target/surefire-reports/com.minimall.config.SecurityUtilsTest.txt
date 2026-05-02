@@ -1,8 +1,8 @@
 -------------------------------------------------------------------------------
 Test set: com.minimall.config.SecurityUtilsTest
 -------------------------------------------------------------------------------
-Tests run: 5, Failures: 0, Errors: 3, Skipped: 0, Time elapsed: 0.441 s <<< FAILURE! -- in com.minimall.config.SecurityUtilsTest
-com.minimall.config.SecurityUtilsTest.isCurrentUser_returnsFalseWhenDifferentUserId -- Time elapsed: 0.409 s <<< ERROR!
+Tests run: 5, Failures: 0, Errors: 3, Skipped: 0, Time elapsed: 0.069 s <<< FAILURE! -- in com.minimall.config.SecurityUtilsTest
+com.minimall.config.SecurityUtilsTest.isCurrentUser_returnsFalseWhenDifferentUserId -- Time elapsed: 0.037 s <<< ERROR!
 org.mockito.exceptions.base.MockitoException: 
 
 Mockito cannot mock this class: interface org.springframework.security.core.Authentication.
@@ -72,7 +72,7 @@ Caused by: java.lang.IllegalArgumentException: Java 25 (69) is not supported by 
 	at org.mockito.internal.creation.bytebuddy.InlineBytecodeGenerator.triggerRetransformation(InlineBytecodeGenerator.java:281)
 	... 19 more
 
-com.minimall.config.SecurityUtilsTest.isCurrentUser_returnsTrueWhenMatchingUserId -- Time elapsed: 0.009 s <<< ERROR!
+com.minimall.config.SecurityUtilsTest.isCurrentUser_returnsTrueWhenMatchingUserId -- Time elapsed: 0.015 s <<< ERROR!
 org.mockito.exceptions.base.MockitoException: 
 
 Mockito cannot mock this class: interface org.springframework.security.core.Authentication.
@@ -142,7 +142,7 @@ Caused by: java.lang.IllegalArgumentException: Java 25 (69) is not supported by 
 	at org.mockito.internal.creation.bytebuddy.InlineBytecodeGenerator.triggerRetransformation(InlineBytecodeGenerator.java:281)
 	... 19 more
 
-com.minimall.config.SecurityUtilsTest.getCurrentUserId_returnsUserIdFromPrincipal -- Time elapsed: 0.007 s <<< ERROR!
+com.minimall.config.SecurityUtilsTest.getCurrentUserId_returnsUserIdFromPrincipal -- Time elapsed: 0.014 s <<< ERROR!
 org.mockito.exceptions.base.MockitoException: 
 
 Mockito cannot mock this class: interface org.springframework.security.core.Authentication.
