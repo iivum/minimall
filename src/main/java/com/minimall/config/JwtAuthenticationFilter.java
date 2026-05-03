@@ -54,7 +54,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 || path.startsWith("/swagger-ui")
                 || path.startsWith("/api-docs")
                 || path.startsWith("/h2-console")
-                || path.equals("/health");
+                || path.equals("/health")
+                || path.startsWith("/actuator");
     }
 
     public record UserPrincipal(String userId, String openid) {}
