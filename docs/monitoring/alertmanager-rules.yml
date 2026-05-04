@@ -11,13 +11,13 @@ groups:
           summary: "MiniMall 服务不可用"
           description: "MiniMall 后端服务已停止运行超过 1 分钟"
 
-      # 高错误率告警
+      # High error rate alert
       - alert: MiniMallHighErrorRate
         expr: |
           (
-            sum(rate(http_server_requests_seconds_count{application="minimall", status=~"5.."}[5m]))
+            sum(rate(http_server_requests_seconds_count{status=~"5.."}[5m]))
             /
-            sum(rate(http_server_requests_seconds_count{application="minimall"}[5m]))
+            sum(rate(http_server_requests_seconds_count[5m]))
           ) > 0.01
         for: 5m
         labels:
@@ -52,13 +52,13 @@ groups:
           summary: "MiniMall 数据库连接池即将耗尽"
           description: "HikariCP 连接池使用率超过 90%，当前活跃: {{ $value }}"
 
-      # 支付失败率告警
+      # Payment failure rate alert
       - alert: MiniMallHighPaymentFailureRate
         expr: |
           (
-            rate(minimall_payment_failure_total[5m])
+            rate(minimall_payment_failure[5m])
             /
-            (rate(minimall_payment_success_total[5m]) + rate(minimall_payment_failure_total[5m]))
+            (rate(minimall_payment_success[5m]) + rate(minimall_payment_failure[5m]))
           ) > 0.05
         for: 5m
         labels:
