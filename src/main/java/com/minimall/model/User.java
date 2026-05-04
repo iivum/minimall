@@ -1,6 +1,7 @@
 package com.minimall.model;
 
 import jakarta.persistence.*;
+import java.math.BigDecimal;
 import java.time.Instant;
 
 @Entity
@@ -25,6 +26,12 @@ public class User {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role = Role.USER;
+
+    @Column(name = "member_grade", nullable = false)
+    private String memberGrade = "L1";
+
+    @Column(name = "total_spent", nullable = false, precision = 10, scale = 2)
+    private BigDecimal totalSpent = BigDecimal.ZERO;
 
     @Column(nullable = false)
     private Instant createdAt;
@@ -51,4 +58,8 @@ public class User {
     public Role getRole() { return role; }
     public void setRole(Role role) { this.role = role; }
     public Instant getCreatedAt() { return createdAt; }
+    public String getMemberGrade() { return memberGrade; }
+    public void setMemberGrade(String memberGrade) { this.memberGrade = memberGrade; }
+    public BigDecimal getTotalSpent() { return totalSpent; }
+    public void setTotalSpent(BigDecimal totalSpent) { this.totalSpent = totalSpent; }
 }
