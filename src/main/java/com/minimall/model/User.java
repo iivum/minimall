@@ -26,6 +26,12 @@ public class User {
     @Column(nullable = false)
     private Role role = Role.USER;
 
+    @Column(name = "member_grade", nullable = false)
+    private String memberGrade = "L1";
+
+    @Column(name = "total_spent", nullable = false)
+    private java.math.BigDecimal totalSpent = java.math.BigDecimal.ZERO;
+
     @Column(nullable = false)
     private Instant createdAt;
 
@@ -50,5 +56,9 @@ public class User {
     public void setPhone(String phone) { this.phone = phone; }
     public Role getRole() { return role; }
     public void setRole(Role role) { this.role = role; }
+    public String getMemberGrade() { return memberGrade; }
+    public void setMemberGrade(String memberGrade) { this.memberGrade = memberGrade; }
+    public java.math.BigDecimal getTotalSpent() { return totalSpent; }
+    public void setTotalSpent(java.math.BigDecimal totalSpent) { this.totalSpent = totalSpent; }
     public Instant getCreatedAt() { return createdAt; }
 }
