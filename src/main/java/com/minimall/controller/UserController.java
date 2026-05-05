@@ -31,8 +31,13 @@ public class UserController {
     }
 
     @GetMapping("/openid/{openid}")
-    @Operation(summary = "Get user by WeChat openid")
+    @Operation(summary = "Get user by WeChat openid (own data only)")
     public ResponseEntity<User> getUserByOpenid(@PathVariable String openid) {
+        // Users can only look up their own data by openid
+        String currentUserOpenid = securityUtils.getCurrentUserOpenid();
+        if (currentUserOpenid == null || !currentUserOpenid.equals(openid)) {
+            throw new UnauthorizedException("You can only access your own profile");
+        }
         return ResponseEntity.ok(userService.findByOpenid(openid));
     }
 

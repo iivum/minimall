@@ -96,6 +96,11 @@ public class CustomerServiceService {
         return repository.findByOpenidOrderByCreatedAtDesc(openid);
     }
 
+    public CustomerServiceMessage findById(String messageId) {
+        return repository.findById(messageId)
+            .orElseThrow(() -> new IllegalArgumentException("Message not found: " + messageId));
+    }
+
     public List<CustomerServiceMessage> getPendingMessages() {
         return repository.findByStatusAndHandlerIdIsNull(CustomerServiceMessage.Status.PENDING);
     }
