@@ -7,6 +7,10 @@
         <text class="login-tip">点击登录</text>
       </view>
     </view>
+    <view class="member-grade" wx:if="{{memberGrade}}">
+      <text class="grade-name">{{memberGrade.gradeName}}</text>
+      <text class="grade-benefit">享{{memberGrade.discountPercent}}%折扣</text>
+    </view>
   </view>
   <view class="order-section">
     <view class="order-header">

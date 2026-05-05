@@ -5,6 +5,7 @@ const { login } = require('../../utils/auth.js');
 Page({
   data: {
     userInfo: null,
+    memberGrade: null,
     isLoggedIn: false,
     menuList: [
       [
@@ -26,7 +27,9 @@ Page({
   },
 
   onShow() {
-    this.checkLoginStatus();
+    if (this.data.isLoggedIn) {
+      this.loadMemberGrade();
+    }
   },
 
   checkLoginStatus() {
@@ -37,6 +40,18 @@ Page({
         isLoggedIn: true,
         userInfo: userInfo,
       });
+      this.loadMemberGrade();
+    }
+  },
+
+  async loadMemberGrade() {
+    try {
+      const res = await request({ url: '/api/membership/benefits' });
+      if (res.data) {
+        this.setData({ memberGrade: res.data });
+      }
+    } catch (err) {
+      console.error('Load member grade error:', err);
     }
   },
 
