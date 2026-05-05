@@ -28,6 +28,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/swagger-ui/**", "/api-docs/**", "/h2-console/**").permitAll()
                 .requestMatchers("/health").permitAll()
+                .requestMatchers("/api/membership/**").authenticated()
                 .anyRequest().authenticated()
             )
             .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()));

@@ -17,15 +17,18 @@ public class OrderService {
     private final UserService userService;
     private final ProductService productService;
     private final WeChatSubscribeService subscribeService;
+    private final MemberService memberService;
 
     public OrderService(OrderRepository orderRepository,
                        UserService userService,
                        ProductService productService,
-                       WeChatSubscribeService subscribeService) {
+                       WeChatSubscribeService subscribeService,
+                       MemberService memberService) {
         this.orderRepository = orderRepository;
         this.userService = userService;
         this.productService = productService;
         this.subscribeService = subscribeService;
+        this.memberService = memberService;
     }
 
     public List<Order> findByUserId(String userId) {
@@ -95,6 +98,9 @@ public class OrderService {
 
         // Send subscription message for payment
         subscribeService.sendOrderPaidMessage(savedOrder, order.getUser());
+
+        // Update user's total spent and check for grade promotion
+        memberService.updateTotalSpent(order.getUser().getId(), order.getTotalAmount());
 
         return savedOrder;
     }

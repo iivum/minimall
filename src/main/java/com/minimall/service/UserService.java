@@ -26,6 +26,10 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    public User save(User user) {
+        return userRepository.save(user);
+    }
+
     public User update(String id, User updated) {
         User existing = findById(id);
         existing.setNickname(updated.getNickname());
