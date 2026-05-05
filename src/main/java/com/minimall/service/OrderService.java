@@ -17,15 +17,18 @@ public class OrderService {
     private final UserService userService;
     private final ProductService productService;
     private final WeChatSubscribeService subscribeService;
+    private final MemberService memberService;
 
     public OrderService(OrderRepository orderRepository,
                        UserService userService,
                        ProductService productService,
-                       WeChatSubscribeService subscribeService) {
+                       WeChatSubscribeService subscribeService,
+                       MemberService memberService) {
         this.orderRepository = orderRepository;
         this.userService = userService;
         this.productService = productService;
         this.subscribeService = subscribeService;
+        this.memberService = memberService;
     }
 
     public List<Order> findByUserId(String userId) {
@@ -73,9 +76,8 @@ public class OrderService {
         order.setStatus(status);
         Order savedOrder = orderRepository.save(order);
 
-        // Send notification based on status transition
-        if (status == Order.Status.SHIPPED) {
-            // For shipped status, express number should be set separately
+        // Send subscription message based on status transition
+        if (status == Order.Status.SHIPPED && oldStatus != Order.Status.SHIPPED) {
             subscribeService.sendOrderShippedMessage(savedOrder, order.getUser(), "");
         } else if (status == Order.Status.COMPLETED && oldStatus != Order.Status.COMPLETED) {
             subscribeService.sendOrderCompletedMessage(savedOrder, order.getUser());
@@ -95,6 +97,9 @@ public class OrderService {
 
         // Send subscription message for payment
         subscribeService.sendOrderPaidMessage(savedOrder, order.getUser());
+
+        // Update user's total spent and check for grade promotion
+        memberService.updateTotalSpent(order.getUser().getId(), order.getTotalAmount());
 
         return savedOrder;
     }
