@@ -61,30 +61,14 @@ public class OrderService {
         order.setItems(items);
         order.setTotalAmount(total);
 
-        Order savedOrder = orderRepository.save(order);
-
-        // Send subscription message for order creation
-        subscribeService.sendOrderCreatedMessage(savedOrder, user);
-
-        return savedOrder;
+        return orderRepository.save(order);
     }
 
     @Transactional
     public Order updateStatus(String id, Order.Status status) {
         Order order = findById(id);
-        Order.Status oldStatus = order.getStatus();
         order.setStatus(status);
-        Order savedOrder = orderRepository.save(order);
-
-        // Send notification based on status transition
-        if (status == Order.Status.SHIPPED) {
-            // For shipped status, express number should be set separately
-            subscribeService.sendOrderShippedMessage(savedOrder, order.getUser(), "");
-        } else if (status == Order.Status.COMPLETED && oldStatus != Order.Status.COMPLETED) {
-            subscribeService.sendOrderCompletedMessage(savedOrder, order.getUser());
-        }
-
-        return savedOrder;
+        return orderRepository.save(order);
     }
 
     @Transactional
