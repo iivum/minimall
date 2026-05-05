@@ -17,17 +17,20 @@ public class OrderService {
     private final UserService userService;
     private final ProductService productService;
     private final WeChatSubscribeService subscribeService;
+    private final PointService pointService;
     private final MemberService memberService;
 
     public OrderService(OrderRepository orderRepository,
                        UserService userService,
                        ProductService productService,
                        WeChatSubscribeService subscribeService,
+                       PointService pointService,
                        MemberService memberService) {
         this.orderRepository = orderRepository;
         this.userService = userService;
         this.productService = productService;
         this.subscribeService = subscribeService;
+        this.pointService = pointService;
         this.memberService = memberService;
     }
 
@@ -63,7 +66,6 @@ public class OrderService {
 
         Order savedOrder = orderRepository.save(order);
 
-        // Send subscription message for order creation
         subscribeService.sendOrderCreatedMessage(savedOrder, user);
 
         return savedOrder;
@@ -76,11 +78,12 @@ public class OrderService {
         order.setStatus(status);
         Order savedOrder = orderRepository.save(order);
 
-        // Send subscription message based on status transition
         if (status == Order.Status.SHIPPED && oldStatus != Order.Status.SHIPPED) {
             subscribeService.sendOrderShippedMessage(savedOrder, order.getUser(), "");
         } else if (status == Order.Status.COMPLETED && oldStatus != Order.Status.COMPLETED) {
             subscribeService.sendOrderCompletedMessage(savedOrder, order.getUser());
+            String userId = order.getUser().getId();
+            pointService.earnOrderPoints(userId, order.getOrderNo(), order.getTotalAmount());
         }
 
         return savedOrder;
@@ -95,10 +98,8 @@ public class OrderService {
         order.setTradeNo(tradeNo);
         Order savedOrder = orderRepository.save(order);
 
-        // Send subscription message for payment
         subscribeService.sendOrderPaidMessage(savedOrder, order.getUser());
 
-        // Update user's total spent and check for grade promotion
         memberService.updateTotalSpent(order.getUser().getId(), order.getTotalAmount());
 
         return savedOrder;
