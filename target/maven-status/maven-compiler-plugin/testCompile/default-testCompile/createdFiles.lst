@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 com/minimall/controller/CustomerServiceControllerTest.class
 com/minimall/repository/CustomerServiceMessageRepositoryTest.class
 com/minimall/model/UserSubscriptionTest.class
@@ -6,3 +7,8 @@ com/minimall/service/CustomerServiceServiceTest.class
 com/minimall/service/JwtServiceTest.class
 com/minimall/config/SecurityUtilsTest.class
 com/minimall/model/CustomerServiceMessageTest.class
+=======
+com/minimall/service/JwtServiceTest.class
+com/minimall/config/SecurityUtilsTest.class
+com/minimall/service/ProductServiceTest.class
+>>>>>>> 715e4d9 (feat: update JWT, PayService and WeChatPayConfig)
