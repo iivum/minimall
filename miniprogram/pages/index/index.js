@@ -3,6 +3,7 @@ const { request } = require('../../utils/request.js');
 
 Page({
   data: {
+    loading: true,
     bannerList: [],
     categoryList: [],
     flashSale: {
@@ -19,31 +20,20 @@ Page({
 
   async loadHomeData() {
     try {
-      wx.showLoading({ title: '加载中...' });
+      const [categoriesRes, productsRes] = await Promise.all([
+        request({ url: '/api/categories' }),
+        request({ url: '/api/products', data: { limit: 9, offset: 0 } }),
+      ]);
 
-      // Load categories
-      const categoriesRes = await request({ url: '/api/categories' });
-      this.setData({ categoryList: categoriesRes.data || [] });
-
-      // Load products for flash sale (first 3)
-      const productsRes = await request({
-        url: '/api/products',
-        data: { limit: 3, offset: 0 },
-      });
+      const allProducts = productsRes.data || [];
       this.setData({
-        'flashSale.goods': productsRes.data || [],
+        loading: false,
+        categoryList: categoriesRes.data || [],
+        'flashSale.goods': allProducts.slice(0, 3),
+        recommendGoods: allProducts.slice(3, 9),
       });
-
-      // Load all products for recommendations
-      const allProductsRes = await request({
-        url: '/api/products',
-        data: { limit: 6, offset: 0 },
-      });
-      this.setData({ recommendGoods: allProductsRes.data || [] });
-
-      wx.hideLoading();
     } catch (err) {
-      wx.hideLoading();
+      this.setData({ loading: false });
       console.error('Load home data error:', err);
       wx.showToast({ title: '加载失败', icon: 'none' });
     }

@@ -9,7 +9,10 @@
       </swiper-item>
     </block>
   </swiper>
-  <view class="category-nav">
+  <view class="skeleton-category" wx:if="{{loading}}">
+    <view class="skeleton-category-item" wx:for="{{4}}" wx:key="i"></view>
+  </view>
+  <view class="category-nav" wx:else>
     <block wx:for="{{categoryList}}" wx:key="id">
       <view class="category-item" bindtap="goCategory" data-id="{{item.id}}">
         <view class="category-icon" style="background-color: {{item.color}}">{{item.icon}}</view>
@@ -25,7 +28,10 @@
         <text class="timer-value">{{flashSale.endTime}}</text>
       </view>
     </view>
-    <scroll-view class="goods-scroll" scroll-x enable-flex>
+    <view class="skeleton-scroll" wx:if="{{loading}}">
+      <view class="skeleton-scroll-item" wx:for="{{3}}" wx:key="i"></view>
+    </view>
+    <scroll-view class="goods-scroll" scroll-x enable-flex wx:else>
       <block wx:for="{{flashSale.goods}}" wx:key="id">
         <view class="goods-card small" bindtap="goDetail" data-id="{{item.id}}">
           <image class="goods-image" src="{{item.image}}" mode="aspectFill" />
@@ -41,7 +47,10 @@
     <view class="section-header">
       <text class="section-title">为你推荐</text>
     </view>
-    <view class="goods-grid">
+    <view class="skeleton-grid" wx:if="{{loading}}">
+      <view class="skeleton-grid-item" wx:for="{{6}}" wx:key="i"></view>
+    </view>
+    <view class="goods-grid" wx:else>
       <block wx:for="{{recommendGoods}}" wx:key="id">
         <view class="goods-card" bindtap="goDetail" data-id="{{item.id}}">
           <image class="goods-image" src="{{item.image}}" mode="aspectFill" />

@@ -7,16 +7,33 @@
         </view>
       </block>
     </scroll-view>
-    <scroll-view class="category-right" scroll-y>
+    <scroll-view class="category-right" scroll-y bindscrolltolower="loadMoreProducts">
       <view class="subcategory-title">
         <text>{{categories[currentIndex].name}}</text>
       </view>
       <view class="subcategory-grid">
         <block wx:for="{{categories[currentIndex].children}}" wx:key="id">
-          <view class="subcategory-item" bindtap="goDetail" data-id="{{item.id}}">
+          <view class="subcategory-item" bindtap="switchSubCategory" data-id="{{item.id}}">
             <text>{{item.name}}</text>
           </view>
         </block>
+      </view>
+      <view class="product-list">
+        <block wx:for="{{products}}" wx:key="id">
+          <view class="product-item" bindtap="goDetail" data-id="{{item.id}}">
+            <image class="product-image" src="{{item.image}}" mode="aspectFill" />
+            <view class="product-info">
+              <text class="product-name">{{item.name}}</text>
+              <text class="product-price">¥{{item.price}}</text>
+            </view>
+          </view>
+        </block>
+      </view>
+      <view class="loading-more" wx:if="{{loading}}">
+        <text>加载中...</text>
+      </view>
+      <view class="no-more" wx:if="{{!hasMore && products.length > 0}}">
+        <text>没有更多了</text>
       </view>
     </scroll-view>
   </view>
