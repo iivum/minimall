@@ -25,6 +25,7 @@ public class WeChatPayConfig {
 
     public String getAppid() { return appid; }
     public void setAppid(String appid) { this.appid = appid; }
+    public String getAppId() { return appid; }
 
     @Bean
     public RSAAutoCertificateConfig rsaAutoCertificateConfig() throws IOException {
@@ -35,11 +36,10 @@ public class WeChatPayConfig {
         }
 
         RSAAutoCertificateConfig config = new RSAAutoCertificateConfig.Builder()
-            .mchId(mchid)
+            .merchantId(mchid)
             .privateKey(privateKeyContent)
             .merchantSerialNumber(serialNo)
             .apiV3Key(apiV3Key)
-            .appid(appid)
             .build();
         return config;
     }
