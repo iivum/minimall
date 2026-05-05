@@ -1,5 +1,4 @@
 version: '3.8'
-
 services:
   postgres:
     image: postgres:15-alpine
@@ -20,7 +19,6 @@ services:
       start_period: 30s
     networks:
       - minimall-network
-
   backend:
     build:
       context: ./backend
@@ -51,10 +49,59 @@ services:
       start_period: 60s
     networks:
       - minimall-network
-
+  prometheus:
+    image: prom/prometheus:v2.50.0
+    container_name: minimall-prometheus
+    volumes:
+      - ./docs/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./docs/monitoring/alertmanager-rules.yml:/etc/prometheus/alertmanager-rules.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    ports:
+      - "9090:9090"
+    networks:
+      - minimall-network
+  grafana:
+    image: grafana/grafana:10.4.0
+    container_name: minimall-grafana
+    volumes:
+      - ./docs/monitoring/grafana-dashboard.json:/var/lib/grafana/dashboards/minimall.json:ro
+      - ./docs/monitoring/provisioning.yml:/etc/grafana/provisioning/dashboards/dashboard.yml:ro
+      - grafana_data:/var/lib/grafana
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-admin123}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+    networks:
+      - minimall-network
+  alertmanager:
+    image: prom/alertmanager:v0.27.0
+    container_name: minimall-alertmanager
+    volumes:
+      - ./docs/monitoring/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+      - alertmanager_data:/alertmanager
+    command:
+      - '--config.file=/etc/alertmanager/alertmanager.yml'
+      - '--storage.path=/alertmanager'
+    ports:
+      - "9093:9093"
+    networks:
+      - minimall-network
 networks:
   minimall-network:
     driver: bridge
-
 volumes:
+  postgres_data:
+  prometheus_data:
+  grafana_data:
+  alertmanager_data:
   postgres_data:

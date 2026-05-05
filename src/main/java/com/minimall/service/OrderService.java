@@ -18,17 +18,20 @@ public class OrderService {
     private final ProductService productService;
     private final WeChatSubscribeService subscribeService;
     private final PointService pointService;
+    private final MemberService memberService;
 
     public OrderService(OrderRepository orderRepository,
                        UserService userService,
                        ProductService productService,
                        WeChatSubscribeService subscribeService,
-                       PointService pointService) {
+                       PointService pointService,
+                       MemberService memberService) {
         this.orderRepository = orderRepository;
         this.userService = userService;
         this.productService = productService;
         this.subscribeService = subscribeService;
         this.pointService = pointService;
+        this.memberService = memberService;
     }
 
     public List<Order> findByUserId(String userId) {
@@ -63,7 +66,6 @@ public class OrderService {
 
         Order savedOrder = orderRepository.save(order);
 
-        // Send subscription message for order creation
         subscribeService.sendOrderCreatedMessage(savedOrder, user);
 
         return savedOrder;
@@ -76,13 +78,10 @@ public class OrderService {
         order.setStatus(status);
         Order savedOrder = orderRepository.save(order);
 
-        // Send notification based on status transition
-        if (status == Order.Status.SHIPPED) {
-            // For shipped status, express number should be set separately
+        if (status == Order.Status.SHIPPED && oldStatus != Order.Status.SHIPPED) {
             subscribeService.sendOrderShippedMessage(savedOrder, order.getUser(), "");
         } else if (status == Order.Status.COMPLETED && oldStatus != Order.Status.COMPLETED) {
             subscribeService.sendOrderCompletedMessage(savedOrder, order.getUser());
-            // Award points for completed order (1% of order amount)
             String userId = order.getUser().getId();
             pointService.earnOrderPoints(userId, order.getOrderNo(), order.getTotalAmount());
         }
@@ -99,8 +98,9 @@ public class OrderService {
         order.setTradeNo(tradeNo);
         Order savedOrder = orderRepository.save(order);
 
-        // Send subscription message for payment
         subscribeService.sendOrderPaidMessage(savedOrder, order.getUser());
+
+        memberService.updateTotalSpent(order.getUser().getId(), order.getTotalAmount());
 
         return savedOrder;
     }
