@@ -58,7 +58,7 @@ public class Order {
     }
 
     public enum Status {
-        PENDING, PAID, SHIPPED, COMPLETED, CANCELLED
+        PENDING, PAID, SHIPPED, COMPLETED, CANCELLED, REFUNDED
     }
 
     public enum PayStatus {
