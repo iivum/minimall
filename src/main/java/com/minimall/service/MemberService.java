@@ -35,8 +35,22 @@ public class MemberService {
     @Transactional
     public void redeem(String userId, String benefitType, BigDecimal amount) {
         User user = userService.findById(userId);
-        // Benefit redemption logic - implementation depends on specific requirements
-        // This is a placeholder for actual redemption logic
+        MemberGrade currentGrade = memberGradeRepository.findByCode(user.getMemberGrade())
+            .orElseThrow(() -> new RuntimeException("Grade not found: " + user.getMemberGrade()));
+
+        switch (benefitType) {
+            case "discount" -> {
+                if (amount.compareTo(BigDecimal.valueOf(currentGrade.getDiscountPercent())) > 0) {
+                    throw new RuntimeException("Discount percentage exceeds your grade limit: " + currentGrade.getDiscountPercent() + "%");
+                }
+            }
+            case "points" -> {
+                if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+                    throw new RuntimeException("Points amount must be positive");
+                }
+            }
+            default -> throw new RuntimeException("Unknown benefit type: " + benefitType);
+        }
     }
 
     @Transactional
