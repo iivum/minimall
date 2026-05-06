@@ -3,6 +3,7 @@ package com.minimall.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.minimall.config.WeChatPayConfig;
 import com.minimall.model.Order;
+import io.micrometer.core.instrument.Counter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -22,11 +23,16 @@ public class PayService {
     private final WeChatPayConfig weChatPayConfig;
     private final OrderService orderService;
     private final ObjectMapper objectMapper;
+    private final Counter paymentSuccessCounter;
+    private final Counter paymentFailureCounter;
 
-    public PayService(WeChatPayConfig weChatPayConfig, OrderService orderService) {
+    public PayService(WeChatPayConfig weChatPayConfig, OrderService orderService,
+                      Counter payment_success_counter, Counter payment_failure_counter) {
         this.weChatPayConfig = weChatPayConfig;
         this.orderService = orderService;
         this.objectMapper = new ObjectMapper();
+        this.paymentSuccessCounter = payment_success_counter;
+        this.paymentFailureCounter = payment_failure_counter;
     }
 
     public String createUnifiedOrder(Order order, String openid) {
@@ -109,8 +115,10 @@ public class PayService {
             Order order = orderService.findByOrderNo(outTradeNo);
             if ("SUCCESS".equals(tradeStatus)) {
                 orderService.pay(order.getId(), tradeNo);
+                paymentSuccessCounter.increment();
                 log.info("Order paid successfully: {}", outTradeNo);
             } else {
+                paymentFailureCounter.increment();
                 log.warn("Payment failed for order: {}, status: {}", outTradeNo, tradeStatus);
             }
         } catch (Exception e) {
