@@ -1,0 +1,62 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/product/detail",
+    "pages/cart/cart",
+    "pages/order/list",
+    "pages/order/detail",
+    "pages/member/index",
+    "pages/pay/pay"
+  ],
+  "subpackages": [],
+  "window": {
+    "navigationBarBackgroundColor": "#ffffff",
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "Minimall",
+    "backgroundColor": "#f5f5f5",
+    "backgroundTextStyle": "light",
+    "enablePullDownRefresh": true,
+    "onReachBottomDistance": 50
+  },
+  "tabBar": {
+    "color": "#999999",
+    "selectedColor": "#FF6B6B",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "assets/images/tab-home.png",
+        "selectedIconPath": "assets/images/tab-home-active.png"
+      },
+      {
+        "pagePath": "pages/cart/cart",
+        "text": "购物车",
+        "iconPath": "assets/images/tab-cart.png",
+        "selectedIconPath": "assets/images/tab-cart-active.png"
+      },
+      {
+        "pagePath": "pages/order/list",
+        "text": "订单",
+        "iconPath": "assets/images/tab-order.png",
+        "selectedIconPath": "assets/images/tab-order-active.png"
+      },
+      {
+        "pagePath": "pages/member/index",
+        "text": "我的",
+        "iconPath": "assets/images/tab-member.png",
+        "selectedIconPath": "assets/images/tab-member-active.png"
+      }
+    ]
+  },
+  "permission": {
+    "scope.userLocation": {
+      "desc": "用于提供附近门店服务"
+    }
+  },
+  "requiredBackgroundModes": ["audio", "location"],
+  "usingComponents": {},
+  "sitemapLocation": "sitemap.json",
+  "style": "v2"
+}

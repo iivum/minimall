@@ -1,0 +1,24 @@
+<!-- pages/index/index.wxml -->
+<view class="container">
+  <view class="search-bar">
+    <input class="search-input" placeholder="搜索商品" bindconfirm="onSearch" confirm-type="search" />
+  </view>
+  <view class="product-list" wx:if="{{!loading}}">
+    <view class="product-item" wx:for="{{products}}" wx:key="id" bindtap="goToProduct" data-id="{{item.id}}">
+      <image class="product-image" mode="aspectFill" src="{{item.imageUrl}}" />
+      <view class="product-info">
+        <text class="product-name">{{item.name}}</text>
+        <view class="product-desc">{{item.description}}</view>
+        <view class="product-price">
+          <text class="price">¥{{item.price}}</text>
+          <text class="original-price" wx:if="{{item.originalPrice > item.price}}">¥{{item.originalPrice}}</text>
+        </view>
+        <view class="product-actions">
+          <button class="btn-add-cart" size="mini" bindtap="addToCart" data-id="{{item.id}}" catchtap="addToCart">加入购物车</button>
+        </view>
+      </view>
+    </view>
+  </view>
+  <view class="loading" wx:if="{{loading}}"><text>加载中...</text></view>
+  <view class="empty" wx:if="{{!loading && products.length === 0}}"><text>暂无商品</text></view>
+</view>

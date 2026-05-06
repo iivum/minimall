@@ -1,0 +1,87 @@
+/** app.wxss **/
+page {
+  background-color: #f5f5f5;
+  font-size: 28rpx;
+  color: #333;
+}
+
+.container {
+  padding: 24rpx;
+}
+
+.price {
+  color: #FF6B6B;
+  font-weight: bold;
+}
+
+.original-price {
+  color: #999;
+  text-decoration: line-through;
+  font-size: 24rpx;
+}
+
+.btn-primary {
+  background-color: #FF6B6B;
+  color: #fff;
+  border-radius: 8rpx;
+  padding: 24rpx 48rpx;
+  font-size: 32rpx;
+  text-align: center;
+}
+
+.btn-secondary {
+  background-color: #fff;
+  color: #333;
+  border: 1rpx solid #ddd;
+  border-radius: 8rpx;
+  padding: 24rpx 48rpx;
+  font-size: 32rpx;
+  text-align: center;
+}
+
+.btn-disabled {
+  background-color: #ccc;
+  color: #fff;
+}
+
+.card {
+  background-color: #fff;
+  border-radius: 12rpx;
+  padding: 24rpx;
+  margin-bottom: 24rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
+}
+
+.flex-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.text-primary {
+  color: #FF6B6B;
+}
+
+.text-secondary {
+  color: #999;
+}
+
+.text-small {
+  font-size: 24rpx;
+}
+
+.text-bold {
+  font-weight: bold;
+}

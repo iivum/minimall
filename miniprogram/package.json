@@ -1,0 +1,15 @@
+{
+  "name": "minimall",
+  "version": "1.0.0",
+  "description": "MVP WeChat MiniMall for personal",
+  "main": "app.js",
+  "scripts": {
+    "dev": "miniprogram-dev",
+    "build": "miniprogram-build"
+  },
+  "keywords": ["miniprogram", "wechat", "ecommerce"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {}
+}

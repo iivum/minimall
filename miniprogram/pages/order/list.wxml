@@ -1,0 +1,23 @@
+<!-- pages/order/list.wxml -->
+<view class="container">
+  <view class="order-list" wx:if="{{!loading && orders.length > 0}}">
+    <view class="order-item card" wx:for="{{orders}}" wx:key="id" bindtap="goToDetail" data-id="{{item.id}}">
+      <view class="order-header">
+        <text class="order-no">订单号: {{item.orderNo}}</text>
+        <text class="order-status status-{{item.status}}">{{item.statusText}}</text>
+      </view>
+      <view class="order-products">
+        <view class="product-item" wx:for="{{item.items}}" wx:for-item="product" wx:key="id">
+          <text class="product-name">{{product.name}}</text>
+          <text class="product-qty">x{{product.quantity}}</text>
+        </view>
+      </view>
+      <view class="order-footer">
+        <text class="order-time">{{item.createdAt}}</text>
+        <text class="order-total">合计: ¥{{item.totalAmount}}</text>
+      </view>
+    </view>
+  </view>
+  <view class="loading" wx:if="{{loading}}"><text>加载中...</text></view>
+  <view class="empty" wx:if="{{!loading && orders.length === 0}}"><text>暂无订单</text></view>
+</view>

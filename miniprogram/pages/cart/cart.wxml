@@ -1,0 +1,36 @@
+<!-- pages/cart/cart.wxml -->
+<view class="container">
+  <view class="cart-list" wx:if="{{cartItems.length > 0}}">
+    <view class="cart-item" wx:for="{{cartItems}}" wx:key="id">
+      <view class="item-select" bindtap="toggleSelect" data-index="{{index}}">
+        <image class="check-icon" src="{{item.selected !== false ? '/assets/images/checked.png' : '/assets/images/unchecked.png'}}" />
+      </view>
+      <image class="item-image" mode="aspectFill" src="{{item.imageUrl}}" />
+      <view class="item-info">
+        <text class="item-name">{{item.name}}</text>
+        <view class="item-price">¥{{item.price}}</view>
+        <view class="item-quantity">
+          <button size="mini" data-index="{{index}}" data-type="minus" bindtap="onQuantityChange">-</button>
+          <text>{{item.quantity}}</text>
+          <button size="mini" data-index="{{index}}" data-type="plus" bindtap="onQuantityChange">+</button>
+        </view>
+      </view>
+      <view class="item-remove" bindtap="removeItem" data-index="{{index}}">删除</view>
+    </view>
+  </view>
+  <view class="empty" wx:if="{{cartItems.length === 0}}">
+    <text>购物车是空的</text>
+    <button class="btn-primary" bindtap="goShopping">去逛逛</button>
+  </view>
+  <view class="bottom-bar" wx:if="{{cartItems.length > 0}}">
+    <view class="select-all" bindtap="toggleAllSelect">
+      <image class="check-icon" src="{{allSelected ? '/assets/images/checked.png' : '/assets/images/unchecked.png'}}" />
+      <text>全选</text>
+    </view>
+    <view class="total-info">
+      <text>合计:</text>
+      <text class="total-price">¥{{totalPrice}}</text>
+    </view>
+    <button class="btn-checkout" bindtap="checkout">结算({{selectedCount}})</button>
+  </view>
+</view>
