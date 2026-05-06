@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.Signature;
@@ -117,5 +118,12 @@ public class PayService {
             log.error("Failed to process callback: {}", e.getMessage());
             throw new RuntimeException("Failed to process callback", e);
         }
+    }
+
+    public boolean processRefund(Order order, BigDecimal amount) {
+        log.info("Processing refund for order: {}, amount: {}", order.getOrderNo(), amount);
+        // In production, this would call WeChat Pay refund API
+        // For now, we simulate a successful refund
+        return true;
     }
 }

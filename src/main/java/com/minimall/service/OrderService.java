@@ -48,6 +48,10 @@ public class OrderService {
             .orElseThrow(() -> new RuntimeException("Order not found: " + orderNo));
     }
 
+    public Order save(Order order) {
+        return orderRepository.save(order);
+    }
+
     @Transactional
     public Order create(String userId, List<OrderItem> items) {
         User user = userService.findById(userId);

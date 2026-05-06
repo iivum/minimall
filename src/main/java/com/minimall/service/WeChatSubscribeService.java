@@ -2,6 +2,7 @@ package com.minimall.service;
 
 import com.minimall.config.WeChatSubscribeConfig;
 import com.minimall.model.Order;
+import com.minimall.model.RefundRequest;
 import com.minimall.model.User;
 import com.minimall.model.UserSubscription;
 import com.minimall.repository.UserSubscriptionRepository;
@@ -93,6 +94,22 @@ public class WeChatSubscribeService {
         Map<String, Object> data = new HashMap<>();
         data.put("order_no", new TemplateData(order.getOrderNo()));
 
+        sendTemplateMessage(user.getOpenid(), config.getOrderCompletedTemplateId(), data);
+    }
+
+    public void sendRefundCompletedMessage(RefundRequest refund, User user) {
+        UserSubscription sub = subscriptionRepository.findByOpenid(user.getOpenid()).orElse(null);
+        if (sub == null) {
+            log.info("User {} has no subscription for messages", user.getOpenid());
+            return;
+        }
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("order_no", new TemplateData(refund.getOrder().getOrderNo()));
+        data.put("refund_amount", new TemplateData(refund.getAmount().toString() + "元"));
+        data.put("refund_reason", new TemplateData(refund.getReason()));
+
+        // Use order completed template or a dedicated refund template
         sendTemplateMessage(user.getOpenid(), config.getOrderCompletedTemplateId(), data);
     }
 
