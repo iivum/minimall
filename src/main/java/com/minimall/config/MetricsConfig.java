@@ -50,6 +50,22 @@ public class MetricsConfig {
     }
 
     @Bean
+    public Counter payment_success_counter(MeterRegistry registry) {
+        return Counter.builder("minimall_payment_success")
+                .description("Total number of successful payments (underscore naming)")
+                .tag("type", "payment")
+                .register(registry);
+    }
+
+    @Bean
+    public Counter payment_failure_counter(MeterRegistry registry) {
+        return Counter.builder("minimall_payment_failure")
+                .description("Total number of failed payments (underscore naming)")
+                .tag("type", "payment")
+                .register(registry);
+    }
+
+    @Bean
     public Timer apiResponseTimer(MeterRegistry registry) {
         return Timer.builder("minimall.api.response.time")
                 .description("API response time")
