@@ -92,3 +92,123 @@ groups:
         annotations:
           summary: "MiniMall API 请求超时"
           description: "MiniMall API P99 响应时间超过 5 秒，当前值: {{ $value | humanizeDuration }}"
+
+      # 订单成功率告警
+      - alert: MiniMallLowOrderSuccessRate
+        expr: |
+          (
+            rate(minimall_payment_success_total[5m])
+            /
+            (rate(minimall_payment_success_total[5m]) + rate(minimall_payment_failure_total[5m]))
+          ) < 0.95
+        for: 5m
+        labels:
+          severity: critical
+          team: payments
+        annotations:
+          summary: "MiniMall 订单成功率过低"
+          description: "MiniMall 订单成功率低于 95%，当前值: {{ $value | humanizePercentage }}"
+
+      # 购物车弃率告警
+      - alert: MiniMallHighCartAbandonmentRate
+        expr: |
+          (
+            rate(minimall_cart_abandoned_total[5m])
+            /
+            (rate(minimall_cart_created_total[5m]))
+          ) > 0.7
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "MiniMall 购物车弃率过高"
+          description: "MiniMall 购物车弃率超过 70%，当前值: {{ $value | humanizePercentage }}"
+
+      # 用户注册失败告警
+      - alert: MiniMallUserRegistrationFailures
+        expr: |
+          (
+            rate(minimall_user_registration_failure_total[5m])
+            /
+            (rate(minimall_user_registration_success_total[5m]) + rate(minimall_user_registration_failure_total[5m]))
+          ) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "MiniMall 用户注册失败率过高"
+          description: "MiniMall 用户注册失败率超过 10%，当前值: {{ $value | humanizePercentage }}"
+
+      # 库存不足告警
+      - alert: MiniMallInventoryShortage
+        expr: minimall_inventory_available < 10
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "MiniMall 库存不足"
+          description: "MiniMall 可用库存低于 10，当前值: {{ $value }}"
+
+      # 订单量异常波动告警
+      - alert: MiniMallOrderVolumeAnomaly
+        expr: |
+          abs(
+            rate(minimall_order_created_total[15m])
+            -
+            rate(minimall_order_created_total[15m] offset 15m)
+          ) / (rate(minimall_order_created_total[15m] offset 15m) + 0.001) > 0.5
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "MiniMall 订单量异常波动"
+          description: "MiniMall 订单量在 15 分钟内波动超过 50%"
+
+      # 活跃用户数突降告警
+      - alert: MiniMallActiveUsersDrop
+        expr: |
+          (
+            minimall_active_users
+            <
+            (minimall_active_users offset 1h)
+          ) and (
+            (minimall_active_users offset 1h)
+            -
+            minimall_active_users
+          ) / (minimall_active_users offset 1h) > 0.3
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "MiniMall 活跃用户数突降"
+          description: "MiniMall 活跃用户数在 1 小时内下降超过 30%"
+
+      # 退款率告警
+      - alert: MiniMallHighRefundRate
+        expr: |
+          (
+            rate(minimall_refund_total[5m])
+            /
+            (rate(minimall_order_created_total[5m]) + 0.001)
+          ) > 0.1
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "MiniMall 退款率过高"
+          description: "MiniMall 退款率超过 10%，当前值: {{ $value | humanizePercentage }}"
+
+      # 通知发送失败率告警
+      - alert: MiniMallNotificationFailure
+        expr: |
+          (
+            rate(minimall_notification_failure_total[5m])
+            /
+            (rate(minimall_notification_success_total[5m]) + rate(minimall_notification_failure_total[5m]))
+          ) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "MiniMall 通知发送失败率过高"
+          description: "MiniMall 通知发送失败率超过 5%，当前值: {{ $value | humanizePercentage }}"

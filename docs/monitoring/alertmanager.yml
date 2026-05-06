@@ -3,11 +3,15 @@ global:
 
 route:
   group_by: ['alertname']
-  group_wait: 10s
-  group_interval: 10s
-  repeat_interval: 1h
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 4h
   receiver: 'default'
   routes:
+    - match:
+        team: payments
+      receiver: 'payments-alerts'
+      continue: true
     - match:
         severity: critical
       receiver: 'critical-alerts'
@@ -28,6 +32,11 @@ receivers:
         send_resolved: true
 
   - name: 'warning-alerts'
+    webhook_configs:
+      - url: 'http://localhost:9093/webhook'
+        send_resolved: true
+
+  - name: 'payments-alerts'
     webhook_configs:
       - url: 'http://localhost:9093/webhook'
         send_resolved: true
