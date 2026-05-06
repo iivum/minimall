@@ -3,13 +3,12 @@ package com.minimall.controller;
 import com.minimall.model.Order;
 import com.minimall.service.OrderService;
 import com.minimall.service.PayService;
+import com.wechat.pay.java.service.payments.jsapi.model.PrepayWithRequestPaymentResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/pay")
@@ -25,22 +24,15 @@ public class PayController {
 
     @PostMapping("/create/{orderId}")
     @Operation(summary = "Create unified order and get prepay_id")
-    public ResponseEntity<Map<String, Object>> createPayRequest(@PathVariable String orderId, @RequestParam String openid) {
+    public ResponseEntity<Map<String, String>> createPayRequest(
+            @PathVariable String orderId,
+            @RequestParam String openid) {
+
         Order order = orderService.findById(orderId);
-        String prepayId = payService.createUnifiedOrder(order, openid);
+        PrepayWithRequestPaymentResponse response = payService.createUnifiedOrder(order, openid);
+        Map<String, String> paymentParams = payService.getJsApiSign(response);
 
-        long timestamp = System.currentTimeMillis() / 1000;
-        String nonceStr = UUID.randomUUID().toString();
-        String sign = payService.getJsApiSign(prepayId, timestamp, nonceStr);
-
-        Map<String, Object> result = new HashMap<>();
-        result.put("timeStamp", timestamp);
-        result.put("nonceStr", nonceStr);
-        result.put("package", "prepay_id=" + prepayId);
-        result.put("signType", "RSA");
-        result.put("paySign", sign);
-
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(paymentParams);
     }
 
     @PostMapping("/callback")
