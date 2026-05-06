@@ -1,0 +1,20 @@
+<!-- pages/pay/pay.wxml -->
+<view class="container">
+  <view class="pay-info card">
+    <text class="pay-title">订单支付</text>
+    <view class="pay-amount">
+      <text class="currency">¥</text>
+      <text class="amount">{{amount}}</text>
+    </view>
+  </view>
+  <view class="pay-method card">
+    <image class="wechat-icon" src="/assets/images/wechat-pay.png" />
+    <text class="method-name">微信支付</text>
+    <text class="check-icon">✓</text>
+  </view>
+  <view class="pay-btn">
+    <button class="btn-confirm {{loading ? 'btn-disabled' : ''}}" bindtap="onPayTap" disabled="{{loading}}">
+      {{loading ? '加载中...' : '确认支付'}}
+    </button>
+  </view>
+</view>

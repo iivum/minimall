@@ -1,0 +1,25 @@
+<!-- pages/product/detail.wxml -->
+<view class="container" wx:if="{{!loading && product}}">
+  <image class="product-image" mode="aspectFill" src="{{product.imageUrl}}" />
+  <view class="product-info card">
+    <text class="product-name">{{product.name}}</text>
+    <view class="price-row">
+      <text class="price">¥{{product.price}}</text>
+      <text class="original-price" wx:if="{{product.originalPrice > product.price}}">¥{{product.originalPrice}}</text>
+    </view>
+    <text class="product-desc">{{product.description}}</text>
+  </view>
+  <view class="quantity-row card">
+    <text>数量</text>
+    <view class="quantity-control">
+      <button bindtap="onQuantityChange" data-type="minus">-</button>
+      <input type="number" value="{{quantity}}" bindchange="onQuantityChange" />
+      <button bindtap="onQuantityChange" data-type="plus">+</button>
+    </view>
+  </view>
+  <view class="action-bar">
+    <button class="btn-secondary" bindtap="addToCart">加入购物车</button>
+    <button class="btn-primary" bindtap="buyNow">立即购买</button>
+  </view>
+</view>
+<view class="loading" wx:if="{{loading}}"><text>加载中...</text></view>
