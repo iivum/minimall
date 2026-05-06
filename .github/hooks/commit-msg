@@ -1,0 +1,16 @@
+#!/bin/bash
+# Commit-msg hook to validate issue association
+# All commit messages must reference an issue in format: Refs: MIN-XXX, Fixes: MIN-XXX, or Closes: MIN-XXX
+
+COMMIT_MSG=$(cat "$1")
+
+if ! echo "$COMMIT_MSG" | grep -qE "(Refs|Fixes|Closes):\s*MIN-[0-9]+"; then
+    echo "ERROR: Commit message must reference an issue"
+    echo "Format: <type>: <description>"
+    echo "        Refs: MIN-XXX"
+    echo ""
+    echo "Example:"
+    echo "        feat: Add user authentication"
+    echo "        Refs: MIN-123"
+    exit 1
+fi

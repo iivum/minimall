@@ -1,0 +1,89 @@
+name: Code Review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  push:
+    branches: [main]
+
+jobs:
+  code-review:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Cache Maven packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-maven-
+
+      - name: Run tests with coverage
+        run: mvn test jacoco:report -q
+
+      - name: Check JaCoCo coverage
+        run: |
+          COVERAGE=$(mvn help:evaluate -Dexpression=jacoco-maven-plugin.coverage -q -DforceStdout 2>/dev/null | grep -o '[0-9]*%' | head -1 | tr -d '%')
+          if [ "$COVERAGE" -lt 80 ]; then
+            echo "Coverage is ${COVERAGE}%, but 80% is required"
+            exit 1
+          fi
+
+      - name: Verify commit message issue association
+        run: |
+          if [ "$GITHUB_EVENT_NAME" == "push" ]; then
+            COMMIT_MSG=$(git log -1 --format=%B)
+            if ! echo "$COMMIT_MSG" | grep -qE "(Refs|Fixes|Closes):\s*MIN-[0-9]+"; then
+              echo "Commit message must reference an issue (e.g., 'Refs: MIN-123')"
+              exit 1
+            fi
+          fi
+
+  security-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Trivy security scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: './src'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+
+      - name: Upload Trivy results to GitHub Security
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+  pr-review:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: Verify PR description references issue
+        run: |
+          PR_BODY="${{ github.event.pull_request.body }}"
+          if ! echo "$PR_BODY" | grep -qE "(Refs|Fixes|Closes):\s*MIN-[0-9]+"; then
+            echo "PR description must reference an issue (e.g., 'Closes MIN-123')"
+            exit 1
+          fi
+
+      - name: Check for self-approval
+        run: |
+          if [ "${{ github.event.pull_request.user.login }}" == "${{ github.event.pull_request.head.repo.owner.login }}" ]; then
+            echo "PR author should not be the same as repository owner for merge"
+            exit 1
+          fi
