@@ -1,0 +1,62 @@
+<view class="container">
+  <!-- Tab切换 -->
+  <view class="tab-bar">
+    <view class="tab-item {{activeTab === 'my' ? 'active' : ''}}" bindtap="switchTab" data-tab="my">
+      我的优惠券
+    </view>
+    <view class="tab-item {{activeTab === 'newUser' ? 'active' : ''}}" bindtap="switchTab" data-tab="newUser">
+      新用户专享
+    </view>
+  </view>
+
+  <!-- 我的优惠券列表 -->
+  <view wx:if="{{activeTab === 'my'}}" class="coupon-list">
+    <block wx:for="{{myCoupons}}" wx:key="id">
+      <view class="coupon-item">
+        <view class="coupon-left">
+          <text class="coupon-value">{{item.discountAmount}}</text>
+          <text class="coupon-unit">元</text>
+        </view>
+        <view class="coupon-right">
+          <text class="coupon-name">{{item.couponType}}</text>
+          <text class="coupon-desc">满{{item.minOrderAmount}}元可用</text>
+          <text class="coupon-time">有效期至 {{item.validUntil}}</text>
+        </view>
+        <view class="coupon-status {{item.isActive ? 'active' : 'expired'}}">
+          {{item.isActive ? '可用' : '已过期'}}
+        </view>
+      </view>
+    </block>
+    <view wx:if="{{myCoupons.length === 0}}" class="empty-tip">
+      暂无优惠券
+    </view>
+  </view>
+
+  <!-- 新用户优惠券列表 -->
+  <view wx:if="{{activeTab === 'newUser'}}" class="coupon-list">
+    <block wx:for="{{newUserCoupons}}" wx:key="id">
+      <view class="coupon-item new-user">
+        <view class="coupon-left">
+          <text class="coupon-value">{{item.discountAmount}}</text>
+          <text class="coupon-unit">元</text>
+        </view>
+        <view class="coupon-right">
+          <text class="coupon-name">{{item.couponType}}</text>
+          <text class="coupon-desc">满{{item.minOrderAmount}}元可用</text>
+          <text class="coupon-time">有效期至 {{item.validUntil}}</text>
+        </view>
+        <button class="claim-btn" bindtap="handleClaim" data-id="{{item.id}}" disabled="{{loading}}">
+          立即领取
+        </button>
+      </view>
+    </block>
+    <view wx:if="{{newUserCoupons.length === 0}}" class="empty-tip">
+      暂无新用户优惠券
+    </view>
+  </view>
+
+  <!-- Loading状态 -->
+  <view wx:if="{{loading}}" class="loading-mask">
+    <view class="loading-inner"></view>
+  </view>
+</view>
