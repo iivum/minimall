@@ -1,0 +1,78 @@
+/* pages/points/index.wxss */
+.points-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40rpx;
+  background: linear-gradient(135deg, #FF6B6B 0%, #FF8E8E 100%);
+  color: #fff;
+}
+
+.points-label {
+  font-size: 28rpx;
+  opacity: 0.9;
+}
+
+.points-value {
+  font-size: 72rpx;
+  font-weight: bold;
+  margin-top: 10rpx;
+}
+
+.transactions-list {
+  padding: 20rpx;
+}
+
+.transaction-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 30rpx;
+  background: #fff;
+  border-radius: 12rpx;
+  margin-bottom: 20rpx;
+}
+
+.transaction-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.transaction-title {
+  font-size: 28rpx;
+  color: #333;
+}
+
+.transaction-time {
+  font-size: 24rpx;
+  color: #999;
+  margin-top: 8rpx;
+}
+
+.transaction-amount {
+  font-size: 32rpx;
+  font-weight: bold;
+}
+
+.transaction-amount.positive {
+  color: #FF6B6B;
+}
+
+.transaction-amount.negative {
+  color: #999;
+}
+
+.empty {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 100rpx;
+  color: #999;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  padding: 40rpx;
+  color: #999;
+}
