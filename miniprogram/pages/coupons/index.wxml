@@ -1,0 +1,45 @@
+<!-- pages/coupons/index.wxml -->
+<view class="container">
+  <view class="coupon-tabs">
+    <view class="tab {{activeTab === 'available' ? 'active' : ''}}" bindtap="switchTab" data-tab="available">
+      <text>可用优惠券</text>
+      <text class="count" wx:if="{{availableCoupons.length > 0}}">{{availableCoupons.length}}</text>
+    </view>
+    <view class="tab {{activeTab === 'used' ? 'active' : ''}}" bindtap="switchTab" data-tab="used">
+      <text>已使用</text>
+    </view>
+    <view class="tab {{activeTab === 'expired' ? 'active' : ''}}" bindtap="switchTab" data-tab="expired">
+      <text>已过期</text>
+    </view>
+  </view>
+
+  <view class="coupon-list" wx:if="{{displayCoupons.length > 0}}">
+    <block wx:for="{{displayCoupons}}" wx:key="id">
+      <view class="coupon-item {{item.couponType === 'DISCOUNT' ? 'discount' : 'cash'}}">
+        <view class="coupon-left">
+          <text class="coupon-value">
+            <text class="currency" wx:if="{{item.couponType === 'CASH'}}">¥</text>
+            <text class="amount">{{item.discountAmount}}</text>
+            <text class="unit" wx:if="{{item.couponType === 'DISCOUNT'}}">折</text>
+          </text>
+          <text class="coupon threshold">满{{item.minOrderAmount}}可用</text>
+        </view>
+        <view class="coupon-right">
+          <text class="coupon-name">{{item.couponType === 'DISCOUNT' ? '折扣券' : '代金券'}}</text>
+          <text class="coupon-time">有效期至 {{item.validUntil}}</text>
+          <view class="coupon-action" wx:if="{{activeTab === 'available'}}">
+            <button class="use-btn" size="mini" bindtap="useCoupon" data-id="{{item.id}}">立即使用</button>
+          </view>
+        </view>
+      </view>
+    </block>
+  </view>
+
+  <view class="empty-state" wx:elif="{{!loading}}">
+    <text>暂无优惠券</text>
+  </view>
+
+  <view class="loading" wx:if="{{loading}}">
+    <text>加载中...</text>
+  </view>
+</view>

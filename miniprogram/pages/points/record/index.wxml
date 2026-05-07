@@ -1,0 +1,45 @@
+<!-- pages/points/record/index.wxml -->
+<view class="container">
+  <view class="points-header">
+    <text class="points-label">当前积分</text>
+    <text class="points-value">{{account.balance}}</text>
+    <text class="points-desc">共 {{history.length}} 条记录</text>
+  </view>
+
+  <view class="tabs">
+    <view class="tab {{activeTab === 'all' ? 'active' : ''}}" bindtap="switchTab" data-tab="all">
+      <text>全部</text>
+    </view>
+    <view class="tab {{activeTab === 'earn' ? 'active' : ''}}" bindtap="switchTab" data-tab="earn">
+      <text>获取</text>
+    </view>
+    <view class="tab {{activeTab === 'spend' ? 'active' : ''}}" bindtap="switchTab" data-tab="spend">
+      <text>使用</text>
+    </view>
+  </view>
+
+  <view class="history-list" wx:if="{{filteredHistory.length > 0}}">
+    <block wx:for="{{filteredHistory}}" wx:key="id">
+      <view class="history-item">
+        <view class="history-left">
+          <text class="history-type">{{item.type === 'EARN' ? '积分获取' : '积分使用'}}</text>
+          <text class="history-desc">{{item.description || '-'}}</text>
+          <text class="history-time">{{item.createdAt}}</text>
+        </view>
+        <view class="history-right">
+          <text class="history-points {{item.type === 'EARN' ? 'earn' : 'spend'}}">
+            {{item.type === 'EARN' ? '+' : '-'}}{{item.points}}
+          </text>
+        </view>
+      </view>
+    </block>
+  </view>
+
+  <view class="empty-state" wx:elif="{{!loading}}">
+    <text>暂无积分记录</text>
+  </view>
+
+  <view class="loading" wx:if="{{loading}}">
+    <text>加载中...</text>
+  </view>
+</view>
