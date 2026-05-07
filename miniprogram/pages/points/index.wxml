@@ -1,0 +1,52 @@
+<!-- pages/points/index.wxml -->
+<view class="container" wx:if="{{!loading && account}}">
+  <view class="points-header">
+    <view class="balance-section">
+      <text class="balance-label">当前积分</text>
+      <text class="balance-value">{{account.balance}}</text>
+    </view>
+    <view class="stats-section">
+      <view class="stat-item">
+        <text class="stat-value">{{account.totalEarned}}</text>
+        <text class="stat-label">累计收益</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-value">{{account.totalSpent}}</text>
+        <text class="stat-label">累计支出</text>
+      </view>
+    </view>
+  </view>
+
+  <button class="sign-in-btn" bindtap="goToSignIn">每日签到</button>
+
+  <view class="tab-bar">
+    <view class="tab-item {{currentTab === 'all' ? 'active' : ''}}" bindtap="onTabChange" data-tab="all">
+      <text>全部</text>
+    </view>
+    <view class="tab-item {{currentTab === 'earn' ? 'active' : ''}}" bindtap="onTabChange" data-tab="earn">
+      <text>收入</text>
+    </view>
+    <view class="tab-item {{currentTab === 'spend' ? 'active' : ''}}" bindtap="onTabChange" data-tab="spend">
+      <text>支出</text>
+    </view>
+  </view>
+
+  <view class="transaction-list">
+    <block wx:for="{{transactions}}" wx:key="id">
+      <view class="transaction-item">
+        <view class="tx-info">
+          <text class="tx-desc">{{item.description}}</text>
+          <text class="tx-time">{{item.createdAt}}</text>
+        </view>
+        <view class="tx-amount {{item.type === 'EARN' ? 'earn' : 'spend'}}">
+          <text wx:if="{{item.type === 'EARN'}}">+{{item.points}}</text>
+          <text wx:else>-{{item.points}}</text>
+        </view>
+      </view>
+    </block>
+    <view class="empty-state" wx:if="{{transactions.length === 0}}">
+      <text>暂无积分记录</text>
+    </view>
+  </view>
+</view>
+<view class="loading" wx:if="{{loading}}"><text>加载中...</text></view>

@@ -6,7 +6,8 @@
     "pages/order/list",
     "pages/order/detail",
     "pages/member/index",
-    "pages/pay/pay"
+    "pages/pay/pay",
+    "pages/points/index"
   ],
   "subpackages": [],
   "window": {

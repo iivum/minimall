@@ -49,7 +49,7 @@ Page({
   },
 
   goToPoints() {
-    wx.showToast({ title: '功能开发中', icon: 'none' })
+    wx.navigateTo({ url: '/pages/points/index' })
   },
 
   logout() {
