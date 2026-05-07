@@ -1,0 +1,64 @@
+<view class="container">
+  <!-- 积分余额卡片 -->
+  <view class="points-card">
+    <view class="points-header">
+      <text class="points-label">当前积分</text>
+      <text class="points-value">{{account.balance}}</text>
+    </view>
+    <view class="points-info">
+      <view class="info-item">
+        <text class="info-label">累计获取</text>
+        <text class="info-value">{{account.totalEarned}}</text>
+      </view>
+      <view class="info-item">
+        <text class="info-label">累计消费</text>
+        <text class="info-value">{{account.totalSpent}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 签到区域 -->
+  <view class="sign-in-section">
+    <button class="sign-in-btn {{isSignedToday ? 'disabled' : ''}}"
+            bindtap="handleSignIn"
+            disabled="{{isSignedToday || loading}}">
+      {{isSignedToday ? '今日已签到' : '立即签到'}}
+    </button>
+    <text class="sign-in-tip">每日签到可获得积分奖励</text>
+  </view>
+
+  <!-- 分享奖励区域 -->
+  <view class="share-section">
+    <view class="section-title">分享赚积分</view>
+    <view class="share-item">
+      <text class="share-desc">分享商品给好友，好友购买后您可获得积分奖励</text>
+      <button class="share-btn" bindtap="handleShare" disabled="{{loading}}">生成分享链接</button>
+    </view>
+  </view>
+
+  <!-- 积分历史 -->
+  <view class="history-section">
+    <view class="section-title">积分明细</view>
+    <view class="history-list">
+      <block wx:for="{{history}}" wx:key="id">
+        <view class="history-item">
+          <view class="history-info">
+            <text class="history-desc">{{item.description}}</text>
+            <text class="history-time">{{item.createdAt}}</text>
+          </view>
+          <text class="history-points {{item.points >= 0 ? 'positive' : 'negative'}}">
+            {{item.points >= 0 ? '+' : ''}}{{item.points}}
+          </text>
+        </view>
+      </block>
+      <view wx:if="{{history.length === 0}}" class="empty-tip">
+        暂无积分记录
+      </view>
+    </view>
+  </view>
+
+  <!-- Loading状态 -->
+  <view wx:if="{{loading}}" class="loading-mask">
+    <view class="loading-inner"></view>
+  </view>
+</view>
