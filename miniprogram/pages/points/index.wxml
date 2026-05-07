@@ -1,0 +1,25 @@
+<!-- pages/points/index.wxml -->
+<view class="container">
+  <view class="points-header">
+    <view class="points-label">我的积分</view>
+    <view class="points-value">{{points}}</view>
+    <button class="btn-exchange" bindtap="goExchange">去兑换</button>
+  </view>
+  <view class="points-history">
+    <view class="history-title">积分明细</view>
+    <view class="history-list" wx:if="{{pointsHistory.length > 0}}">
+      <view class="history-item" wx:for="{{pointsHistory}}" wx:key="id">
+        <view class="item-info">
+          <text class="item-type">{{item.type}}</text>
+          <text class="item-date">{{item.date}}</text>
+        </view>
+        <text class="item-points {{item.points > 0 ? 'positive' : 'negative'}}">
+          {{item.points > 0 ? '+' : ''}}{{item.points}}
+        </text>
+      </view>
+    </view>
+    <view class="empty" wx:if="{{pointsHistory.length === 0}}">
+      <text>暂无积分记录</text>
+    </view>
+  </view>
+</view>
