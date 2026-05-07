@@ -30,6 +30,8 @@ public class SecurityConfig {
                 .requestMatchers("/health").permitAll()
                 .requestMatchers("/api/membership/**").authenticated()
                 .requestMatchers("/api/points/**").authenticated()
+                .requestMatchers("/api/coupons/**").permitAll()
+                .requestMatchers("/api/share/**").permitAll()
                 .anyRequest().authenticated()
             )
             .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()));
