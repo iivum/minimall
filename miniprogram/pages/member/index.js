@@ -45,11 +45,19 @@ Page({
   },
 
   goToCoupons() {
-    wx.showToast({ title: '功能开发中', icon: 'none' })
+    wx.navigateTo({ url: '/pages/coupons/index' })
   },
 
   goToPoints() {
-    wx.showToast({ title: '功能开发中', icon: 'none' })
+    wx.navigateTo({ url: '/pages/points/index' })
+  },
+
+  goToPrivacy() {
+    wx.navigateTo({ url: '/pages/privacy/index' })
+  },
+
+  goToAgreement() {
+    wx.navigateTo({ url: '/pages/agreement/index' })
   },
 
   logout() {
