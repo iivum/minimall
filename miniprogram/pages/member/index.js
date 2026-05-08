@@ -52,6 +52,14 @@ Page({
     wx.navigateTo({ url: '/pages/points/index' })
   },
 
+  goToPrivacy() {
+    wx.navigateTo({ url: '/pages/privacy/index' })
+  },
+
+  goToAgreement() {
+    wx.navigateTo({ url: '/pages/agreement/index' })
+  },
+
   logout() {
     wx.showModal({
       title: '确认退出',

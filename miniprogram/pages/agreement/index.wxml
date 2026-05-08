@@ -1,0 +1,6 @@
+<view class="agreement-container">
+  <view class="loading" wx:if="{{loading}}"><text>加载中...</text></view>
+  <view class="content" wx:else>
+    <rich-text nodes="{{content}}"></rich-text>
+  </view>
+</view>
