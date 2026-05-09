@@ -1,0 +1,41 @@
+name: Branch Status Check
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check branch age
+        run: |
+          branch_age=$(git log -1 --format="%ai" HEAD --since="90 days ago" 2>/dev/null || true)
+          if [ -z "$branch_age" ]; then
+            echo "Warning: Branch is older than 90 days - consider merging or closing"
+          else
+            echo "Branch age: $branch_age"
+          fi
+
+      - name: Check divergence from main
+        run: |
+          main_commit=$(git rev-parse origin/main)
+          branch_commit=$(git rev-parse HEAD)
+          common_commit=$(git merge-base HEAD origin/main)
+          if [ "$branch_commit" != "$main_commit" ]; then
+            echo "Branch has diverged from main - rebase recommended"
+            echo "Main: $main_commit"
+            echo "Branch: $branch_commit"
+            echo "Common ancestor: $common_commit"
+          else
+            echo "Branch is up to date with main"
+          fi
+
+      - name: List merged agent branches
+        run: |
+          merged=$(git branch -r --merged origin/main | grep 'agent/' | wc -l)
+          echo "Agent branches merged into main: $merged"
