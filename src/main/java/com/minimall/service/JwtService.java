@@ -29,10 +29,49 @@ public class JwtService {
         return Jwts.builder()
                 .subject(userId)
                 .claim("openid", openid)
+                .claim("type", "user")
                 .issuedAt(now)
                 .expiration(expiry)
                 .signWith(secretKey)
                 .compact();
+    }
+
+    public String generateAdminToken(String adminId, String username, String role) {
+        Date now = new Date();
+        Date expiry = new Date(now.getTime() + expirationMs);
+        return Jwts.builder()
+                .subject(adminId)
+                .claim("username", username)
+                .claim("role", role)
+                .claim("type", "admin")
+                .issuedAt(now)
+                .expiration(expiry)
+                .signWith(secretKey)
+                .compact();
+    }
+
+    public String getAdminIdFromToken(String token) {
+        Claims claims = parseToken(token);
+        return claims.getSubject();
+    }
+
+    public String getAdminUsernameFromToken(String token) {
+        Claims claims = parseToken(token);
+        return claims.get("username", String.class);
+    }
+
+    public String getAdminRoleFromToken(String token) {
+        Claims claims = parseToken(token);
+        return claims.get("role", String.class);
+    }
+
+    public boolean isAdminToken(String token) {
+        try {
+            Claims claims = parseToken(token);
+            return "admin".equals(claims.get("type", String.class));
+        } catch (JwtException | IllegalArgumentException e) {
+            return false;
+        }
     }
 
     public String getUserIdFromToken(String token) {
