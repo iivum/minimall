@@ -19,13 +19,21 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Debug working directory
+        run: |
+          echo "Working directory: $(pwd)"
+          echo "GITHUB_WORKSPACE: $GITHUB_WORKSPACE"
+          echo "Listing all files in current directory:"
+          ls -la
+
       - name: Verify source files exist
         run: |
           echo "=== Verifying Source Code Files ==="
-          test -d src/main/java && echo "Main source directory exists"
-          test -d src/test/java && echo "Test source directory exists"
-          test -f pom.xml && echo "Maven configuration exists"
-          test -f backend/Dockerfile && echo "Dockerfile exists"
+          echo "Current directory: $(pwd)"
+          test -d "$GITHUB_WORKSPACE/src/main/java" && echo "Main source directory exists" || echo "Main source directory MISSING"
+          test -d "$GITHUB_WORKSPACE/src/test/java" && echo "Test source directory exists" || echo "Test source directory MISSING"
+          test -f "$GITHUB_WORKSPACE/pom.xml" && echo "Maven configuration exists" || echo "Maven configuration MISSING"
+          test -f "$GITHUB_WORKSPACE/backend/Dockerfile" && echo "Dockerfile exists" || echo "Dockerfile MISSING"
 
       - name: Count source files
         run: |
