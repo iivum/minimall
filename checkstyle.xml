@@ -4,24 +4,7 @@
         "https://checkstyle.org/dtds/configuration_1_3.dtd">
 
 <!--
-  MiniMall Logging Specification Configuration
-
-  Log Level Rules:
-  - log.error: Only for genuine error conditions (exceptions, failures)
-  - log.warn:  For warning conditions (recoverable issues, invalid inputs)
-  - log.info:  For significant business events (order created, payment success)
-  - log.debug: For debugging information (token refresh, cache hits)
-
-  Acceptable log.error scenarios:
-  1. External API call failures (WeChat Pay, WeChat Subscribe)
-  2. Signature/Security verification failures
-  3. Critical callback processing failures
-  4. Unexpected exceptions in service methods
-
-  NOT acceptable:
-  - log.error for business logic flow (use log.warn or log.info)
-  - log.error for expected validation failures
-  - log.error without proper context/metadata
+  MiniMall Checkstyle Configuration
 -->
 <module name="Checker">
     <property name="charset" value="UTF-8"/>
@@ -71,7 +54,6 @@
             <property name="message" value="log.error() requires a message describing the error context"/>
             <property name="ignoreCase" value="false"/>
         </module>
-
     </module>
 
     <module name="LineLength">
