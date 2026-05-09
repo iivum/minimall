@@ -26,7 +26,7 @@ jobs:
           echo "=== Verifying Source Code Files ==="
           test -d src/main/java && echo "Main source directory exists"
           test -f pom.xml && echo "Maven configuration exists"
-          test -d backend/Dockerfile && echo "Dockerfile exists"
+          test -f backend/Dockerfile && echo "Dockerfile exists"
 
       - name: Verify build configuration
         run: |
