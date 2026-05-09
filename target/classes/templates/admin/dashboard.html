@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Minimall 管理后台 - 控制台">
+  <title>控制台 - 管理后台 - Minimall</title>
+
+  <!-- Design Tokens (must be first) -->
+  <link rel="stylesheet" href="/css/tokens.css">
+
+  <!-- Component Library -->
+  <link rel="stylesheet" href="/css/components.css">
+
+  <!-- Admin Styles -->
+  <link rel="stylesheet" href="/css/admin.css">
+
+  <!-- Inter Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- ============================================
+       Admin Layout
+       ============================================ -->
+  <div class="admin-layout">
+    <!-- Sidebar -->
+    <aside class="admin-sidebar" id="sidebar">
+      <div class="admin-sidebar__header">
+        <a href="/admin" class="admin-sidebar__logo">
+          <span class="admin-sidebar__logo-text">Minimall</span>
+          <span class="admin-sidebar__logo-sub">管理后台</span>
+        </a>
+      </div>
+
+      <nav class="admin-sidebar__nav" aria-label="Admin navigation">
+        <div class="admin-nav-group">
+          <span class="admin-nav-group__title">概览</span>
+          <a href="/admin" class="admin-nav-item admin-nav-item--active" data-nav="dashboard">
+            <span class="admin-nav-item__icon">📊</span>
+            <span class="admin-nav-item__text">控制台</span>
+          </a>
+        </div>
+
+        <div class="admin-nav-group">
+          <span class="admin-nav-group__title">商品管理</span>
+          <a href="/admin/products" class="admin-nav-item" data-nav="products">
+            <span class="admin-nav-item__icon">📦</span>
+            <span class="admin-nav-item__text">商品列表</span>
+          </a>
+          <a href="/admin/products/new" class="admin-nav-item" data-nav="products-new">
+            <span class="admin-nav-item__icon">➕</span>
+            <span class="admin-nav-item__text">新增商品</span>
+          </a>
+        </div>
+
+        <div class="admin-nav-group">
+          <span class="admin-nav-group__title">订单管理</span>
+          <a href="/admin/orders" class="admin-nav-item" data-nav="orders">
+            <span class="admin-nav-item__icon">📋</span>
+            <span class="admin-nav-item__text">订单列表</span>
+          </a>
+        </div>
+
+        <div class="admin-nav-group">
+          <span class="admin-nav-group__title">用户管理</span>
+          <a href="/admin/users" class="admin-nav-item" data-nav="users">
+            <span class="admin-nav-item__icon">👥</span>
+            <span class="admin-nav-item__text">用户列表</span>
+          </a>
+        </div>
+
+        <div class="admin-nav-group">
+          <span class="admin-nav-group__title">营销工具</span>
+          <a href="/admin/coupons" class="admin-nav-item" data-nav="coupons">
+            <span class="admin-nav-item__icon">🎫</span>
+            <span class="admin-nav-item__text">优惠券</span>
+          </a>
+          <a href="/admin/live" class="admin-nav-item" data-nav="live">
+            <span class="admin-nav-item__icon">📺</span>
+            <span class="admin-nav-item__text">直播管理</span>
+          </a>
+        </div>
+
+        <div class="admin-nav-group">
+          <span class="admin-nav-group__title">系统</span>
+          <a href="/admin/settings" class="admin-nav-item" data-nav="settings">
+            <span class="admin-nav-item__icon">⚙️</span>
+            <span class="admin-nav-item__text">设置</span>
+          </a>
+        </div>
+      </nav>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="admin-main-wrapper">
+      <!-- Top Header -->
+      <header class="admin-header">
+        <div class="admin-header__left">
+          <button type="button" class="admin-sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">
+            <span class="admin-sidebar-toggle__icon">☰</span>
+          </button>
+          <div class="admin-breadcrumb" id="breadcrumb">
+            <span class="admin-breadcrumb__item admin-breadcrumb__item--current">首页</span>
+            <span class="admin-breadcrumb__separator">/</span>
+            <span class="admin-breadcrumb__item admin-breadcrumb__item--current">控制台</span>
+          </div>
+        </div>
+
+        <div class="admin-header__right">
+          <button
+            type="button"
+            class="btn btn--ghost btn--sm"
+            data-theme-toggle
+            aria-label="Switch to dark mode"
+          >🌙</button>
+
+          <div class="admin-user-menu">
+            <button type="button" class="admin-user-menu__trigger" id="userMenuTrigger">
+              <span class="admin-user-menu__avatar">A</span>
+              <span class="admin-user-menu__name">管理员</span>
+              <span class="admin-user-menu__arrow">▼</span>
+            </button>
+            <div class="admin-user-menu__dropdown" id="userMenuDropdown">
+              <a href="/admin/profile" class="admin-user-menu__item">个人设置</a>
+              <a href="/admin/logout" class="admin-user-menu__item">退出登录</a>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Page Content -->
+      <main class="admin-content">
+        <div class="container">
+          <!-- Page Header -->
+          <div class="admin-page-header">
+            <div>
+              <h1 class="admin-page-header__title">控制台</h1>
+              <p class="admin-page-header__subtitle">欢迎回来，查看您的业务概览</p>
+            </div>
+          </div>
+
+          <!-- Stats Grid -->
+          <div class="admin-stats-grid">
+            <div class="admin-stat-card">
+              <div class="admin-stat-card__icon admin-stat-card__icon--primary">📦</div>
+              <div class="admin-stat-card__content">
+                <div class="admin-stat-card__label">商品总数</div>
+                <div class="admin-stat-card__value" id="stat-products">-</div>
+              </div>
+            </div>
+
+            <div class="admin-stat-card">
+              <div class="admin-stat-card__icon admin-stat-card__icon--success">📋</div>
+              <div class="admin-stat-card__content">
+                <div class="admin-stat-card__label">订单总数</div>
+                <div class="admin-stat-card__value" id="stat-orders">-</div>
+              </div>
+            </div>
+
+            <div class="admin-stat-card">
+              <div class="admin-stat-card__icon admin-stat-card__icon--warning">👥</div>
+              <div class="admin-stat-card__content">
+                <div class="admin-stat-card__label">用户总数</div>
+                <div class="admin-stat-card__value" id="stat-users">-</div>
+              </div>
+            </div>
+
+            <div class="admin-stat-card">
+              <div class="admin-stat-card__icon admin-stat-card__icon--error">⚠️</div>
+              <div class="admin-stat-card__content">
+                <div class="admin-stat-card__label">待处理订单</div>
+                <div class="admin-stat-card__value" id="stat-pending">-</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Actions -->
+          <div class="admin-card">
+            <div class="admin-card__header">
+              <h2 class="admin-card__title">快捷操作</h2>
+            </div>
+            <div class="admin-card__body">
+              <div class="flex gap-4 flex-wrap">
+                <a href="/admin/products/new" class="btn btn--primary">➕ 新增商品</a>
+                <a href="/admin/products" class="btn btn--secondary">📦 商品列表</a>
+                <a href="/admin/orders" class="btn btn--secondary">📋 订单管理</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Theme Switcher -->
+  <script src="/js/theme.js"></script>
+
+  <!-- Admin Layout JS -->
+  <script src="/js/admin.js"></script>
+</body>
+</html>

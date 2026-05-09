@@ -120,7 +120,6 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
-<<<<<<< HEAD
             <!-- SpotBugs for security vulnerability scanning -->
             <plugin>
                 <groupId>com.github.spotbugs</groupId>
@@ -138,7 +137,8 @@
                 <version>9.0.0</version>
                 <configuration>
                     <failBuildOnCVSS>7</failBuildOnCVSS>
-=======
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>com.coveo</groupId>
                 <artifactId>fmt-maven-plugin</artifactId>
@@ -166,7 +166,6 @@
                     <configLocation>checkstyle.xml</configLocation>
                     <consoleOutput>true</consoleOutput>
                     <failsOnError>false</failsOnError>
->>>>>>> agent/java-reviewer/b06aa083
                 </configuration>
             </plugin>
         </plugins>
