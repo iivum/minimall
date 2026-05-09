@@ -2,6 +2,8 @@ package com.minimall.service;
 
 import com.minimall.model.Product;
 import com.minimall.repository.ProductRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -17,8 +19,16 @@ public class ProductService {
         return productRepository.findByActiveTrue();
     }
 
+    public Page<Product> findAllActive(Pageable pageable) {
+        return productRepository.findByActiveTrue(pageable);
+    }
+
     public List<Product> searchByName(String name) {
         return productRepository.findByNameContainingIgnoreCaseAndActiveTrue(name);
+    }
+
+    public Page<Product> searchByName(String name, Pageable pageable) {
+        return productRepository.findByNameContainingIgnoreCaseAndActiveTrue(name, pageable);
     }
 
     public Product findById(String id) {

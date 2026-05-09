@@ -34,6 +34,8 @@ public class SecurityConfig {
                 .requestMatchers("/api/points/**").authenticated()
                 .requestMatchers("/api/coupons/**").permitAll()
                 .requestMatchers("/api/share/**").permitAll()
+                .requestMatchers("/api/upload/**").permitAll()
+                .requestMatchers("/uploads/**").permitAll()
                 .anyRequest().authenticated()
             )
             .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()));

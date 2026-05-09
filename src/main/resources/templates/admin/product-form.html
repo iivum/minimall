@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Minimall 管理后台 - 商品表单">
+  <title id="page-title">新增商品 - 管理后台 - Minimall</title>
+
+  <!-- Design Tokens (must be first) -->
+  <link rel="stylesheet" href="/css/tokens.css">
+
+  <!-- Component Library -->
+  <link rel="stylesheet" href="/css/components.css">
+
+  <!-- Admin Styles -->
+  <link rel="stylesheet" href="/css/admin.css">
+
+  <!-- Inter Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- ============================================
+       Admin Layout
+       ============================================ -->
+  <div class="admin-layout">
+    <!-- Sidebar -->
+    <aside class="admin-sidebar" id="sidebar">
+      <div class="admin-sidebar__header">
+        <a href="/admin" class="admin-sidebar__logo">
+          <span class="admin-sidebar__logo-text">Minimall</span>
+          <span class="admin-sidebar__logo-sub">管理后台</span>
+        </a>
+      </div>
+
+      <nav class="admin-sidebar__nav" aria-label="Admin navigation">
+        <div class="admin-nav-group">
+          <span class="admin-nav-group__title">概览</span>
+          <a href="/admin" class="admin-nav-item" data-nav="dashboard">
+            <span class="admin-nav-item__icon">📊</span>
+            <span class="admin-nav-item__text">控制台</span>
+          </a>
+        </div>
+
+        <div class="admin-nav-group">
+          <span class="admin-nav-group__title">商品管理</span>
+          <a href="/admin/products" class="admin-nav-item" data-nav="products">
+            <span class="admin-nav-item__icon">📦</span>
+            <span class="admin-nav-item__text">商品列表</span>
+          </a>
+          <a href="/admin/products/new" class="admin-nav-item admin-nav-item--active" data-nav="products-new">
+            <span class="admin-nav-item__icon">➕</span>
+            <span class="admin-nav-item__text">新增商品</span>
+          </a>
+        </div>
+
+        <div class="admin-nav-group">
+          <span class="admin-nav-group__title">订单管理</span>
+          <a href="/admin/orders" class="admin-nav-item" data-nav="orders">
+            <span class="admin-nav-item__icon">📋</span>
+            <span class="admin-nav-item__text">订单列表</span>
+          </a>
+        </div>
+
+        <div class="admin-nav-group">
+          <span class="admin-nav-group__title">用户管理</span>
+          <a href="/admin/users" class="admin-nav-item" data-nav="users">
+            <span class="admin-nav-item__icon">👥</span>
+            <span class="admin-nav-item__text">用户列表</span>
+          </a>
+        </div>
+
+        <div class="admin-nav-group">
+          <span class="admin-nav-group__title">营销工具</span>
+          <a href="/admin/coupons" class="admin-nav-item" data-nav="coupons">
+            <span class="admin-nav-item__icon">🎫</span>
+            <span class="admin-nav-item__text">优惠券</span>
+          </a>
+          <a href="/admin/live" class="admin-nav-item" data-nav="live">
+            <span class="admin-nav-item__icon">📺</span>
+            <span class="admin-nav-item__text">直播管理</span>
+          </a>
+        </div>
+
+        <div class="admin-nav-group">
+          <span class="admin-nav-group__title">系统</span>
+          <a href="/admin/settings" class="admin-nav-item" data-nav="settings">
+            <span class="admin-nav-item__icon">⚙️</span>
+            <span class="admin-nav-item__text">设置</span>
+          </a>
+        </div>
+      </nav>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="admin-main-wrapper">
+      <!-- Top Header -->
+      <header class="admin-header">
+        <div class="admin-header__left">
+          <button type="button" class="admin-sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">
+            <span class="admin-sidebar-toggle__icon">☰</span>
+          </button>
+          <div class="admin-breadcrumb" id="breadcrumb">
+            <a href="/admin" class="admin-breadcrumb__item">首页</a>
+            <span class="admin-breadcrumb__separator">/</span>
+            <a href="/admin/products" class="admin-breadcrumb__item">商品管理</a>
+            <span class="admin-breadcrumb__separator">/</span>
+            <span class="admin-breadcrumb__item admin-breadcrumb__item--current" id="breadcrumb-title" th:text="${isEdit} ? '编辑商品' : '新增商品'">新增商品</span>
+          </div>
+        </div>
+
+        <div class="admin-header__right">
+          <button
+            type="button"
+            class="btn btn--ghost btn--sm"
+            data-theme-toggle
+            aria-label="Switch to dark mode"
+          >🌙</button>
+
+          <div class="admin-user-menu">
+            <button type="button" class="admin-user-menu__trigger" id="userMenuTrigger">
+              <span class="admin-user-menu__avatar">A</span>
+              <span class="admin-user-menu__name">管理员</span>
+              <span class="admin-user-menu__arrow">▼</span>
+            </button>
+            <div class="admin-user-menu__dropdown" id="userMenuDropdown">
+              <a href="/admin/profile" class="admin-user-menu__item">个人设置</a>
+              <a href="/admin/logout" class="admin-user-menu__item">退出登录</a>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Page Content -->
+      <main class="admin-content">
+        <div class="container">
+          <!-- Page Header -->
+          <div class="admin-page-header">
+            <div>
+              <h1 class="admin-page-header__title" id="page-title-text" th:text="${isEdit} ? '编辑商品' : '新增商品'">新增商品</h1>
+              <p class="admin-page-header__subtitle" id="page-subtitle" th:text="${isEdit} ? '修改商品信息' : '填写商品信息来创建新商品'">填写商品信息来创建新商品</p>
+            </div>
+          </div>
+
+          <!-- Product Form Card -->
+          <div class="admin-card">
+            <div class="admin-card__body">
+              <form id="product-form" class="admin-product-form" th:data-edit="${isEdit}" th:data-product-id="${productId}">
+                <div class="admin-form-grid">
+                  <!-- Product Name -->
+                  <div class="form-group">
+                    <label for="name" class="form-label form-label--required">商品名称</label>
+                    <input
+                      type="text"
+                      id="name"
+                      name="name"
+                      class="form-input"
+                      placeholder="请输入商品名称"
+                      required
+                      maxlength="100"
+                    >
+                    <span class="form-hint">必填，限100字符</span>
+                  </div>
+
+                  <!-- Price -->
+                  <div class="form-group">
+                    <label for="price" class="form-label form-label--required">价格</label>
+                    <input
+                      type="number"
+                      id="price"
+                      name="price"
+                      class="form-input"
+                      placeholder="0.00"
+                      required
+                      min="0"
+                      step="0.01"
+                    >
+                    <span class="form-hint">必填，单位：元</span>
+                  </div>
+
+                  <!-- Stock -->
+                  <div class="form-group">
+                    <label for="stock" class="form-label form-label--required">库存</label>
+                    <input
+                      type="number"
+                      id="stock"
+                      name="stock"
+                      class="form-input"
+                      placeholder="0"
+                      required
+                      min="0"
+                      step="1"
+                    >
+                    <span class="form-hint">必填，库存数量</span>
+                  </div>
+
+                  <!-- Active Status -->
+                  <div class="form-group">
+                    <label class="form-label">商品状态</label>
+                    <div class="flex items-center gap-4" style="margin-top: var(--space-2);">
+                      <label class="flex items-center gap-2" style="cursor: pointer;">
+                        <input type="checkbox" name="active" id="active" checked
+                          style="width: 18px; height: 18px; cursor: pointer;">
+                        <span>上架销售</span>
+                      </label>
+                    </div>
+                    <span class="form-hint">下架后商品将不再显示</span>
+                  </div>
+
+                  <!-- Image Upload -->
+                  <div class="form-group admin-form-grid--full">
+                    <label class="form-label">商品图片</label>
+                    <div class="admin-image-upload">
+                      <div class="admin-image-upload__preview" id="image-preview">
+                        <div class="admin-image-upload__placeholder">
+                          <span style="font-size: 2rem;">📷</span>
+                          <span>点击或拖拽上传图片</span>
+                          <span class="text-sm text-secondary">支持 JPG、PNG，最大 2MB</span>
+                        </div>
+                      </div>
+                      <input
+                        type="file"
+                        class="admin-image-upload__input"
+                        id="image-input"
+                        accept="image/jpeg,image/png,image/gif"
+                      >
+                      <input type="hidden" name="imageUrl" id="image-url" value="">
+                      <button type="button" class="btn btn--secondary btn--sm" id="upload-btn">
+                        上传图片
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Description -->
+                  <div class="form-group admin-form-grid--full">
+                    <label for="description" class="form-label">商品描述</label>
+                    <textarea
+                      id="description"
+                      name="description"
+                      class="form-input"
+                      rows="5"
+                      placeholder="请输入商品详细描述..."
+                      maxlength="2000"
+                    ></textarea>
+                    <span class="form-hint">选填，限2000字符</span>
+                  </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="flex gap-4 justify-end" style="margin-top: var(--space-8);">
+                  <a href="/admin/products" class="btn btn--secondary">取消</a>
+                  <button type="submit" class="btn btn--primary">
+                    💾 保存商品
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Theme Switcher -->
+  <script src="/js/theme.js"></script>
+
+  <!-- Admin Layout JS -->
+  <script src="/js/admin.js"></script>
+
+  <!-- Image Upload Handler -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const imagePreview = document.getElementById('image-preview');
+      const imageInput = document.getElementById('image-input');
+      const imageUrlInput = document.getElementById('image-url');
+      const uploadBtn = document.getElementById('upload-btn');
+
+      if (imagePreview && imageInput) {
+        imagePreview.addEventListener('click', function() {
+          imageInput.click();
+        });
+
+        imagePreview.addEventListener('dragover', function(e) {
+          e.preventDefault();
+          imagePreview.style.borderColor = 'var(--color-primary-400)';
+          imagePreview.style.backgroundColor = 'var(--color-primary-50)';
+        });
+
+        imagePreview.addEventListener('dragleave', function() {
+          imagePreview.style.borderColor = 'var(--color-secondary-300)';
+          imagePreview.style.backgroundColor = '';
+        });
+
+        imagePreview.addEventListener('drop', function(e) {
+          e.preventDefault();
+          imagePreview.style.borderColor = 'var(--color-secondary-300)';
+          imagePreview.style.backgroundColor = '';
+          const files = e.dataTransfer.files;
+          if (files.length > 0 && files[0].type.startsWith('image/')) {
+            handleImageFile(files[0]);
+          }
+        });
+
+        imageInput.addEventListener('change', function() {
+          if (this.files.length > 0) {
+            handleImageFile(this.files[0]);
+          }
+        });
+      }
+
+      if (uploadBtn) {
+        uploadBtn.addEventListener('click', function() {
+          imageInput.click();
+        });
+      }
+
+      function handleImageFile(file) {
+        // Validate file size (max 2MB)
+        if (file.size > 2 * 1024 * 1024) {
+          alert('图片大小不能超过 2MB');
+          return;
+        }
+
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+          alert('请上传图片文件');
+          return;
+        }
+
+        // Preview the image using FileReader
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const placeholder = imagePreview.querySelector('.admin-image-upload__placeholder');
+          if (placeholder) {
+            placeholder.style.display = 'none';
+          }
+
+          let img = imagePreview.querySelector('img');
+          if (!img) {
+            img = document.createElement('img');
+            imagePreview.appendChild(img);
+          }
+          img.src = e.target.result;
+
+          // Set the image URL (in a real app, this would be uploaded to a server)
+          imageUrlInput.value = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  </script>
+</body>
+</html>
