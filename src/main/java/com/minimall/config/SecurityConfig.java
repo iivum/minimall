@@ -26,6 +26,7 @@ public class SecurityConfig {
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/api/admin/auth/**").permitAll()
                 .requestMatchers("/swagger-ui/**", "/api-docs/**", "/h2-console/**").permitAll()
                 .requestMatchers("/ws/**").permitAll()
                 .requestMatchers("/health").permitAll()

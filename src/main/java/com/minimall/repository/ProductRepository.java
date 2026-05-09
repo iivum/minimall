@@ -7,4 +7,5 @@ import java.util.List;
 public interface ProductRepository extends JpaRepository<Product, String> {
     List<Product> findByActiveTrue();
     List<Product> findByNameContainingIgnoreCaseAndActiveTrue(String name);
+    long countByActiveTrue();
 }

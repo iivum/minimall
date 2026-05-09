@@ -17,6 +17,10 @@ public class ProductService {
         return productRepository.findByActiveTrue();
     }
 
+    public List<Product> findAll() {
+        return productRepository.findAll();
+    }
+
     public List<Product> searchByName(String name) {
         return productRepository.findByNameContainingIgnoreCaseAndActiveTrue(name);
     }
@@ -45,5 +49,17 @@ public class ProductService {
         Product product = findById(id);
         product.setActive(false);
         productRepository.save(product);
+    }
+
+    public Product activate(String id) {
+        Product product = findById(id);
+        product.setActive(true);
+        return productRepository.save(product);
+    }
+
+    public Product deactivate(String id) {
+        Product product = findById(id);
+        product.setActive(false);
+        return productRepository.save(product);
     }
 }

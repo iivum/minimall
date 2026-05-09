@@ -38,6 +38,10 @@ public class OrderService {
         return orderRepository.findByUserIdOrderByCreatedAtDesc(userId);
     }
 
+    public List<Order> findAll() {
+        return orderRepository.findAll();
+    }
+
     public Order findById(String id) {
         return orderRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("Order not found: " + id));
