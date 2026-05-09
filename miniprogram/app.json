@@ -8,7 +8,11 @@
     "pages/member/index",
     "pages/pay/pay",
     "pages/points/index",
-    "pages/coupons/index"
+    "pages/coupons/index",
+    "pages/privacy/index",
+    "pages/agreement/index",
+    "minilive/list/list",
+    "minilive/room/room"
   ],
   "subpackages": [],
   "window": {

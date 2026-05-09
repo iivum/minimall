@@ -1,25 +1,48 @@
-<!-- pages/points/index.wxml -->
 <view class="container">
-  <view class="points-header">
-    <view class="points-label">我的积分</view>
-    <view class="points-value">{{points}}</view>
-    <button class="btn-exchange" bindtap="goExchange">去兑换</button>
+  <!-- 积分余额卡片 -->
+  <view class="points-card">
+    <view class="points-label">当前积分</view>
+    <view class="points-balance">{{points}}</view>
   </view>
-  <view class="points-history">
-    <view class="history-title">积分明细</view>
-    <view class="history-list" wx:if="{{pointsHistory.length > 0}}">
-      <view class="history-item" wx:for="{{pointsHistory}}" wx:key="id">
-        <view class="item-info">
-          <text class="item-type">{{item.type}}</text>
-          <text class="item-date">{{item.date}}</text>
+
+  <!-- 加载状态 -->
+  <view class="loading" wx:if="{{loading}}">
+    <text>加载中...</text>
+  </view>
+
+  <!-- 错误状态 -->
+  <view class="error-state" wx:elif="{{error}}">
+    <text class="error-text">{{error}}</text>
+    <button class="retry-btn" bindtap="onRetry">重试</button>
+  </view>
+
+  <!-- 积分记录列表 -->
+  <view class="records-section" wx:else>
+    <view class="section-title">积分记录</view>
+    <view class="records-list">
+      <view
+        class="record-item"
+        wx:for="{{records}}"
+        wx:key="id"
+      >
+        <view class="record-info">
+          <view class="record-title">{{item.description}}</view>
+          <view class="record-time">{{item.createdAt}}</view>
         </view>
-        <text class="item-points {{item.points > 0 ? 'positive' : 'negative'}}">
-          {{item.points > 0 ? '+' : ''}}{{item.points}}
-        </text>
+        <view class="record-points {{item.type === 'earn' ? 'positive' : 'negative'}}">
+          {{item.type === 'earn' ? '+' : '-'}}{{item.points}}
+        </view>
       </view>
     </view>
-    <view class="empty" wx:if="{{pointsHistory.length === 0}}">
+
+    <!-- 空状态 -->
+    <view class="empty-state" wx:if="{{!loading && records.length === 0}}">
       <text>暂无积分记录</text>
+    </view>
+
+    <!-- 加载更多 -->
+    <view class="load-more" wx:if="{{hasMore}}">
+      <text>加载更多...</text>
     </view>
   </view>
 </view>

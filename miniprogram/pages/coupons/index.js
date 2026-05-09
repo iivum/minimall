@@ -3,41 +3,52 @@ const app = getApp()
 
 Page({
   data: {
-    coupons: [],
+    availableCoupons: [],
+    usedCoupons: [],
+    expiredCoupons: [],
+    loading: true,
+    error: null,
     activeTab: 'available',
-    loading: false,
+  },
+
+  onLoad() {
+    this.loadCoupons()
   },
 
   onShow() {
     this.loadCoupons()
   },
 
-  loadCoupons() {
-    this.setData({ loading: true })
-    const coupons = wx.getStorageSync('coupons') || []
-    this.setData({
-      coupons,
-      loading: false,
-    })
-  },
-
-  onTabChange(e) {
-    const { tab } = e.currentTarget.dataset
-    this.setData({ activeTab: tab })
-  },
-
-  getCoupon(e) {
-    const { index } = e.currentTarget.dataset
-    const coupons = this.data.coupons
-    if (coupons[index].status === 'available') {
-      coupons[index].status = 'used'
-      wx.setStorageSync('coupons', coupons)
-      wx.showToast({ title: '领取成功', icon: 'success' })
-      this.loadCoupons()
+  async loadCoupons() {
+    this.setData({ loading: true, error: null })
+    try {
+      const userId = app.globalData.userId
+      if (!userId) {
+        this.setData({ loading: false, availableCoupons: [], usedCoupons: [], expiredCoupons: [] })
+        return
+      }
+      const res = await app.request({ url: `/users/${userId}/coupons` })
+      this.setData({
+        availableCoupons: res?.available || [],
+        usedCoupons: res?.used || [],
+        expiredCoupons: res?.expired || [],
+        loading: false,
+      })
+    } catch (err) {
+      this.setData({ loading: false, error: '加载失败，请重试' })
     }
   },
 
-  goShopping() {
-    wx.switchTab({ url: '/pages/index/index' })
+  switchTab(e) {
+    const tab = e.currentTarget.dataset.tab
+    this.setData({ activeTab: tab })
+  },
+
+  async claimCoupon() {
+    wx.showToast({ title: '功能开发中', icon: 'none' })
+  },
+
+  onRetry() {
+    this.loadCoupons()
   },
 })
