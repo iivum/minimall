@@ -155,7 +155,7 @@ public class WeChatSubscribeService {
             .block(Duration.ofSeconds(10));
 
         if (response == null) {
-            log.error("Failed to send template message: null response");
+            log.warn("Template message response is null, openid={}", openid);
             return;
         }
 
@@ -165,7 +165,7 @@ public class WeChatSubscribeService {
         if (errcode != null && errcode == 0) {
             log.info("Successfully sent template message to openid: {}", openid);
         } else {
-            log.error("Failed to send template message: errcode={}, errmsg={}", errcode, errmsg);
+            log.warn("Failed to send template message, errcode={}, errmsg={}, openid={}", errcode, errmsg, openid);
         }
     }
 
