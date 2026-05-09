@@ -1,0 +1,38 @@
+<view class="container">
+  <view class="loading" wx:if="{{loading}}">
+    <text>加载中...</text>
+  </view>
+
+  <view class="empty" wx:elif="{{lives.length === 0}}">
+    <text>暂无直播</text>
+  </view>
+
+  <view class="lives-list" wx:else>
+    <view
+      class="live-item"
+      wx:for="{{lives}}"
+      wx:key="roomId"
+      bindtap="goToLiveRoom"
+      data-room-id="{{item.roomId}}"
+    >
+      <image class="cover" src="{{item.coverUrl}}" mode="aspectFill" />
+      <view class="live-info">
+        <view class="title">{{item.title}}</view>
+        <view class="host">{{item.hostName}}</view>
+        <view class="status" wx:if="{{item.status === 1}}">
+          <text class="status-dot live"></text>
+          <text class="status-text">直播中</text>
+        </view>
+        <view class="status" wx:elif="{{item.status === 0}}">
+          <text class="status-text">预告</text>
+        </view>
+        <view class="status" wx:else>
+          <text class="status-text">已结束</text>
+        </view>
+      </view>
+      <view class="viewer-count" wx:if="{{item.viewerCount > 0}}">
+        <text>{{item.viewerCount}}人在看</text>
+      </view>
+    </view>
+  </view>
+</view>

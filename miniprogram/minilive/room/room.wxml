@@ -1,0 +1,81 @@
+<view class="room-container">
+  <!-- 直播视频区域 -->
+  <view class="video-area">
+    <live-player
+      src="{{roomInfo.liveUrl}}"
+      mode="live"
+      autoplay
+      bindstatechange="onPlayerStateChange"
+      class="video-player"
+    />
+    <view class="video-overlay">
+      <!-- 顶部信息栏 -->
+      <view class="top-bar">
+        <view class="host-info">
+          <image class="host-avatar" src="{{roomInfo.hostAvatar}}" />
+          <view class="host-name">{{roomInfo.hostName}}</view>
+        </view>
+        <view class="viewer-count">{{roomInfo.viewerCount}}人在看</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 商品列表浮层 -->
+  <view class="goods-drawer {{showGoods ? 'show' : ''}}">
+    <view class="goods-header">
+      <text class="goods-title">直播商品</text>
+      <view class="close-btn" bindtap="hideGoodsList">×</view>
+    </view>
+    <scroll-view class="goods-scroll" scroll-y>
+      <view
+        class="goods-item"
+        wx:for="{{goods}}"
+        wx:key="id"
+        bindtap="goToGoods"
+        data-goods-id="{{item.id}}"
+      >
+        <image class="goods-image" src="{{item.image}}" />
+        <view class="goods-info">
+          <view class="goods-name">{{item.name}}</view>
+          <view class="goods-price">¥{{item.price}}</view>
+        </view>
+        <view class="goods-action">讲解中</view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 底部互动区 -->
+  <view class="interaction-area">
+    <!-- 商品按钮 -->
+    <view class="goods-btn" bindtap="showGoodsList">
+      <text>商品</text>
+    </view>
+
+    <!-- 点赞 -->
+    <view class="like-btn {{isLiked ? 'liked' : ''}}" bindtap="toggleLike">
+      <text class="like-icon">♥</text>
+      <text class="like-count">{{likeCount}}</text>
+    </view>
+  </view>
+
+  <!-- 评论区 -->
+  <view class="comments-area">
+    <scroll-view class="comments-scroll" scroll-y bindtap="hideGoodsList">
+      <view class="comment-item" wx:for="{{comments}}" wx:key="id">
+        <text class="comment-user">{{item.userName}}: </text>
+        <text class="comment-content">{{item.content}}</text>
+      </view>
+    </scroll-view>
+    <view class="comment-input-area">
+      <input
+        class="comment-input"
+        type="text"
+        placeholder="说点什么..."
+        value="{{commentText}}"
+        bindinput="onCommentInput"
+        bindconfirm="sendComment"
+      />
+      <button class="send-btn" bindtap="sendComment">发送</button>
+    </view>
+  </view>
+</view>

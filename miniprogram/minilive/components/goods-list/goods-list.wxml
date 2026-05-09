@@ -1,0 +1,22 @@
+<view class="goods-list-container {{visible ? 'show' : ''}}">
+  <view class="goods-header">
+    <text class="goods-title">直播商品</text>
+    <view class="close-btn" bindtap="hideGoods">×</view>
+  </view>
+  <scroll-view class="goods-scroll" scroll-y>
+    <view
+      class="goods-item"
+      wx:for="{{goods}}"
+      wx:key="id"
+      bindtap="goToGoods"
+      data-goods-id="{{item.id}}"
+    >
+      <image class="goods-image" src="{{item.image}}" mode="aspectFill" />
+      <view class="goods-info">
+        <view class="goods-name">{{item.name}}</view>
+        <view class="goods-price">¥{{item.price}}</view>
+      </view>
+      <view class="goods-action" wx:if="{{item.isExplaining}}">讲解中</view>
+    </view>
+  </scroll-view>
+</view>
