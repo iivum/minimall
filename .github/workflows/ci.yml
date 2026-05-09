@@ -11,6 +11,26 @@ env:
   MAVEN_OPTS: -Xmx1024m
 
 jobs:
+  # Conflict marker detection (MIN-1554)
+  conflict-marker-check:
+    name: Detect Conflict Markers
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check for conflict markers
+        run: |
+          echo "=== Checking for Merge Conflict Markers ==="
+          CONFLICTS=$(grep -r "<<<<<<<\|=======\|>>>>>>>" --include="*.java" --include="*.xml" --include="*.md" . 2>/dev/null | grep -v ".git/" | wc -l)
+          if [ "$CONFLICTS" -gt 0 ]; then
+            echo "ERROR: Found $CONFLICTS conflict markers in code"
+            grep -r "<<<<<<<\|=======\|>>>>>>>" --include="*.java" --include="*.xml" --include="*.md" . 2>/dev/null | grep -v ".git/"
+            exit 1
+          else
+            echo "No conflict markers found"
+          fi
+
   # Code existence verification (MIN-1444)
   verify-code:
     name: Verify Code Existence
