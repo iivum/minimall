@@ -3,6 +3,7 @@
         "-//Checkstyle//DTD Checkstyle Configuration 1.3//EN"
         "https://checkstyle.org/dtds/configuration_1_3.dtd">
 
+<<<<<<< HEAD
 <!--
   MiniMall Logging Specification Configuration
 
@@ -23,6 +24,8 @@
   - log.error for expected validation failures
   - log.error without proper context/metadata
 -->
+=======
+>>>>>>> agent/java-reviewer/b06aa083
 <module name="Checker">
     <property name="charset" value="UTF-8"/>
     <property name="severity" value="warning"/>
@@ -34,6 +37,7 @@
         <module name="LeftCurly"/>
         <module name="NeedBraces"/>
         <module name="RightCurly"/>
+<<<<<<< HEAD
 
         <!-- Logging checks -->
         <module name="RegexpSingleline">
@@ -72,10 +76,16 @@
             <property name="ignoreCase" value="false"/>
         </module>
 
+=======
+>>>>>>> agent/java-reviewer/b06aa083
     </module>
 
     <module name="LineLength">
         <property name="max" value="120"/>
     </module>
     <module name="NewlineAtEndOfFile"/>
+<<<<<<< HEAD
 </module>
+=======
+</module>
+>>>>>>> agent/java-reviewer/b06aa083
