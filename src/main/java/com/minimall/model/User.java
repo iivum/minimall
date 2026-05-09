@@ -5,7 +5,11 @@ import java.math.BigDecimal;
 import java.time.Instant;
 
 @Entity
-@Table(name = "users")
+@Table(name = "users", indexes = {
+    @Index(name = "idx_user_openid", columnList = "openid"),
+    @Index(name = "idx_user_phone", columnList = "phone"),
+    @Index(name = "idx_user_member_grade", columnList = "member_grade")
+})
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
