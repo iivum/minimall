@@ -43,7 +43,7 @@ public class PayService {
             signature.update(message.getBytes(StandardCharsets.UTF_8));
             return Base64.getEncoder().encodeToString(signature.sign());
         } catch (Exception e) {
-            log.error("Failed to sign JSAPI request: {}", e.getMessage());
+            log.error("Failed to sign JSAPI request", e);
             throw new RuntimeException("Failed to sign JSAPI request", e);
         }
     }
@@ -64,7 +64,7 @@ public class PayService {
             verifier.update(hash);
             return verifier.verify(Base64.getDecoder().decode(signature));
         } catch (Exception e) {
-            log.error("Callback verification failed: {}", e.getMessage());
+            log.error("Callback verification failed", e);
             return false;
         }
     }
@@ -114,7 +114,7 @@ public class PayService {
                 log.warn("Payment failed for order: {}, status: {}", outTradeNo, tradeStatus);
             }
         } catch (Exception e) {
-            log.error("Failed to process callback: {}", e.getMessage());
+            log.error("Failed to process callback", e);
             throw new RuntimeException("Failed to process callback", e);
         }
     }
