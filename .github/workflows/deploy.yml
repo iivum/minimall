@@ -1,0 +1,97 @@
+name: Deploy to Production
+
+on:
+  workflow_run:
+    workflows: ["Docker Build and Push"]
+    types: [completed]
+    branches: [main]
+
+jobs:
+  deploy:
+    name: Deploy to Server
+    runs-on: ubuntu-latest
+    if: github.event.workflow_run.conclusion == 'success'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Verify deployment readiness
+        run: |
+          echo "=== Deployment Readiness Check ==="
+          if [ -f "$(pwd)/docker-compose.yml" ]; then
+            echo "Docker Compose file verified"
+          else
+            echo "ERROR: Docker Compose file NOT found"
+            exit 1
+          fi
+          if [ -f "$(pwd)/backend/Dockerfile" ]; then
+            echo "Dockerfile verified"
+          else
+            echo "ERROR: Dockerfile NOT found"
+            exit 1
+          fi
+          echo "Deployment ready"
+
+      - name: Create deployment summary
+        run: |
+          echo "=== Deployment Summary ==="
+          echo "Tag: ${{ github.ref }}"
+          echo "Commit: ${{ github.sha }}"
+          echo "Actor: ${{ github.actor }}"
+          echo "Run ID: ${{ github.run_id }}"
+          echo "Workflow: ${{ github.workflow }}"
+          echo ""
+          echo "To deploy, run on your server:"
+          echo "  cd minimall && git pull && docker-compose up -d"
+
+  # Code existence verification at deploy time
+  verify-deploy:
+    name: Verify Code for Deployment
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Final verification
+        run: |
+          echo "=== Final Code Existence Verification ==="
+          WORKDIR="$(pwd)"
+          echo "Working directory: $WORKDIR"
+          
+          if [ -d "$WORKDIR/src/main/java" ]; then
+            echo "Main source: OK"
+          else
+            echo "ERROR: Main source NOT found"
+            exit 1
+          fi
+          
+          if [ -d "$WORKDIR/src/test/java" ]; then
+            echo "Test source: OK"
+          else
+            echo "ERROR: Test source NOT found"
+            exit 1
+          fi
+          
+          if [ -f "$WORKDIR/pom.xml" ]; then
+            echo "Build config: OK"
+          else
+            echo "ERROR: Build config NOT found"
+            exit 1
+          fi
+          
+          if [ -f "$WORKDIR/backend/Dockerfile" ]; then
+            echo "Dockerfile: OK"
+          else
+            echo "ERROR: Dockerfile NOT found"
+            exit 1
+          fi
+          
+          if [ -f "$WORKDIR/docker-compose.yml" ]; then
+            echo "Docker Compose: OK"
+          else
+            echo "ERROR: Docker Compose NOT found"
+            exit 1
+          fi
+          
+          echo ""
+          echo "All required files exist - ready for deployment"
