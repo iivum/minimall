@@ -107,6 +107,49 @@ chmod +x scripts/code-merge-check.sh
 mvn verify -Dcheckstyle.skip=false
 ```
 
+### 合并验证脚本
+
+```bash
+# verify-merge.sh - 验证 issue 声明的文件和代码变更是否确实存在于 main 分支
+# 用法: ./scripts/verify-merge.sh <issue-id> [file-path] [commit-hash]
+
+# 示例 1: 验证单个文件
+./scripts/verify-merge.sh MIN-123 src/main/java/Example.java
+
+# 示例 2: 验证多个文件
+./scripts/verify-merge.sh MIN-123 "src/main/java/Example.java" "abc1234"
+
+# 示例 3: 完整验证（文件 + commit）
+./scripts/verify-merge.sh MIN-123 src/main/java/Example.java abc1234
+```
+
+### 自动化验证步骤
+
+在进行人工审查前，使用 `verify-merge.sh` 脚本验证代码已正确合并：
+
+1. **文件存在性验证**
+   ```bash
+   ./scripts/verify-merge.sh <issue-id> <file-path>
+   ```
+   - 使用 `git ls-tree origin/main <file>` 验证文件存在于 main 分支
+
+2. **Commit 存在性验证**
+   ```bash
+   ./scripts/verify-merge.sh <issue-id> "" <commit-hash>
+   ```
+   - 使用 `git log --oneline origin/main | grep <commit>` 验证 commit 存在
+
+3. **验证 main 分支状态**
+   - 脚本自动检查 origin/main 是否为最新状态
+   - 如非最新状态，会自动执行 `git fetch origin main`
+
+4. **CI 集成**
+   ```bash
+   # 在 CI pipeline 中添加合并验证
+   - name: Verify merge
+     run: ./scripts/verify-merge.sh ${{ env.ISSUE_ID }} ${{ env.FILE_PATH }}
+   ```
+
 ---
 
 ## 验收标准
