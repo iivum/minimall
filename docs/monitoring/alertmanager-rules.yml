@@ -11,7 +11,7 @@ groups:
           summary: "MiniMall 服务不可用"
           description: "MiniMall 后端服务已停止运行超过 1 分钟"
 
-      # 高错误率告警
+      # HTTP 5xx 错误率告警 (>1%)
       - alert: MiniMallHighErrorRate
         expr: |
           (
@@ -26,17 +26,29 @@ groups:
           summary: "MiniMall 高错误率"
           description: "MiniMall HTTP 5xx 错误率超过 1%，当前值: {{ $value | humanizePercentage }}"
 
-      # 响应时间告警 (P99 > 2s)
-      - alert: MiniMallHighResponseTime
+      # 响应时间告警 (P99 > 500ms 警告, > 2s 严重)
+      - alert: MiniMallHighResponseTimeWarning
+        expr: |
+          histogram_quantile(0.99,
+            rate(http_server_requests_seconds_bucket{application="minimall"}[5m])
+          ) > 0.5
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "MiniMall 响应时间过高"
+          description: "MiniMall P99 响应时间超过 500ms，当前值: {{ $value | humanizeDuration }}"
+
+      - alert: MiniMallHighResponseTimeCritical
         expr: |
           histogram_quantile(0.99,
             rate(http_server_requests_seconds_bucket{application="minimall"}[5m])
           ) > 2
         for: 5m
         labels:
-          severity: warning
+          severity: critical
         annotations:
-          summary: "MiniMall 响应时间过高"
+          summary: "MiniMall 响应时间严重超标"
           description: "MiniMall P99 响应时间超过 2 秒，当前值: {{ $value | humanizeDuration }}"
 
       # 数据库连接池告警
@@ -52,7 +64,17 @@ groups:
           summary: "MiniMall 数据库连接池即将耗尽"
           description: "HikariCP 连接池使用率超过 90%，当前活跃: {{ $value }}"
 
-      # 支付失败率告警
+      - alert: MiniMallHikariCPConnectionsWaiting
+        expr: |
+          hikaricp_connections_pending{application="minimall"} > 5
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "MiniMall 数据库连接等待超时"
+          description: "HikariCP 等待连接线程超过 5 个，当前值: {{ $value }}"
+
+      # 支付失败率告警 (>5%)
       - alert: MiniMallHighPaymentFailureRate
         expr: |
           (
@@ -67,18 +89,45 @@ groups:
           summary: "MiniMall 支付失败率过高"
           description: "MiniMall 支付失败率超过 5%，当前值: {{ $value | humanizePercentage }}"
 
-      # JVM 内存告警
-      - alert: MiniMallJVMHeapUsageHigh
+      # 支付成功率告警 (<95% 警告, <90% 严重)
+      - alert: MiniMallPaymentSuccessRateWarning
+        expr: |
+          (
+            rate(minimall_payment_success_total[5m])
+            /
+            (rate(minimall_payment_success_total[5m]) + rate(minimall_payment_failure_total[5m])
+          ) < 0.95
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "MiniMall 支付成功率低"
+          description: "MiniMall 支付成功率低于 95%，当前值: {{ $value | humanizePercentage }}"
+
+      # JVM 内存告警 (>85% 警告, >90% 严重)
+      - alert: MiniMallJVMHeapUsageWarning
         expr: |
           jvm_memory_used_bytes{application="minimall", area="heap"}
           /
-          jvm_memory_max_bytes{application="minimall", area="heap"} > 0.9
+          jvm_memory_max_bytes{application="minimall", area="heap"} > 0.85
         for: 10m
         labels:
           severity: warning
         annotations:
           summary: "MiniMall JVM 堆内存使用率过高"
-          description: "MiniMall JVM 堆内存使用率超过 90%"
+          description: "MiniMall JVM 堆内存使用率超过 85%"
+
+      - alert: MiniMallJVMHeapUsageCritical
+        expr: |
+          jvm_memory_used_bytes{application="minimall", area="heap"}
+          /
+          jvm_memory_max_bytes{application="minimall", area="heap"} > 0.9
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "MiniMall JVM 堆内存即将耗尽"
+          description: "MiniMall JVM 堆内存使用率超过 90%，可能触发 OOM"
 
       # API 响应时间告警 (P99 > 5s)
       - alert: MiniMallAPITimeout
@@ -92,3 +141,49 @@ groups:
         annotations:
           summary: "MiniMall API 请求超时"
           description: "MiniMall API P99 响应时间超过 5 秒，当前值: {{ $value | humanizeDuration }}"
+
+      # 支付处理时间告警 (P99 > 5s)
+      - alert: MiniMallPaymentProcessingSlow
+        expr: |
+          histogram_quantile(0.99,
+            rate(minimall_payment_processing_time_seconds_bucket[5m])
+          ) > 5
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "MiniMall 支付处理时间过长"
+          description: "MiniMall 支付 P99 处理时间超过 5 秒，当前值: {{ $value | humanizeDuration }}"
+
+      # JVM GC 暂停告警
+      - alert: MiniMallJVMGCPause
+        expr: |
+          rate(jvm_gc_pause_seconds_sum{application="minimall"}[5m]) * 1000 > 200
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "MiniMall JVM GC 暂停时间过长"
+          description: "MiniMall JVM GC 暂停时间速率超过 200ms/s，当前值: {{ $value }}ms"
+
+      # 数据库连接池配置告警
+      - alert: MiniMallHikariCPConfiguration
+        expr: |
+          hikaricp_connections_max{application="minimall"} < 10
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "MiniMall 数据库连接池配置过小"
+          description: "HikariCP 最大连接数小于 10，可能影响高并发性能"
+
+      # 活跃用户数告警 (用于容量规划)
+      - alert: MiniMallHighActiveUsers
+        expr: |
+          minimall_active_users{application="minimall"} > 1000
+        for: 10m
+        labels:
+          severity: info
+        annotations:
+          summary: "MiniMall 活跃用户数较高"
+          description: "MiniMall 当前活跃用户数超过 1000，当前值: {{ $value }}"
