@@ -1,16 +1,43 @@
 /* pages/product/detail.wxss */
-.product-image { width: 100%; height: 600rpx; }
+.product-image { width: 100%; height: 600rpx; background-color: #f5f5f5; }
 .product-info { margin-top: 24rpx; }
-.product-name { font-size: 36rpx; font-weight: bold; display: block; margin-bottom: 16rpx; }
+.product-name { font-size: 36rpx; font-weight: bold; display: block; margin-bottom: 16rpx; color: #333; }
 .price-row { display: flex; align-items: center; gap: 16rpx; margin-bottom: 16rpx; }
-.price { color: #FF6B6B; font-size: 40rpx; font-weight: bold; }
+.price { color: #FF6B6B; font-size: 44rpx; font-weight: bold; }
 .original-price { color: #999; font-size: 28rpx; text-decoration: line-through; }
-.product-desc { font-size: 28rpx; color: #666; line-height: 1.6; }
-.quantity-row { display: flex; justify-content: space-between; align-items: center; }
+.product-desc { font-size: 28rpx; color: #666; line-height: 1.6; margin-top: 16rpx; }
+.quantity-row { display: flex; justify-content: space-between; align-items: center; margin-top: 24rpx; }
+.quantity-label { font-size: 28rpx; color: #333; }
 .quantity-control { display: flex; align-items: center; gap: 16rpx; }
-.quantity-control button { width: 60rpx; height: 60rpx; line-height: 60rpx; background-color: #f5f5f5; border-radius: 8rpx; }
-.quantity-control input { width: 80rpx; text-align: center; border: 1rpx solid #ddd; border-radius: 8rpx; }
-.action-bar { position: fixed; bottom: 0; left: 0; right: 0; display: flex; gap: 24rpx; padding: 24rpx; background-color: #fff; }
-.btn-primary { flex: 1; background-color: #FF6B6B; color: #fff; border-radius: 48rpx; }
-.btn-secondary { flex: 1; background-color: #fff; color: #333; border: 1rpx solid #ddd; border-radius: 48rpx; }
-.loading { text-align: center; padding: 100rpx 0; color: #999; }
+.quantity-btn { width: 64rpx; height: 64rpx; display: flex; align-items: center; justify-content: center; background-color: #f5f5f5; border-radius: 8rpx; font-size: 36rpx; color: #333; transition: all 0.15s; }
+.quantity-btn.disabled { color: #ccc; }
+.quantity-btn.plus { background-color: #FF6B6B; color: #fff; }
+.quantity-input { width: 80rpx; text-align: center; border: 1rpx solid #ddd; border-radius: 8rpx; padding: 8rpx 0; font-size: 28rpx; }
+
+/* 错误状态 */
+.error-panel { display: flex; flex-direction: column; align-items: center; padding: 100rpx 0; gap: 24rpx; }
+.error-text { color: #FF6B6B; font-size: 28rpx; }
+.btn-retry { padding: 16rpx 48rpx; background-color: #FF6B6B; color: #fff; border-radius: 48rpx; font-size: 28rpx; }
+
+/* 骨架屏 */
+.skeleton-container { padding: 24rpx; }
+.skeleton-image { width: 100%; height: 600rpx; background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: skeleton-loading 1.5s ease-in-out infinite; border-radius: 12rpx; margin-bottom: 24rpx; }
+.skeleton-info { background-color: #fff; border-radius: 12rpx; padding: 24rpx; }
+.skeleton-title { height: 36rpx; width: 60%; background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: skeleton-loading 1.5s ease-in-out infinite; border-radius: 8rpx; margin-bottom: 20rpx; }
+.skeleton-price { height: 44rpx; width: 30%; background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: skeleton-loading 1.5s ease-in-out infinite; border-radius: 8rpx; margin-bottom: 20rpx; }
+.skeleton-desc { height: 24rpx; width: 100%; background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: skeleton-loading 1.5s ease-in-out infinite; border-radius: 8rpx; margin-bottom: 16rpx; }
+.skeleton-desc.short { width: 60%; }
+@keyframes skeleton-loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* 底部操作栏 */
+.action-bar { position: fixed; bottom: 0; left: 0; right: 0; display: flex; gap: 24rpx; padding: 24rpx; padding-bottom: calc(24rpx + env(safe-area-inset-bottom)); background-color: #fff; border-top: 1rpx solid #eee; }
+.action-left { display: flex; align-items: center; }
+.btn-cart { width: 88rpx; height: 88rpx; display: flex; align-items: center; justify-content: center; background-color: #fff; border: 1rpx solid #eee; border-radius: 44rpx; margin-right: 16rpx; }
+.cart-icon { width: 48rpx; height: 48rpx; }
+.action-right { flex: 1; display: flex; gap: 24rpx; }
+.btn-secondary { flex: 1; background-color: #fff; color: #333; border: 1rpx solid #ddd; border-radius: 48rpx; text-align: center; line-height: 88rpx; font-size: 32rpx; }
+.btn-primary { flex: 1; background-color: #FF6B6B; color: #fff; border-radius: 48rpx; text-align: center; line-height: 88rpx; font-size: 32rpx; }
+.btn-press { opacity: 0.85; transform: scale(0.98); }

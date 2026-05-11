@@ -6,6 +6,7 @@ Page({
     product: null,
     quantity: 1,
     loading: true,
+    error: null,
   },
 
   onLoad(options) {
@@ -14,19 +15,30 @@ Page({
   },
 
   async loadProduct(id) {
-    this.setData({ loading: true })
+    this.setData({ loading: true, error: null })
     try {
       const product = await app.request({ url: `/products/${id}` })
       this.setData({ product, loading: false })
     } catch (err) {
-      this.setData({ loading: false })
-      wx.showToast({ title: '加载失败', icon: 'none' })
+      this.setData({ loading: false, error: '商品加载失败，请重试' })
     }
   },
 
+  retryLoad() {
+    const { id } = this.data.product
+    this.loadProduct(id)
+  },
+
   onQuantityChange(e) {
+    const { type } = e.currentTarget.dataset
     const { value } = e.detail
-    this.setData({ quantity: parseInt(value) || 1 })
+    let quantity = parseInt(value) || 1
+    if (type === 'minus') {
+      quantity = Math.max(1, this.data.quantity - 1)
+    } else if (type === 'plus') {
+      quantity = this.data.quantity + 1
+    }
+    this.setData({ quantity })
   },
 
   addToCart() {

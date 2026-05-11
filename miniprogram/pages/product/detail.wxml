@@ -10,16 +10,38 @@
     <text class="product-desc">{{product.description}}</text>
   </view>
   <view class="quantity-row card">
-    <text>数量</text>
+    <text class="quantity-label">数量</text>
     <view class="quantity-control">
-      <button bindtap="onQuantityChange" data-type="minus">-</button>
-      <input type="number" value="{{quantity}}" bindchange="onQuantityChange" />
-      <button bindtap="onQuantityChange" data-type="plus">+</button>
+      <view class="quantity-btn minus {{quantity <= 1 ? 'disabled' : ''}}" bindtap="onQuantityChange" data-type="minus">-</view>
+      <input class="quantity-input" type="number" value="{{quantity}}" bindchange="onQuantityChange" />
+      <view class="quantity-btn plus" bindtap="onQuantityChange" data-type="plus">+</view>
     </view>
   </view>
-  <view class="action-bar">
-    <button class="btn-secondary" bindtap="addToCart">加入购物车</button>
-    <button class="btn-primary" bindtap="buyNow">立即购买</button>
+  <!-- 错误状态 -->
+  <view class="error-panel" wx:if="{{error}}">
+    <text class="error-text">{{error}}</text>
+    <view class="btn-retry" bindtap="retryLoad">重新加载</view>
   </view>
 </view>
-<view class="loading" wx:if="{{loading}}"><text>加载中...</text></view>
+<!-- 骨架屏加载状态 -->
+<view class="skeleton-container" wx:if="{{loading && !product}}">
+  <view class="skeleton-image"></view>
+  <view class="skeleton-info">
+    <view class="skeleton-title"></view>
+    <view class="skeleton-price"></view>
+    <view class="skeleton-desc"></view>
+    <view class="skeleton-desc short"></view>
+  </view>
+</view>
+<!-- 底部操作栏 -->
+<view class="action-bar" wx:if="{{product && !error}}">
+  <view class="action-left">
+    <view class="btn-cart" bindtap="goToCart">
+      <image class="cart-icon" src="/assets/images/tab-cart.png" />
+    </view>
+  </view>
+  <view class="action-right">
+    <view class="btn-secondary" bindtap="addToCart" hover-class="btn-press">加入购物车</view>
+    <view class="btn-primary" bindtap="buyNow" hover-class="btn-press">立即购买</view>
+  </view>
+</view>

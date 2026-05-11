@@ -39,4 +39,8 @@ Page({
     const { id } = e.currentTarget.dataset
     wx.navigateTo({ url: `/pages/order/detail?id=${id}` })
   },
+
+  goShopping() {
+    wx.switchTab({ url: '/pages/index/index' })
+  },
 })
