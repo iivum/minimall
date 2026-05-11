@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>LiveCommentResponse.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">minimall</a> &gt; <a href="index.source.html" class="el_package">com.minimall.dto</a> &gt; <span class="el_source">LiveCommentResponse.java</span></div><h1>LiveCommentResponse.java</h1><pre class="source lang-java linenums">package com.minimall.dto;
+
+import com.minimall.model.LiveComment;
+import java.time.Instant;
+
+<span class="nc" id="L6">public record LiveCommentResponse(</span>
+    String id,
+    String liveRoomId,
+    String userId,
+    String userNickname,
+    String userAvatar,
+    String content,
+    Instant createdAt
+) {
+    public static LiveCommentResponse from(LiveComment comment) {
+<span class="nc" id="L16">        return new LiveCommentResponse(</span>
+<span class="nc" id="L17">            comment.getId(),</span>
+<span class="nc" id="L18">            comment.getLiveRoomId(),</span>
+<span class="nc" id="L19">            comment.getUserId(),</span>
+<span class="nc" id="L20">            comment.getUserNickname(),</span>
+<span class="nc" id="L21">            comment.getUserAvatar(),</span>
+<span class="nc" id="L22">            comment.getContent(),</span>
+<span class="nc" id="L23">            comment.getCreatedAt()</span>
+        );
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

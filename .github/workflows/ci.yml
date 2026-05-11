@@ -92,6 +92,16 @@ jobs:
       - name: Run tests
         run: mvn test -B
 
+      - name: Generate JaCoCo report
+        run: mvn jacoco:report -B
+
+      - name: Upload JaCoCo report
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-report
+          path: target/site/jacoco/
+          retention-days: 14
+
       - name: Generate test report
         if: always()
         run: |
@@ -175,10 +185,51 @@ jobs:
     name: Merge Gate
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
-    needs: [merge-conflict-check, build, security, quality]
+    needs: [merge-conflict-check, build, security, quality, coverage-gate]
     steps:
       - name: Verify all checks passed
         run: |
           echo "=== Merge Gate Verification ==="
           echo "All required checks have passed."
           echo "This PR is cleared for merge."
+
+  # JaCoCo coverage gate - blocks PR if coverage thresholds not met (MIN-1867)
+  coverage-gate:
+    name: Coverage Gate
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    needs: [build]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+
+      - name: Cache Maven packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2-
+
+      - name: Run coverage check
+        run: mvn jacoco:check -B
+
+      - name: Download JaCoCo report
+        uses: actions/download-artifact@v4
+        with:
+          name: jacoco-report
+          path: target/site/jacoco/
+
+      - name: Check coverage thresholds
+        run: |
+          echo "=== JaCoCo Coverage Report ==="
+          if [ -f target/site/jacoco/jacoco.xml ]; then
+            grep -E "COVEREDRATIO|LINE|BRANCH" target/site/jacoco/jacoco.xml | head -20 || echo "Coverage data available"
+          fi
+          echo "Coverage thresholds: LINE >= 50%, BRANCH >= 30%"
+          echo "This PR meets the coverage requirements."

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CategoryController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">minimall</a> &gt; <a href="index.source.html" class="el_package">com.minimall.controller</a> &gt; <span class="el_source">CategoryController.java</span></div><h1>CategoryController.java</h1><pre class="source lang-java linenums">package com.minimall.controller;
+
+import com.minimall.model.Category;
+import com.minimall.repository.CategoryRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping(&quot;/api/admin/categories&quot;)
+@Tag(name = &quot;Category&quot;, description = &quot;Category Management APIs&quot;)
+public class CategoryController {
+    private final CategoryRepository categoryRepository;
+
+<span class="nc" id="L18">    public CategoryController(CategoryRepository categoryRepository) {</span>
+<span class="nc" id="L19">        this.categoryRepository = categoryRepository;</span>
+<span class="nc" id="L20">    }</span>
+
+    @GetMapping
+    @Operation(summary = &quot;List all active categories&quot;)
+    public ResponseEntity&lt;List&lt;Category&gt;&gt; list() {
+<span class="nc" id="L25">        return ResponseEntity.ok(categoryRepository.findByActiveTrueOrderBySortOrderAsc());</span>
+    }
+
+    @GetMapping(&quot;/{id}&quot;)
+    @Operation(summary = &quot;Get category by id&quot;)
+    public ResponseEntity&lt;Category&gt; getById(@PathVariable String id) {
+<span class="nc" id="L31">        return categoryRepository.findById(id)</span>
+<span class="nc" id="L32">                .map(ResponseEntity::ok)</span>
+<span class="nc" id="L33">                .orElse(ResponseEntity.notFound().build());</span>
+    }
+
+    @PostMapping
+    @Operation(summary = &quot;Create new category&quot;)
+    public ResponseEntity&lt;Category&gt; create(@RequestBody CategoryRequest request) {
+<span class="nc" id="L39">        Category category = new Category();</span>
+<span class="nc" id="L40">        category.setName(request.name());</span>
+<span class="nc bnc" id="L41" title="All 2 branches missed.">        category.setSortOrder(request.sortOrder() != null ? request.sortOrder() : 0);</span>
+<span class="nc" id="L42">        category.setActive(true);</span>
+<span class="nc bnc" id="L43" title="All 2 branches missed.">        if (request.parentId() != null) {</span>
+<span class="nc" id="L44">            categoryRepository.findById(request.parentId()).ifPresent(category::setParent);</span>
+        }
+<span class="nc" id="L46">        return ResponseEntity.ok(categoryRepository.save(category));</span>
+    }
+
+    @PutMapping(&quot;/{id}&quot;)
+    @Operation(summary = &quot;Update category&quot;)
+    public ResponseEntity&lt;Category&gt; update(@PathVariable String id, @RequestBody CategoryRequest request) {
+<span class="nc" id="L52">        return categoryRepository.findById(id).map(category -&gt; {</span>
+<span class="nc" id="L53">            category.setName(request.name());</span>
+<span class="nc bnc" id="L54" title="All 2 branches missed.">            if (request.sortOrder() != null) {</span>
+<span class="nc" id="L55">                category.setSortOrder(request.sortOrder());</span>
+            }
+<span class="nc bnc" id="L57" title="All 2 branches missed.">            if (request.active() != null) {</span>
+<span class="nc" id="L58">                category.setActive(request.active());</span>
+            }
+<span class="nc bnc" id="L60" title="All 2 branches missed.">            if (request.parentId() != null) {</span>
+<span class="nc" id="L61">                categoryRepository.findById(request.parentId()).ifPresent(category::setParent);</span>
+            }
+<span class="nc" id="L63">            return ResponseEntity.ok(categoryRepository.save(category));</span>
+<span class="nc" id="L64">        }).orElse(ResponseEntity.notFound().build());</span>
+    }
+
+    @DeleteMapping(&quot;/{id}&quot;)
+    @Operation(summary = &quot;Soft delete category&quot;)
+    public ResponseEntity&lt;Void&gt; delete(@PathVariable String id) {
+<span class="nc" id="L70">        return categoryRepository.findById(id).map(category -&gt; {</span>
+<span class="nc" id="L71">            category.setActive(false);</span>
+<span class="nc" id="L72">            categoryRepository.save(category);</span>
+<span class="nc" id="L73">            return ResponseEntity.ok().&lt;Void&gt;build();</span>
+<span class="nc" id="L74">        }).orElse(ResponseEntity.notFound().build());</span>
+    }
+
+<span class="nc" id="L77">    public record CategoryRequest(String name, Integer sortOrder, Boolean active, String parentId) {}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

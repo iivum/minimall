@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UserSubscription.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">minimall</a> &gt; <a href="index.source.html" class="el_package">com.minimall.model</a> &gt; <span class="el_source">UserSubscription.java</span></div><h1>UserSubscription.java</h1><pre class="source lang-java linenums">package com.minimall.model;
+
+import jakarta.persistence.*;
+import java.time.Instant;
+
+@Entity
+@Table(name = &quot;user_subscriptions&quot;)
+<span class="fc" id="L8">public class UserSubscription {</span>
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
+
+    @Column(unique = true, nullable = false)
+    private String openid;
+
+<span class="fc" id="L16">    @Column(name = &quot;order_created_enabled&quot;, nullable = false)</span>
+    private boolean orderCreatedEnabled = false;
+
+<span class="fc" id="L19">    @Column(name = &quot;order_paid_enabled&quot;, nullable = false)</span>
+    private boolean orderPaidEnabled = false;
+
+<span class="fc" id="L22">    @Column(name = &quot;order_shipped_enabled&quot;, nullable = false)</span>
+    private boolean orderShippedEnabled = false;
+
+<span class="fc" id="L25">    @Column(name = &quot;order_completed_enabled&quot;, nullable = false)</span>
+    private boolean orderCompletedEnabled = false;
+
+    @Column(nullable = false)
+    private Instant createdAt;
+
+    @Column
+    private Instant updatedAt;
+
+    @PrePersist
+    protected void onCreate() {
+<span class="nc" id="L36">        createdAt = Instant.now();</span>
+<span class="nc" id="L37">        updatedAt = Instant.now();</span>
+<span class="nc" id="L38">    }</span>
+
+    @PreUpdate
+    protected void onUpdate() {
+<span class="nc" id="L42">        updatedAt = Instant.now();</span>
+<span class="nc" id="L43">    }</span>
+
+<span class="nc" id="L45">    public String getId() { return id; }</span>
+<span class="nc" id="L46">    public void setId(String id) { this.id = id; }</span>
+<span class="fc" id="L47">    public String getOpenid() { return openid; }</span>
+<span class="fc" id="L48">    public void setOpenid(String openid) { this.openid = openid; }</span>
+<span class="fc" id="L49">    public boolean isOrderCreatedEnabled() { return orderCreatedEnabled; }</span>
+<span class="fc" id="L50">    public void setOrderCreatedEnabled(boolean orderCreatedEnabled) { this.orderCreatedEnabled = orderCreatedEnabled; }</span>
+<span class="fc" id="L51">    public boolean isOrderPaidEnabled() { return orderPaidEnabled; }</span>
+<span class="nc" id="L52">    public void setOrderPaidEnabled(boolean orderPaidEnabled) { this.orderPaidEnabled = orderPaidEnabled; }</span>
+<span class="fc" id="L53">    public boolean isOrderShippedEnabled() { return orderShippedEnabled; }</span>
+<span class="nc" id="L54">    public void setOrderShippedEnabled(boolean orderShippedEnabled) { this.orderShippedEnabled = orderShippedEnabled; }</span>
+<span class="fc" id="L55">    public boolean isOrderCompletedEnabled() { return orderCompletedEnabled; }</span>
+<span class="nc" id="L56">    public void setOrderCompletedEnabled(boolean orderCompletedEnabled) { this.orderCompletedEnabled = orderCompletedEnabled; }</span>
+<span class="nc" id="L57">    public Instant getCreatedAt() { return createdAt; }</span>
+<span class="nc" id="L58">    public Instant getUpdatedAt() { return updatedAt; }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

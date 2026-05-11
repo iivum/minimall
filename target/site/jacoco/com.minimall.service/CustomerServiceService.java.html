@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CustomerServiceService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">minimall</a> &gt; <a href="index.source.html" class="el_package">com.minimall.service</a> &gt; <span class="el_source">CustomerServiceService.java</span></div><h1>CustomerServiceService.java</h1><pre class="source lang-java linenums">package com.minimall.service;
+
+import com.minimall.model.CustomerServiceMessage;
+import com.minimall.repository.CustomerServiceMessageRepository;
+import com.minimall.config.CustomerServiceConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalTime;
+import java.util.List;
+import java.util.Map;
+
+@Service
+public class CustomerServiceService {
+<span class="fc" id="L17">    private static final Logger log = LoggerFactory.getLogger(CustomerServiceService.class);</span>
+
+    private static final String DEFAULT_REPLY = &quot;感谢您的留言，我们会尽快回复您~&quot;;
+    private static final String WELCOME_REPLY = &quot;欢迎光临！有什么可以帮您的吗？&quot;;
+    private static final String OFF_HOURS_REPLY = &quot;现在是非工作时间，客服将在工作时间内尽快回复您~&quot;;
+    private static final String TRANSFER_KEYWORD = &quot;人工&quot;;
+
+<span class="fc" id="L24">    private static final LocalTime WORK_START = LocalTime.of(9, 0);</span>
+<span class="fc" id="L25">    private static final LocalTime WORK_END = LocalTime.of(18, 0);</span>
+
+    private final CustomerServiceMessageRepository repository;
+    private final CustomerServiceConfig config;
+
+    public CustomerServiceService(CustomerServiceMessageRepository repository,
+<span class="fc" id="L31">                                   CustomerServiceConfig config) {</span>
+<span class="fc" id="L32">        this.repository = repository;</span>
+<span class="fc" id="L33">        this.config = config;</span>
+<span class="fc" id="L34">    }</span>
+
+    @Transactional
+    public String processMessage(CustomerServiceMessage message) {
+<span class="fc bfc" id="L38" title="All 2 branches covered.">        if (!message.isFromCustomer()) {</span>
+<span class="fc" id="L39">            return null;</span>
+        }
+
+        // 如果自动回复被禁用，直接返回null
+<span class="fc bfc" id="L43" title="All 2 branches covered.">        if (!config.isEnabled()) {</span>
+<span class="fc" id="L44">            return null;</span>
+        }
+
+<span class="fc" id="L47">        String content = message.getContent();</span>
+
+        // 检查是否转人工
+<span class="fc bfc" id="L50" title="All 2 branches covered.">        if (shouldTransferToHuman(content)) {</span>
+<span class="fc" id="L51">            return handleTransfer(message);</span>
+        }
+
+        // 检查自动回复规则
+<span class="fc" id="L55">        String autoReply = findAutoReply(content);</span>
+<span class="fc bfc" id="L56" title="All 2 branches covered.">        if (autoReply != null) {</span>
+<span class="fc" id="L57">            message.setReply(autoReply);</span>
+<span class="fc" id="L58">            message.setAutoReplyRule(findMatchingRule(content));</span>
+<span class="fc" id="L59">            repository.save(message);</span>
+<span class="fc" id="L60">            return autoReply;</span>
+        }
+
+        // 默认回复
+<span class="fc" id="L64">        message.setReply(DEFAULT_REPLY);</span>
+<span class="fc" id="L65">        repository.save(message);</span>
+<span class="fc" id="L66">        return DEFAULT_REPLY;</span>
+    }
+
+    @Transactional
+    public CustomerServiceMessage receiveMessage(String openid, String content,
+                                                  CustomerServiceMessage.MessageType type) {
+        // 检查是否首次来访
+<span class="fc" id="L73">        List&lt;CustomerServiceMessage&gt; existing = repository.findByOpenidOrderByCreatedAtDesc(openid);</span>
+<span class="fc" id="L74">        boolean isFirstVisit = existing.isEmpty();</span>
+
+<span class="fc" id="L76">        CustomerServiceMessage message = new CustomerServiceMessage();</span>
+<span class="fc" id="L77">        message.setOpenid(openid);</span>
+<span class="fc" id="L78">        message.setContent(content);</span>
+<span class="fc" id="L79">        message.setMessageType(type);</span>
+<span class="fc" id="L80">        message.setFromCustomer(true);</span>
+<span class="fc" id="L81">        message.setStatus(CustomerServiceMessage.Status.PENDING);</span>
+
+<span class="fc" id="L83">        CustomerServiceMessage saved = repository.save(message);</span>
+
+        // 首次来访自动回复欢迎语
+<span class="pc bpc" id="L86" title="1 of 4 branches missed.">        if (isFirstVisit &amp;&amp; config.isEnabled()) {</span>
+<span class="fc" id="L87">            saved.setReply(WELCOME_REPLY);</span>
+<span class="fc" id="L88">            saved.setAutoReplyRule(&quot;first_visit&quot;);</span>
+<span class="fc" id="L89">            repository.save(saved);</span>
+        }
+
+<span class="fc" id="L92">        return saved;</span>
+    }
+
+    public List&lt;CustomerServiceMessage&gt; getUserMessages(String openid) {
+<span class="fc" id="L96">        return repository.findByOpenidOrderByCreatedAtDesc(openid);</span>
+    }
+
+    public List&lt;CustomerServiceMessage&gt; getPendingMessages() {
+<span class="fc" id="L100">        return repository.findByStatusAndHandlerIdIsNull(CustomerServiceMessage.Status.PENDING);</span>
+    }
+
+    @Transactional
+    public CustomerServiceMessage markAsRead(String messageId) {
+<span class="fc" id="L105">        CustomerServiceMessage message = repository.findById(messageId)</span>
+<span class="fc" id="L106">            .orElseThrow(() -&gt; new IllegalArgumentException(&quot;Message not found: &quot; + messageId));</span>
+<span class="fc" id="L107">        message.markAsRead();</span>
+<span class="fc" id="L108">        return repository.save(message);</span>
+    }
+
+    @Transactional
+    public CustomerServiceMessage completeMessage(String messageId) {
+<span class="fc" id="L113">        CustomerServiceMessage message = repository.findById(messageId)</span>
+<span class="fc" id="L114">            .orElseThrow(() -&gt; new IllegalArgumentException(&quot;Message not found: &quot; + messageId));</span>
+<span class="fc" id="L115">        message.complete();</span>
+<span class="fc" id="L116">        return repository.save(message);</span>
+    }
+
+    @Transactional
+    public CustomerServiceMessage transferToHuman(String messageId, String handlerId) {
+<span class="fc" id="L121">        CustomerServiceMessage message = repository.findById(messageId)</span>
+<span class="fc" id="L122">            .orElseThrow(() -&gt; new IllegalArgumentException(&quot;Message not found: &quot; + messageId));</span>
+<span class="fc" id="L123">        message.transferToHuman(handlerId);</span>
+<span class="fc" id="L124">        return repository.save(message);</span>
+    }
+
+    public long getPendingCount() {
+<span class="fc" id="L128">        return repository.countByStatus(CustomerServiceMessage.Status.PENDING);</span>
+    }
+
+    private boolean shouldTransferToHuman(String content) {
+<span class="fc bfc" id="L132" title="All 2 branches covered.">        return content.contains(TRANSFER_KEYWORD) ||</span>
+<span class="fc bfc" id="L133" title="All 2 branches covered.">               content.contains(&quot;客服&quot;) ||</span>
+<span class="pc bpc" id="L134" title="1 of 2 branches missed.">               content.contains(&quot;转人工&quot;);</span>
+    }
+
+    private String handleTransfer(CustomerServiceMessage message) {
+<span class="fc" id="L138">        String handlerId = &quot;human-&quot; + System.currentTimeMillis();</span>
+<span class="fc" id="L139">        message.setHandlerId(handlerId);</span>
+<span class="fc" id="L140">        message.setStatus(CustomerServiceMessage.Status.TRANSFERRED);</span>
+<span class="fc" id="L141">        message.setReply(&quot;您已转入人工客服，请稍候...&quot;);</span>
+<span class="fc" id="L142">        repository.save(message);</span>
+<span class="fc" id="L143">        log.info(&quot;Message {} transferred to human handler: {}&quot;, message.getId(), handlerId);</span>
+<span class="fc" id="L144">        return message.getReply();</span>
+    }
+
+    private String findAutoReply(String content) {
+<span class="pc bpc" id="L148" title="1 of 2 branches missed.">        if (!config.isEnabled()) {</span>
+<span class="nc" id="L149">            return null;</span>
+        }
+
+<span class="fc bfc" id="L152" title="All 2 branches covered.">        for (Map.Entry&lt;String, String&gt; rule : config.getRules().entrySet()) {</span>
+<span class="fc bfc" id="L153" title="All 2 branches covered.">            if (content.contains(rule.getKey())) {</span>
+<span class="fc" id="L154">                return rule.getValue();</span>
+            }
+<span class="fc" id="L156">        }</span>
+<span class="fc" id="L157">        return null;</span>
+    }
+
+    private String findMatchingRule(String content) {
+<span class="pc bpc" id="L161" title="1 of 2 branches missed.">        for (Map.Entry&lt;String, String&gt; rule : config.getRules().entrySet()) {</span>
+<span class="pc bpc" id="L162" title="1 of 2 branches missed.">            if (content.contains(rule.getKey())) {</span>
+<span class="fc" id="L163">                return rule.getKey();</span>
+            }
+<span class="nc" id="L165">        }</span>
+<span class="nc" id="L166">        return null;</span>
+    }
+
+    private boolean isWithinWorkingHours() {
+<span class="nc" id="L170">        LocalTime now = LocalTime.now();</span>
+<span class="nc bnc" id="L171" title="All 4 branches missed.">        return !now.isBefore(WORK_START) &amp;&amp; !now.isAfter(WORK_END);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

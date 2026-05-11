@@ -48,6 +48,7 @@ com/minimall/dto/ShareResponse.class
 com/minimall/controller/CategoryController.class
 com/minimall/repository/PointAccountRepository.class
 com/minimall/controller/StatsController.class
+com/minimall/config/QueryPerformanceMonitor.class
 com/minimall/dto/ShareRequest.class
 com/minimall/dto/PointTransactionResponse.class
 com/minimall/controller/LiveController.class

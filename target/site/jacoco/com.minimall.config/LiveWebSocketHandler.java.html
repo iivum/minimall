@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>LiveWebSocketHandler.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">minimall</a> &gt; <a href="index.source.html" class="el_package">com.minimall.config</a> &gt; <span class="el_source">LiveWebSocketHandler.java</span></div><h1>LiveWebSocketHandler.java</h1><pre class="source lang-java linenums">package com.minimall.config;
+
+import com.minimall.dto.LiveCommentResponse;
+import com.minimall.service.LiveService;
+import org.springframework.stereotype.Component;
+import org.springframework.web.socket.handler.TextWebSocketHandler;
+import org.springframework.web.socket.CloseStatus;
+import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketSession;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import reactor.core.publisher.Sinks;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+@Component
+public class LiveWebSocketHandler extends TextWebSocketHandler {
+    private final LiveService liveService;
+    private final ObjectMapper objectMapper;
+<span class="nc" id="L19">    private final Map&lt;String, Sinks.Many&lt;LiveCommentResponse&gt;&gt; roomSinks = new ConcurrentHashMap&lt;&gt;();</span>
+
+<span class="nc" id="L21">    public LiveWebSocketHandler(LiveService liveService, ObjectMapper objectMapper) {</span>
+<span class="nc" id="L22">        this.liveService = liveService;</span>
+<span class="nc" id="L23">        this.objectMapper = objectMapper;</span>
+<span class="nc" id="L24">    }</span>
+
+    @Override
+    public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+<span class="nc" id="L28">        String roomId = extractRoomId(session);</span>
+<span class="nc bnc" id="L29" title="All 2 branches missed.">        if (roomId != null) {</span>
+<span class="nc" id="L30">            Sinks.Many&lt;LiveCommentResponse&gt; sink = roomSinks.computeIfAbsent(roomId,</span>
+<span class="nc" id="L31">                k -&gt; Sinks.many().multicast().onBackpressureBuffer());</span>
+<span class="nc" id="L32">            sink.asFlux().subscribe(message -&gt; {</span>
+                try {
+<span class="nc" id="L34">                    synchronized (session) {</span>
+<span class="nc bnc" id="L35" title="All 2 branches missed.">                        if (session.isOpen()) {</span>
+<span class="nc" id="L36">                            session.sendMessage(new TextMessage(objectMapper.writeValueAsString(message)));</span>
+                        }
+<span class="nc" id="L38">                    }</span>
+<span class="nc" id="L39">                } catch (Exception e) {</span>
+                    // Ignore send errors
+<span class="nc" id="L41">                }</span>
+<span class="nc" id="L42">            });</span>
+<span class="nc" id="L43">            session.getAttributes().put(&quot;roomId&quot;, roomId);</span>
+        }
+<span class="nc" id="L45">    }</span>
+
+    @Override
+    protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
+<span class="nc" id="L49">        String roomId = (String) session.getAttributes().get(&quot;roomId&quot;);</span>
+<span class="nc bnc" id="L50" title="All 2 branches missed.">        if (roomId != null) {</span>
+<span class="nc" id="L51">            CommentMessage commentMessage = objectMapper.readValue(message.getPayload(), CommentMessage.class);</span>
+<span class="nc" id="L52">            LiveCommentResponse response = liveService.addComment(</span>
+                roomId,
+<span class="nc" id="L54">                commentMessage.userId(),</span>
+<span class="nc" id="L55">                commentMessage.nickname(),</span>
+<span class="nc" id="L56">                commentMessage.avatar(),</span>
+<span class="nc" id="L57">                commentMessage.content()</span>
+            );
+
+<span class="nc" id="L60">            Sinks.Many&lt;LiveCommentResponse&gt; sink = roomSinks.get(roomId);</span>
+<span class="nc bnc" id="L61" title="All 2 branches missed.">            if (sink != null) {</span>
+<span class="nc" id="L62">                sink.tryEmitNext(response);</span>
+            }
+        }
+<span class="nc" id="L65">    }</span>
+
+    @Override
+    public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
+        // Cleanup if needed
+<span class="nc" id="L70">    }</span>
+
+    private String extractRoomId(WebSocketSession session) {
+<span class="nc bnc" id="L73" title="All 2 branches missed.">        String path = session.getUri() != null ? session.getUri().getPath() : &quot;&quot;;</span>
+<span class="nc" id="L74">        String[] parts = path.split(&quot;/&quot;);</span>
+<span class="nc bnc" id="L75" title="All 2 branches missed.">        for (int i = 0; i &lt; parts.length - 1; i++) {</span>
+<span class="nc bnc" id="L76" title="All 4 branches missed.">            if (parts[i].equals(&quot;lives&quot;) &amp;&amp; i + 1 &lt; parts.length) {</span>
+<span class="nc" id="L77">                return parts[i + 1];</span>
+            }
+        }
+<span class="nc" id="L80">        return null;</span>
+    }
+
+<span class="nc" id="L83">    public record CommentMessage(String userId, String nickname, String avatar, String content) {}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

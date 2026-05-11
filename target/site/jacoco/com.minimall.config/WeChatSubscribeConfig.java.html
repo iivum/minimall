@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>WeChatSubscribeConfig.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">minimall</a> &gt; <a href="index.source.html" class="el_package">com.minimall.config</a> &gt; <span class="el_source">WeChatSubscribeConfig.java</span></div><h1>WeChatSubscribeConfig.java</h1><pre class="source lang-java linenums">package com.minimall.config;
+
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+@ConfigurationProperties(prefix = &quot;wechat.subscribe&quot;)
+<span class="nc" id="L8">public class WeChatSubscribeConfig {</span>
+    private String appId;
+    private String appSecret;
+    private String orderCreatedTemplateId;
+    private String orderPaidTemplateId;
+    private String orderShippedTemplateId;
+    private String orderCompletedTemplateId;
+
+<span class="nc" id="L16">    public String getAppId() { return appId; }</span>
+<span class="nc" id="L17">    public void setAppId(String appId) { this.appId = appId; }</span>
+<span class="nc" id="L18">    public String getAppSecret() { return appSecret; }</span>
+<span class="nc" id="L19">    public void setAppSecret(String appSecret) { this.appSecret = appSecret; }</span>
+<span class="nc" id="L20">    public String getOrderCreatedTemplateId() { return orderCreatedTemplateId; }</span>
+<span class="nc" id="L21">    public void setOrderCreatedTemplateId(String id) { this.orderCreatedTemplateId = id; }</span>
+<span class="nc" id="L22">    public String getOrderPaidTemplateId() { return orderPaidTemplateId; }</span>
+<span class="nc" id="L23">    public void setOrderPaidTemplateId(String id) { this.orderPaidTemplateId = id; }</span>
+<span class="nc" id="L24">    public String getOrderShippedTemplateId() { return orderShippedTemplateId; }</span>
+<span class="nc" id="L25">    public void setOrderShippedTemplateId(String id) { this.orderShippedTemplateId = id; }</span>
+<span class="nc" id="L26">    public String getOrderCompletedTemplateId() { return orderCompletedTemplateId; }</span>
+<span class="nc" id="L27">    public void setOrderCompletedTemplateId(String id) { this.orderCompletedTemplateId = id; }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
