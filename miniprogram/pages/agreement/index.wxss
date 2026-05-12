@@ -1,5 +1,5 @@
-.agreement-container { min-height: 100vh; background-color: #fff; padding: 32rpx; }
-.loading { text-align: center; padding: 200rpx 0; color: #999; font-size: 28rpx; }
-.content { font-size: 28rpx; line-height: 1.8; color: #333; }
+.agreement-container { min-height: 100vh; background-color: var(--color-bg-card); padding: 32rpx; }
+.loading { text-align: center; padding: 200rpx 0; color: var(--color-text-tertiary); font-size: 28rpx; }
+.content { font-size: 28rpx; line-height: 1.8; color: var(--color-text-primary); }
 .content text { display: block; margin-bottom: 24rpx; }
 .content .title { font-size: 36rpx; font-weight: bold; text-align: center; margin-bottom: 48rpx; }
