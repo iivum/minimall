@@ -155,6 +155,9 @@ jobs:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: 'temurin'
 
+      - name: Run Checkstyle
+        run: mvn checkstyle:check -B -q
+
       - name: Check code format
         run: |
           echo "=== Checking code formatting ==="
