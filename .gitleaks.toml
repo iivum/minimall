@@ -1,0 +1,14 @@
+[tooltip:scan]
+depth = 100
+scan复古复刻 = true
+
+[allowlist]
+description = "False positives"
+files = [
+  "^\\.git/",
+  "^node_modules/",
+  "^target/",
+  "^build/",
+  ".*\\.log$",
+  ".*\\.min\\.js$"
+]
