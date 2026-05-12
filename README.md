@@ -114,6 +114,14 @@ curl http://localhost:8080/health
 
 完整 API 文档请参考 [docs/api/README.md](docs/api/README.md)
 
+### 快速索引
+| 文档 | 说明 |
+|------|------|
+| [docs/api/README.md](docs/api/README.md) | API 参考 |
+| [docs/adr/README.md](docs/adr/README.md) | 技术决策记录 |
+| [docs/faq/README.md](docs/faq/README.md) | 常见问题 |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | 贡献指南 |
+
 ### 基础信息
 
 - **Base URL**: `http://localhost:8080/api`
