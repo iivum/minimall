@@ -1,0 +1,60 @@
+[rules]
+# Generic secrets
+[[rules.BasicAuth]]
+description = "Basic Auth"
+regex = '''(?i)(basic\s+[a-zA-Z0-9=_\\-]+)'''
+
+[[rules.Encoding]]
+description = "Generic Encoding"
+regex = '''(?i)(encode|encode64|encoded|base64)'''
+
+# AWS
+[[rules.AWS]]
+description = "AWS"
+regex = '''(?i)(aws(.|s){0,30})?.[0-9a-zA-Z\\/+=]{40}'''
+
+# Azure
+[[rules.Azure]]
+description = "Azure"
+regex = '''(?i)(azure|azuresubscription|azureaccountkey)[0-9a-zA-Z\\/+=]{32,126}'''
+
+# GitHub
+[[rules.GitHub]]
+description = "GitHub"
+regex = '''(?i)ghp_[0-9a-zA-Z]{36}'''
+
+# GitLab
+[[rules.GitLab]]
+description = "GitLab"
+regex = '''(?i)glpat-[0-9a-zA-Z\\-]{20}'''
+
+# Slack
+[[rules.Slack]]
+description = "Slack"
+regex = '''xox[baprs]-[0-9]{10,13}-[0-9]{10,13}[a-zA-Z0-9-]*'''
+
+# JWT
+[[rules.JWT]]
+description = "JWT"
+regex = '''eyJ[a-zA-Z0-9_=-]{10,}\.eyJ[a-zA-Z0-9_=-]{10,}\.[a-zA-Z0-9_=-]{10,}'''
+
+# Private Key
+[[rules.PrivateKey]]
+description = "Private Key"
+regex = '''-----BEGIN (RSA|EC|DSA|OPENSSH) PRIVATE KEY-----'''
+
+# API Key generic
+[[rules.APISecret]]
+description = "API Secret"
+regex = '''(?i)(api|key|secret|password|token)[0-9a-zA-Z]{20,}'''
+
+[allowlist]
+description = "Allowlist"
+files = [
+  "(.*?)(jpg|gif|png|exe|bin|dll|jar|war|class|pyc)$",
+  "node_modules/",
+  "target/",
+  "build/",
+  ".git/",
+  "*.lock"
+]
