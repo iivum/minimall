@@ -7,6 +7,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -19,14 +20,15 @@ class CustomerServiceMessageRepositoryTest {
 
     @Test
     void saveAndFindByOpenid() {
+        String uniqueOpenid = "test_openid_" + UUID.randomUUID().toString().substring(0, 8);
         CustomerServiceMessage msg = new CustomerServiceMessage();
-        msg.setOpenid("test_openid");
+        msg.setOpenid(uniqueOpenid);
         msg.setContent("Hello");
         msg.setFromCustomer(true);
         CustomerServiceMessage saved = repository.save(msg);
         assertNotNull(saved.getId());
 
-        List<CustomerServiceMessage> messages = repository.findByOpenidOrderByCreatedAtDesc("test_openid");
+        List<CustomerServiceMessage> messages = repository.findByOpenidOrderByCreatedAtDesc(uniqueOpenid);
         assertFalse(messages.isEmpty());
         assertEquals("Hello", messages.get(0).getContent());
     }

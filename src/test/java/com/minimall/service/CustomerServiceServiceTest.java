@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -44,7 +45,7 @@ class CustomerServiceServiceTest {
 
         CustomerServiceMessage msg = new CustomerServiceMessage();
         msg.setContent("我要退货");
-        msg.setOpenid("test_openid");
+        msg.setOpenid("test_openid_" + UUID.randomUUID().toString().substring(0, 8));
         msg.setFromCustomer(true);
 
         when(repository.save(any())).thenAnswer(inv -> inv.getArgument(0));
@@ -61,7 +62,7 @@ class CustomerServiceServiceTest {
     void processMessage_withTransferKeyword_setsTransferredStatus() {
         CustomerServiceMessage msg = new CustomerServiceMessage();
         msg.setContent("我要转人工");
-        msg.setOpenid("test_openid");
+        msg.setOpenid("test_openid_" + UUID.randomUUID().toString().substring(0, 8));
         msg.setFromCustomer(true);
         msg.setStatus(CustomerServiceMessage.Status.PENDING);
 
@@ -84,7 +85,7 @@ class CustomerServiceServiceTest {
 
         CustomerServiceMessage msg = new CustomerServiceMessage();
         msg.setContent("我想知道运费怎么算");
-        msg.setOpenid("test_openid");
+        msg.setOpenid("test_openid_" + UUID.randomUUID().toString().substring(0, 8));
         msg.setFromCustomer(true);
 
         when(repository.save(any())).thenAnswer(inv -> inv.getArgument(0));
@@ -142,7 +143,7 @@ class CustomerServiceServiceTest {
     void processMessage_fromSystem_returnsNull() {
         CustomerServiceMessage msg = new CustomerServiceMessage();
         msg.setContent("system message");
-        msg.setOpenid("test_openid");
+        msg.setOpenid("test_openid_" + UUID.randomUUID().toString().substring(0, 8));
         msg.setFromCustomer(false);
 
         String reply = service.processMessage(msg);
@@ -156,7 +157,7 @@ class CustomerServiceServiceTest {
     void processMessage_with人工Keyword_transfersToHuman() {
         CustomerServiceMessage msg = new CustomerServiceMessage();
         msg.setContent("请联系人工客服");
-        msg.setOpenid("test_openid");
+        msg.setOpenid("test_openid_" + UUID.randomUUID().toString().substring(0, 8));
         msg.setFromCustomer(true);
 
         when(repository.save(any())).thenAnswer(inv -> inv.getArgument(0));
@@ -171,7 +172,7 @@ class CustomerServiceServiceTest {
     void processMessage_with客服Keyword_transfersToHuman() {
         CustomerServiceMessage msg = new CustomerServiceMessage();
         msg.setContent("请问客服电话是多少");
-        msg.setOpenid("test_openid");
+        msg.setOpenid("test_openid_" + UUID.randomUUID().toString().substring(0, 8));
         msg.setFromCustomer(true);
 
         when(repository.save(any())).thenAnswer(inv -> inv.getArgument(0));
@@ -305,7 +306,7 @@ class CustomerServiceServiceTest {
 
         CustomerServiceMessage msg = new CustomerServiceMessage();
         msg.setContent("我要退货");
-        msg.setOpenid("test_openid");
+        msg.setOpenid("test_openid_" + UUID.randomUUID().toString().substring(0, 8));
         msg.setFromCustomer(true);
 
         String reply = service.processMessage(msg);
