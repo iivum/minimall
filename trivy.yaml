@@ -1,0 +1,19 @@
+format: sarif
+output: trivy-results.sarif
+severity:
+  - CRITICAL
+  - HIGH
+  - MEDIUM
+  - LOW
+  - UNKNOWN
+security-checks:
+  - vuln
+  - config
+  - secret
+vulnerability:
+  type:
+    - os
+    - library
+ignore-unfixed: false
+timeout: 10m
+scan-context: local

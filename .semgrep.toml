@@ -1,0 +1,95 @@
+rules:
+  # OWASP Top Ten
+  - id: java-sql-injection
+    pattern: |
+      $STMT = "SELECT " + ...
+      ...
+      executeQuery($STMT)
+    message: Potential SQL injection. Use parameterized queries instead.
+    severity: ERROR
+    languages:
+      - java
+    metadata:
+      cwe: "89"
+      owasp: "A1:2017-Injection"
+
+  - id: java-hardcoded-credential
+    pattern: |
+      String $KEY = "...";
+      ...
+      $VALUE = "...";
+    message: Potential hardcoded credential detected.
+    severity: WARNING
+    languages:
+      - java
+    metadata:
+      cwe: "798"
+      owasp: "A2:2017-Broken Authentication"
+
+  - id: java-xxe
+    pattern: |
+      SAXParserFactory $F = SAXParserFactory.newInstance();
+      ...
+      $F.setFeature("...")
+    message: Potential XXE vulnerability. Disable external entity processing.
+    severity: ERROR
+    languages:
+      - java
+    metadata:
+      cwe: "611"
+      owasp: "A4:2017-XML External Entities (XXE)"
+
+  # Security code patterns
+  - id: java-path-traversal
+    pattern: |
+      new File($USER_INPUT)
+    message: Potential path traversal. Validate and sanitize user input.
+    severity: WARNING
+    languages:
+      - java
+    metadata:
+      cwe: "22"
+      owasp: "A1:2017-Injection"
+
+  - id: java-weak-crypto
+    pattern: |
+      MessageDigest.getInstance("MD5")
+    message: MD5 is weak for cryptographic purposes. Use SHA-256 or stronger.
+    severity: WARNING
+    languages:
+      - java
+    metadata:
+      cwe: "327"
+      owasp: "A3:2017-Sensitive Data Exposure"
+
+  - id: java-unsafe-reflection
+    pattern: |
+      Class.forName($INPUT)
+    message: Dynamic class loading can be dangerous. Validate input thoroughly.
+    severity: WARNING
+    languages:
+      - java
+    metadata:
+      cwe: "470"
+      owasp: "A1:2017-Injection"
+
+  # Input validation
+  - id: java-trust-boundary-violation
+    pattern: |
+      $REQ.getParameter("...")
+      ...
+      $OBJ = new $CLASS($REQ.getParameter("..."))
+    message: User input directly used to create objects without validation.
+    severity: WARNING
+    languages:
+      - java
+    metadata:
+      cwe: "502"
+      owasp: "A1:2017-Injection"
+
+paths:
+  include:
+    - "src/main/java/**/*.java"
+  exclude:
+    - "src/test/java/**/*.java"
+    - "**/*Test*.java"

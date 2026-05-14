@@ -170,12 +170,78 @@ jobs:
           echo "Main source lines: $(find src/main/java -name '*.java' -exec cat {} \; 2>/dev/null | wc -l)"
           echo "Test source lines: $(find src/test/java -name '*.java' -exec cat {} \; 2>/dev/null | wc -l)"
 
+  # Gitleaks secrets detection (MIN-2226)
+  gitleaks:
+    name: Secrets Detection
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # Semgrep SAST scan (MIN-2226)
+  semgrep:
+    name: Static Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Semgrep
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: >-
+            p/owasp-top-ten
+            p/cwe-top-25
+            p/nodejs-node-use
+            p/java
+          sarif: true
+          output: semgrep-results.sarif
+
+      - name: Upload Semgrep results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: semgrep-results
+          path: semgrep-results.sarif
+
+  # Trivy vulnerability scan (MIN-2226)
+  trivy:
+    name: Vulnerability Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Trivy
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          config-file: 'trivy.yaml'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH'
+
+      - name: Upload Trivy results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: trivy-results
+          path: trivy-results.sarif
+
   # Merge gate - prevents merge if checks fail (MIN-1545)
   merge-gate:
     name: Merge Gate
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
-    needs: [merge-conflict-check, build, security, quality]
+    needs: [merge-conflict-check, build, security, quality, gitleaks, semgrep, trivy]
     steps:
       - name: Verify all checks passed
         run: |
