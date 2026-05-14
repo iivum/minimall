@@ -1,0 +1,44 @@
+format: sarif
+output: trivy-results.sarif
+
+severity:
+  UNKNOWN: LOW
+  LOW: LOW
+  MEDIUM: MEDIUM
+  HIGH: HIGH
+  CRITICAL: CRITICAL
+
+vuln-type:
+  - os
+  - library
+
+severity-threshold:
+  HIGH
+
+scan:
+  scanners:
+    - vuln
+    - misconfig
+    - secret
+
+scanner:
+  trivy:
+    skip-dirs:
+      - "node_modules"
+      - "target"
+      - "build"
+      - "dist"
+      - "vendor"
+      - ".git"
+      - "docs"
+      - "miniprogram"
+      - "backend"
+
+cache:
+  ttl: 24h
+
+db:
+  enabled: true
+ repository: "public.ecr.aws/aquasecurity/trivy-db:latest"
+
+report-empty-results: false

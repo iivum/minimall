@@ -1,0 +1,66 @@
+version: 1.43
+
+rules:
+  - id: owasp-top-10
+    message: OWASP Top 10 vulnerability pattern detected
+    severity: WARNING
+
+  - id: cwe-top-25
+    message: CWE Top 25 vulnerability pattern detected
+    severity: WARNING
+
+  - id: java-security
+    message: Java security best practices violation
+    severity: WARNING
+
+  - id: input-validation
+    message: Missing input validation
+    severity: WARNING
+
+  - id: sql-injection
+    message: Potential SQL injection vulnerability
+    severity: ERROR
+
+  - id: xss-prevention
+    message: Potential cross-site scripting (XSS) vulnerability
+    severity: ERROR
+
+  - id: command-injection
+    message: Potential command injection vulnerability
+    severity: ERROR
+
+  - id: path-traversal
+    message: Potential path traversal vulnerability
+    severity: ERROR
+
+  - id: hardcoded-secrets
+    message: Hardcoded secret detected
+    severity: ERROR
+
+  - id: weak-crypto
+    message: Weak cryptographic algorithm used
+    severity: WARNING
+
+  - id: insecure-cookie
+    message: Insecure cookie configuration
+    severity: WARNING
+
+  - id: xxe-prevention
+    message: Potential XML External Entity (XXE) vulnerability
+    severity: ERROR
+
+paths:
+  exclude:
+    - "*.min.js"
+    - "*.min.css"
+    - "*.map"
+    - "node_modules/*"
+    - "target/*"
+    - "build/*"
+    - "dist/*"
+    - "vendor/*"
+    - ".git/*"
+
+toplevel: true
+output: sarif
+generate_config: false
