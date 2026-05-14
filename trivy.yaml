@@ -1,0 +1,63 @@
+format: sarif
+output: trivy-results.sarif
+severity:
+  - CRITICAL
+  - HIGH
+  - MEDIUM
+  - LOW
+  - UNKNOWN
+vuln-type:
+  - os
+  - library
+scan:
+  scanner:
+    - trivy
+  security-checks:
+    - vuln
+    - misconfig
+    - secret
+ignore-file: .trivyignore
+ignore-unfixed: false
+exit-code: 1
+cache:
+  backend: filesystem
+  ttl: 168h
+db:
+  repository: ghcr.io/aquasecurity/trivy-db:latest
+  ttl: 720h
+scanners:
+  - vuln
+  - misconfig
+  - secret
+target: .
+path: .
+severity-callback: null
+vulnerability:
+  type:
+    - os
+    - library
+  classification: []
+  ignore-unfixed: false
+  accept-unfixed-versions: false
+  vuln-check-existing: false
+secret:
+  config: trivy-secret.yaml
+misconfiguration:
+  scanner:
+    - kubernetes
+    - dockerfile
+    - terraform
+    - cloudformation
+    - helm
+  include-non-failed: true
+  deep: false
+  tf-flag: null
+  cf-flag: null
+  helm-flag: null
+  k8s-flag: null
+reports:
+  - server: null
+    token: null
+debug: false
+light: false
+insecure: false
