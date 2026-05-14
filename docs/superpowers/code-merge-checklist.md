@@ -19,6 +19,7 @@
 - [ ] 新功能包含单元测试
 - [ ] 关键业务逻辑有集成测试
 - [ ] `mvn test` 全部通过
+- [ ] **覆盖率 ≥ 50%** (JaCoCo 自动检查)
 
 ### 3. 安全检查 / Security
 
@@ -47,6 +48,80 @@
 - [ ] 提交信息符合规范
 - [ ] 无不必要的文件提交
 - [ ] 分支名称符合规范
+
+---
+
+## JaCoCo 覆盖率门禁 / JaCoCo Coverage Gate
+
+### 配置说明
+
+- **阈值**: 50% 行覆盖率 (LINE COVEREDRATIO)
+- **Maven 插件**: `jacoco-maven-plugin` v0.8.11
+- **PR 合并门禁**: `coverage-gate` job 必须通过
+- **报告位置**: `target/site/jacoco/`
+- **Artifacts 保留期**: 14 天
+
+### pom.xml 配置
+
+```xml
+<plugin>
+    <groupId>org.jacoco</groupId>
+    <artifactId>jacoco-maven-plugin</artifactId>
+    <version>0.8.11</version>
+    <executions>
+        <execution>
+            <id>prepare-agent</id>
+            <goals><goal>prepare-agent</goal></goals>
+        </execution>
+        <execution>
+            <id>report</id>
+            <phase>test</phase>
+            <goals><goal>report</goal></goals>
+        </execution>
+        <execution>
+            <id>check</id>
+            <goals><goal>check</goal></goals>
+            <configuration>
+                <rules>
+                    <rule>
+                        <element>BUNDLE</element>
+                        <limits>
+                            <limit>
+                                <counter>LINE</counter>
+                                <value>COVEREDRATIO</value>
+                                <minimum>0.50</minimum>
+                            </limit>
+                        </limits>
+                    </rule>
+                </rules>
+            </configuration>
+        </execution>
+    </executions>
+</plugin>
+```
+
+### GitHub Actions CI 配置
+
+```yaml
+coverage-gate:
+  name: Coverage Gate (50%)
+  runs-on: ubuntu-latest
+  needs: build
+  if: github.event_name == 'pull_request'
+  steps:
+    - name: Run tests with coverage
+      run: mvn test -B  # JaCoCo agent 自动启用
+
+    - name: Check coverage threshold
+      run: mvn jacoco:check -B
+
+    - name: Upload coverage report
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-report
+        path: target/site/jacoco/
+        retention-days: 14
+```
 
 ---
 
