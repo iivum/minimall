@@ -17,6 +17,10 @@
         <module name="LeftCurly"/>
         <module name="NeedBraces"/>
         <module name="RightCurly"/>
+        <!-- Required Java style rules -->
+        <module name="FinalParameters"/>
+        <module name="OneStatementPerLine"/>
+        <module name="WhitespaceAfter"/>
     </module>
 
     <!-- Logging checks at Checker level -->
