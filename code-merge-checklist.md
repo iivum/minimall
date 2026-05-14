@@ -42,7 +42,13 @@
 - [ ] API 文档已更新（如需要）
 - [ ] 必要注释已添加
 
-### 6. Git 规范 / Git Standards
+### 6. 交付物验证 / Deliverables Verification
+
+- [ ] 所有声明的文件已通过 `test -f` 验证存在
+- [ ] 使用 `scripts/verify-deliverables.sh` 进行批量验证
+- [ ] 验证结果已在 PR 评论中展示
+
+### 7. Git 规范 / Git Standards
 
 - [ ] 提交信息符合规范
 - [ ] 无不必要的文件提交
