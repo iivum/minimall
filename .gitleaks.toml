@@ -1,0 +1,51 @@
+[allowlist]
+  paths:
+    - '**/.git/**'
+    - '**/node_modules/**'
+    - '**/target/**'
+    - '**/build/**'
+    - '**/dist/**'
+    - '**/vendor/**'
+
+  commits:
+    - '6a8e3f5c04e3d2c8c1f9e7a3b5d4e2f1a0c8b7a6'
+
+[rules]
+  [[rules]]
+    description = "AWS Access Key ID"
+    regex = '(?i)(aws_access_key_id|aws_secret_access_key)(\s*[:=]\s*["\'][A-Z0-9]{16,40}["\'])'
+    tags = ["key", "aws"]
+
+  [[rules]]
+    description = "Generic API Key"
+    regex = '(?i)(api[_-]?key|apikey|api[_-]?secret|secret[_-]?key)\s*[:=]\s*["\'][a-zA-Z0-9]{16,64}["\']'
+    tags = ["key", "api"]
+
+  [[rules]]
+    description = "GitHub Token"
+    regex = '(ghp_[a-zA-Z0-9]{36}|github_pat_[a-zA-Z0-9_]{22,40})'
+    tags = ["key", "github"]
+
+  [[rules]]
+    description = "Generic Secret"
+    regex = '(?i)(password|passwd|pwd|secret|token|auth)\s*[:=]\s*["\'][^"\']{8,64}["\']'
+    tags = ["key", "secret"]
+
+  [[rules]]
+    description = "Private Key"
+    regex = '-----BEGIN (RSA |EC |DSA |OPENSSH |PGP )?PRIVATE KEY-----'
+    tags = ["key", "private"]
+
+  [[rules]]
+    description = "Database Connection String"
+    regex = '(?i)(mysql|postgres|postgres|redis|mongodb)://[^\s:"\']+:[^\s:"\']+@[^\s:"\']+'
+    tags = ["key", "database"]
+
+  [[rules]]
+    description = "JWT Token"
+    regex = 'eyJ[A-Za-z0-9-_]+\.eyJ[A-Za-z0-9-_]+\.[A-Za-z0-9-_.+/=]*'
+    tags = ["key", "jwt"]
+
+[output]
+  format = "json"
+  verbose = true

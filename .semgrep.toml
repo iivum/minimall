@@ -1,0 +1,108 @@
+[rule]
+  p = 'OWASP_TOP_10'
+  p = 'CWE_TOP_25'
+
+[option]
+  ignored_files = ['**/target/**', '**/build/**', '**/node_modules/**', '**/.git/**', '**/vendor/**']
+
+[option]
+  exclude = ['**/target/**', '**/build/**', '**/node_modules/**', '**/.git/**', '**/vendor/**']
+
+[option]
+  max_memory_mb = 4096
+
+[option]
+  max_tokens = 100000
+
+[option]
+  jobs = 0
+
+[option]
+  enable_autofix = false
+
+[option]
+  enable_progress_bar = true
+
+[option]
+  enable_gather_issues = true
+
+[option]
+  baseline_commit = null
+
+[option]
+  scan_full_path = true
+
+[option]
+  enable_gather_issues = true
+
+[option]
+  repo_root = true
+
+[option]
+  diagnostics = true
+
+[option]
+  disable_gather_issues = false
+
+[option]
+  openai_api_key = null
+
+[option]
+  openai_org = null
+
+[option]
+  openai_model = null
+
+[option]
+  gitleaks = true
+
+[option]
+  include = ['**/*.java', '**/*.xml', '**/*.yml', '**/*.yaml', '**/*.properties']
+
+[option]
+  fail_on_known_vulnerabilities = true
+
+[option]
+  severity = ['CRITICAL', 'HIGH', 'MEDIUM']
+
+[output]
+  output = null
+
+[output]
+  sarif = "semgrep.sarif"
+
+[output]
+  text = null
+
+[output]
+  json = "semgrep.json"
+
+[output]
+  gitlab_sast = null
+
+[output]
+  gitlab_sast_blob = null
+
+[output]
+  junit_xml = null
+
+[output]
+  auto_detect = true
+
+[output]
+  github_actions = null
+
+[output]
+  github_comments = null
+
+[output]
+  github_metadata = null
+
+[output]
+  bitbucket_comments = null
+
+[output]
+  slack_webhook = null
+
+[output]
+  enable_version_comparison = false
