@@ -1,0 +1,88 @@
+[rules]
+  [[rules.allowlist]]
+    description = "Test or example placeholders"
+    regex = "(?i)(test|example|sample|demo|placeholder)_?(key|token|secret|password|api_key|apikey)"
+
+[[rules]]
+  description = "AWS Access Key ID"
+  regex = "(?i)(aws_?)?access_?key_?id?[\\s:=]+[A-Z0-9]{16}"
+  tags = ["key", "aws"]
+
+[[rules]]
+  description = "AWS Secret Access Key"
+  regex = "(?i)(aws_?)?secret_?access_?key[\\s:=]+[A-Za-z0-9/+=]{40}"
+  tags = ["key", "aws"]
+
+[[rules]]
+  description = "Generic API Key"
+  regex = "(?i)(api_?key|apikey)[\\s:=]+[a-zA-Z0-9]{20,64}"
+  tags = ["key", "api"]
+
+[[rules]]
+  description = "GitHub Token"
+  regex = "(ghp|gho|ghu|ghs|ghr)_[A-Za-z0-9]{36}"
+  tags = ["key", "github"]
+
+[[rules]]
+  description = "GitLab Personal Token"
+  regex = "glpat-[A-Za-z0-9-_]{20}"
+  tags = ["key", "gitlab"]
+
+[[rules]]
+  description = "Slack Token"
+  regex = "xox[baprs]-[0-9]{10,13}-[0-9]{10,13}-[a-zA-Z0-9]{24}"
+  tags = ["key", "slack"]
+
+[[rules]]
+  description = "Stripe API Key"
+  regex = "sk_live_[0-9a-zA-Z]{24}"
+  tags = ["key", "stripe"]
+
+[[rules]]
+  description = "Private Key"
+  regex = "-----BEGIN (RSA |EC |DSA |OPENSSH )?PRIVATE KEY-----"
+  tags = ["key", "private"]
+
+[[rules]]
+  description = "Database Connection String"
+  regex = "(?i)(db|database|postgres|mysql|mongodb|redis)_?(connection|uri|url)?[\\s:=]+[a-zA-Z0-9:@./_-]+"
+  tags = ["key", "database"]
+
+[[rules]]
+  description = "JWT Token"
+  regex = "eyJ[A-Za-z0-9_-]{10,}\\.[A-Za-z0-9_-]{10,}\\.[A-Za-z0-9_-]{10,}"
+  tags = ["key", "jwt"]
+
+[allowlist]
+  description = "Allowlisted files and patterns"
+  files = [
+    "^\\.git/",
+    "^node_modules/",
+    "^vendor/",
+    "^target/",
+    "^build/",
+    "^dist/",
+    "^\\.gradle/",
+    "^\\.idea/",
+    "^\\.vscode/",
+    ".*\\.min\\.(js|css)",
+    ".*\\.map",
+  ]
+
+  paths = [
+    "^spec/",
+    "^test/",
+    "^tests/",
+    "^.*_test\\.go$",
+    "^.*_test\\.java$",
+    "^.*_spec\\.rb$",
+    "^.*\\.test\\.py$",
+  ]
+
+  regexes = [
+    "(?i)example[_-]?key",
+    "(?i)test[_-]?token",
+    "(?i)dummy[_-]?password",
+    "placeholder",
+    "your_[a-z_]+_here",
+  ]

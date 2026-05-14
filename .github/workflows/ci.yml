@@ -170,12 +170,77 @@ jobs:
           echo "Main source lines: $(find src/main/java -name '*.java' -exec cat {} \; 2>/dev/null | wc -l)"
           echo "Test source lines: $(find src/test/java -name '*.java' -exec cat {} \; 2>/dev/null | wc -l)"
 
+  # Semgrep SAST scan
+  semgrep-sast:
+    name: Semgrep SAST
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Semgrep scan
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: >
+            p/owasp-top-ten
+            p/cwe-top-25
+            p/nodejs
+            p/java
+          output: semgrep-results.sarif
+          upload: true
+
+      - name: Upload SARIF results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: semgrep-results
+          path: semgrep-results.sarif
+
+  # Trivy vulnerability scan
+  trivy-scan:
+    name: Trivy Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Trivy scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH'
+          exit-code: '1'
+
+      - name: Upload Trivy SARIF results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: trivy-results
+          path: trivy-results.sarif
+
+  # Gitleaks secrets scan
+  gitleaks-scan:
+    name: Gitleaks Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        with:
+          config-path: .gitleaks.toml
+
   # Merge gate - prevents merge if checks fail (MIN-1545)
   merge-gate:
     name: Merge Gate
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
-    needs: [merge-conflict-check, build, security, quality]
+    needs: [merge-conflict-check, build, security, quality, semgrep-sast, trivy-scan, gitleaks-scan]
     steps:
       - name: Verify all checks passed
         run: |
