@@ -253,6 +253,47 @@ Current test coverage is estimated at ~40% for service layer.
 
 ---
 
+### 8. JaCoCo Configuration Management
+
+**Category**: DevOps
+**Status**: Backlog
+**Created**: 2026-05-15
+
+**Description**:
+JaCoCo code coverage plugin is referenced in documentation (`mvn test jacoco:report`) but not properly configured in `pom.xml`. The plugin is not declared in the build plugins section, relying on Spring Boot's default behavior which may not generate detailed coverage reports.
+
+**Evidence**:
+```bash
+# README.md and tech-debt-backlog.md reference:
+./mvnw test jacoco:report
+
+# But pom.xml has no jacoco-maven-plugin configuration
+$ grep -A5 "jacoco" pom.xml
+# (no results)
+```
+
+**Impact**:
+- Inconsistent coverage reporting across environments
+- Missing coverage data for CI/CD pipelines
+- Difficulty tracking actual test coverage trends
+
+**RICE Scoring**:
+| Factor | Value | Rationale |
+|--------|-------|-----------|
+| Reach | 5 | CI/CD and quality reporting |
+| Impact | 1 | Reporting only, not runtime |
+| Confidence | 1.0 | Confirmed via code inspection |
+| Effort | 1 | Add plugin configuration |
+| **RICE** | **5** | Low priority |
+
+**Remediation**:
+1. Add `jacoco-maven-plugin` to `pom.xml` build plugins
+2. Configure report formats (HTML, XML, CSV)
+3. Set coverage thresholds for CI enforcement
+4. Update README to reflect actual coverage report location
+
+---
+
 ## Repayment Plan
 
 ### Sprint Allocation
@@ -283,6 +324,7 @@ For a 2-week sprint with 10 working days:
 | DTO Projection | Sprint 39 | Not started | - |
 | Field Injection | Future | Not started | - |
 | Test Coverage | Future | Not started | - |
+| JaCoCo Configuration | Future | Not started | Low priority (RICE=5) |
 
 ---
 
