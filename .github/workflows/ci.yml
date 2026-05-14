@@ -92,6 +92,26 @@ jobs:
       - name: Run tests
         run: mvn test -B
 
+      - name: Generate JaCoCo coverage report
+        run: mvn jacoco:report -B
+
+      - name: Upload coverage reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-report
+          path: target/site/jacoco/
+
+      - name: Check coverage thresholds
+        run: |
+          echo "=== JaCoCo Coverage Check ==="
+          if [ -f target/site/jacoco/index.html ]; then
+            echo "JaCoCo report available at: target/site/jacoco/index.html"
+          fi
+          mvn jacoco:check -B || {
+            echo "Coverage threshold not met. Please review the JaCoCo report."
+            exit 1
+          }
+
       - name: Generate test report
         if: always()
         run: |
