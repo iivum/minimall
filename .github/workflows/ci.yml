@@ -92,6 +92,9 @@ jobs:
       - name: Run tests
         run: mvn test -B
 
+      - name: JaCoCo Coverage Check
+        run: mvn jacoco:check -B
+
       - name: Generate test report
         if: always()
         run: |
@@ -106,6 +109,12 @@ jobs:
         with:
           name: test-results
           path: target/surefire-reports/
+
+      - name: Upload JaCoCo coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-report
+          path: target/site/jacoco/
 
       - name: Package application
         run: mvn package -DskipTests -B
