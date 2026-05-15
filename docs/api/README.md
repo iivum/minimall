@@ -445,7 +445,167 @@
 
 ---
 
-## 统计 Stats (Admin)
+## 分享 Share
+
+### POST /api/share
+创建商品分享链接。
+
+**Headers:**
+- `X-User-Id`: 用户ID
+
+**Request:**
+```json
+{
+  "productId": "商品ID",
+  "shareType": "PRODUCT"
+}
+```
+
+**Response:**
+```json
+{
+  "shareId": "share_123",
+  "shareUrl": "https://minimall.com/share/abc123",
+  "qrCode": "data:image/png;base64,..."
+}
+```
+
+---
+
+### GET /api/share/rewards
+获取用户的分享奖励列表。
+
+**Headers:**
+- `X-User-Id`: 用户ID
+
+**Response:**
+```json
+{
+  "rewards": [
+    {
+      "id": "reward_001",
+      "shareId": "share_123",
+      "rewardType": "POINTS",
+      "amount": 10,
+      "createdAt": "2024-01-15T10:30:00Z"
+    }
+  ],
+  "totalRewards": 50
+}
+```
+
+---
+
+## 直播 Live
+
+### GET /api/lives
+获取所有直播间列表。
+
+**Response:**
+```json
+{
+  "rooms": [
+    {
+      "roomId": "room_001",
+      "roomName": "新品发布会",
+      "coverImage": "https://example.com/cover.jpg",
+      "status": "LIVE",
+      "viewerCount": 1000
+    }
+  ]
+}
+```
+
+---
+
+### GET /api/lives/{roomId}
+获取直播间详情。
+
+---
+
+### GET /api/lives/{roomId}/goods
+获取直播间推荐的商品列表。
+
+**Response:**
+```json
+{
+  "goods": [
+    {
+      "productId": "prod_001",
+      "name": "商品名称",
+      "price": 99.00,
+      "imageUrl": "https://example.com/product.jpg"
+    }
+  ]
+}
+```
+
+---
+
+### POST /api/lives/{roomId}/like
+点赞直播间。
+
+**Headers:**
+- `Authorization`: Bearer Token
+
+**Response:**
+```json
+{
+  "liked": true,
+  "likeCount": 1001
+}
+```
+
+---
+
+### GET /api/lives/{roomId}/comments
+获取直播间评论列表。
+
+---
+
+## 用户 User
+
+### GET /api/users/{id}
+获取用户信息。
+
+**Headers:**
+- `Authorization`: Bearer Token
+
+**Response:**
+```json
+{
+  "id": "user_123",
+  "nickname": "用户名",
+  "avatarUrl": "https://example.com/avatar.jpg",
+  "phone": "13800138000",
+  "createdAt": "2024-01-01T00:00:00Z"
+}
+```
+
+---
+
+### GET /api/users/openid/{openid}
+通过微信OpenID获取用户信息。
+
+---
+
+### PUT /api/users/{id}
+更新用户信息。
+
+**Headers:**
+- `Authorization`: Bearer Token
+
+**Request:**
+```json
+{
+  "nickname": "新昵称",
+  "avatarUrl": "https://example.com/new-avatar.jpg"
+}
+```
+
+---
+
+## 统计 Statistics (Admin)
 
 ### GET /api/admin/stats/dashboard
 获取仪表盘统计数据。
