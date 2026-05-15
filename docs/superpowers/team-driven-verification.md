@@ -123,8 +123,57 @@
 
 ---
 
+## 测试任务验证指南
+
+所有测试任务必须遵循以下验证流程：
+
+### 测试任务交付标准
+
+1. **文件存在性验证** - 使用 `verify-deliverables.sh` 验证所有测试文件
+2. **测试通过验证** - `mvn test -B` 必须全部通过
+3. **覆盖率验证** - JaCoCo 报告覆盖率 ≥ 目标值（通常 70%）
+4. **验证报告提交** - 填写并提交 `deliverables-verification-report-template.md`
+
+### 测试任务检查清单
+
+参见 `test-task-checklist.md`，包含：
+
+- 任务接收检查
+- 任务规划检查
+- 测试实现检查
+- 交付物验证检查
+- 验证报告生成检查
+
+### CI 强制验证
+
+CI 流程中的 `verify-deliverables` job 自动执行：
+
+```yaml
+verify-deliverables:
+  name: Verify Deliverables
+  runs-on: ubuntu-latest
+  needs: [build, quality]
+  steps:
+    - name: Run deliverables verification
+      run: ./scripts/verify-deliverables.sh \
+        src/test/java/com/minimall/controller \
+        src/test/java/com/minimall/service \
+        target/surefire-reports
+```
+
+### 测试相关文档
+
+| 文档 | 用途 |
+|------|------|
+| `team-driven-verification.md` | 团队验证机制 |
+| `test-task-checklist.md` | 测试任务检查清单 |
+| `deliverables-verification-report-template.md` | 验证报告模板 |
+
+---
+
 ## 版本历史
 
 | 版本 | 日期 | 修改内容 |
 |------|------|----------|
 | 1.0 | 2026-05-15 | 初始版本 - 定义步骤结构规范和惩戒机制 |
+| 1.1 | 2026-05-16 | 添加测试任务验证指南和检查清单 |
