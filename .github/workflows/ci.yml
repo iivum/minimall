@@ -213,6 +213,15 @@ jobs:
           test -x scripts/verify-deliverables.sh && echo "验证脚本存在且可执行"
           ./scripts/verify-deliverables.sh pom.xml
 
+      - name: Verify required test files exist
+        run: |
+          echo "=== 验证必需测试文件 ==="
+          echo "检查 Sprint #53 验收必需的三个测试文件..."
+          ./scripts/verify-deliverables.sh \
+            src/test/java/com/minimall/controller/HealthControllerTest.java \
+            src/test/java/com/minimall/controller/AuthControllerTest.java \
+            src/test/java/com/minimall/controller/ProductControllerTest.java
+
       - name: Generate verification report
         if: always()
         run: |
