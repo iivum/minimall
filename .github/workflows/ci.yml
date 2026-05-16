@@ -198,14 +198,16 @@ jobs:
       - name: Verify test files exist
         run: |
           echo "=== 检查测试文件 ==="
-          TEST_FILES=$(find src/test/java -name '*Test.java' 2>/dev/null | wc -l)
-          echo "测试文件数量: $TEST_FILES"
-          if [ "$TEST_FILES" -eq 0 ]; then
-            echo "警告: 未找到测试文件"
-          fi
           ./scripts/verify-deliverables.sh \
-            src/test/java \
-            target/surefire-reports
+            src/test/java/com/minimall/config/SecurityUtilsTest.java \
+            src/test/java/com/minimall/controller/CustomerServiceControllerTest.java \
+            src/test/java/com/minimall/model/CustomerServiceMessageTest.java \
+            src/test/java/com/minimall/model/UserSubscriptionTest.java \
+            src/test/java/com/minimall/repository/CustomerServiceMessageRepositoryTest.java \
+            src/test/java/com/minimall/service/CustomerServiceServiceTest.java \
+            src/test/java/com/minimall/service/JwtServiceTest.java \
+            src/test/java/com/minimall/service/MemberServiceTest.java \
+            src/test/java/com/minimall/service/ProductServiceTest.java
 
       - name: Verify deliverables script is executable
         run: |
