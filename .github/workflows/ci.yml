@@ -189,11 +189,41 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Verify test directory structure
+        run: |
+          echo "=== 验证测试目录 ==="
+          if [ ! -d "src/test/java" ]; then
+            echo "❌ 测试目录 src/test/java 不存在"
+            exit 1
+          fi
+          if [ ! -d "src/main/java" ]; then
+            echo "❌ 源代码目录 src/main/java 不存在"
+            exit 1
+          fi
+          echo "✅ 目录结构验证通过"
+
+      - name: Verify deliverables script exists and is executable
+        run: |
+          echo "=== 验证 verify-deliverables.sh ==="
+          if [ ! -f "scripts/verify-deliverables.sh" ]; then
+            echo "❌ verify-deliverables.sh 不存在"
+            exit 1
+          fi
+          if [ ! -x "scripts/verify-deliverables.sh" ]; then
+            echo "⚠️ verify-deliverables.sh 不可执行，尝试添加执行权限"
+            chmod +x scripts/verify-deliverables.sh
+          fi
+          echo "✅ verify-deliverables.sh 存在且可执行"
+
       - name: Run deliverables verification
         run: |
-          echo "=== 验证交付物 ==="
-          test -d src/test/java && echo "Test directory exists"
-          test -d src/main/java && echo "Main source directory exists"
+          echo "=== 运行交付物验证脚本 ==="
+          # 执行验证脚本并显式处理退出码
+          if ! ./scripts/verify-deliverables.sh pom.xml src/test/java; then
+            echo "❌ 交付物验证失败"
+            exit 1
+          fi
+          echo "✅ 交付物验证通过"
 
       - name: Verify test files exist
         run: |
@@ -201,26 +231,35 @@ jobs:
           TEST_FILES=$(find src/test/java -name '*Test.java' 2>/dev/null | wc -l)
           echo "测试文件数量: $TEST_FILES"
           if [ "$TEST_FILES" -eq 0 ]; then
-            echo "警告: 未找到测试文件"
+            echo "❌ 未找到任何测试文件"
+            exit 1
           fi
-          ./scripts/verify-deliverables.sh \
-            src/test/java \
-            target/surefire-reports
+          echo "✅ 找到 $TEST_FILES 个测试文件"
 
-      - name: Verify deliverables script is executable
+      - name: Verify surefire reports exist
         run: |
-          echo "=== 验证 verify-deliverables.sh ==="
-          test -x scripts/verify-deliverables.sh && echo "验证脚本存在且可执行"
-          ./scripts/verify-deliverables.sh pom.xml
+          echo "=== 检查测试报告 ==="
+          if [ -d "target/surefire-reports" ]; then
+            REPORT_COUNT=$(find target/surefire-reports -name '*.txt' 2>/dev/null | wc -l)
+            echo "测试报告数量: $REPORT_COUNT"
+            if [ "$REPORT_COUNT" -eq 0 ]; then
+              echo "⚠️ 警告: surefire-reports 目录存在但无报告文件"
+            else
+              echo "✅ 找到 $REPORT_COUNT 个测试报告"
+            fi
+          else
+            echo "⚠️ 警告: target/surefire-reports 目录不存在（可能尚未运行测试）"
+          fi
 
       - name: Generate verification report
-        if: always()
         run: |
           REPORT_FILE="verification-report-$(date +%Y%m%d-%H%M%S).txt"
           echo "=== 交付物验证报告 ===" > $REPORT_FILE
           echo "生成时间: $(date)" >> $REPORT_FILE
           echo "仓库: $GITHUB_REPOSITORY" >> $REPORT_FILE
           echo "提交: $GITHUB_SHA" >> $REPORT_FILE
+          echo "分支: $GITHUB_REF" >> $REPORT_FILE
+          echo "触发事件: $GITHUB_EVENT_NAME" >> $REPORT_FILE
           echo "" >> $REPORT_FILE
           echo "测试文件:" >> $REPORT_FILE
           find src/test/java -name '*Test.java' 2>/dev/null >> $REPORT_FILE || echo "无" >> $REPORT_FILE
