@@ -24,7 +24,7 @@ echo ""
 
 for file in "$@"; do
     TOTAL=$((TOTAL + 1))
-    if [ -f "$file" ]; then
+    if [ -e "$file" ]; then
         echo "✅ $file"
     else
         echo "❌ $file (不存在)"
