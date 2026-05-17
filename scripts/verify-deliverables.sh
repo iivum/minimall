@@ -1,14 +1,14 @@
 #!/bin/bash
 #
-# verify-deliverables.sh - 验证交付物文件是否存在
-# 用法: ./scripts/verify-deliverables.sh file1 file2 ...
-# 退出码: 0 = 全部存在, 1 = 任意文件缺失
+# verify-deliverables.sh - 验证交付物文件或目录是否存在
+# 用法: ./scripts/verify-deliverables.sh <文件或目录1> [文件或目录2] ...
+# 退出码: 0 = 全部存在, 1 = 任意路径缺失
 
 set -e
 
 usage() {
-    echo "用法: $0 <文件1> [文件2] ..."
-    echo "验证每个文件是否存在，使用 test -f 检查"
+    echo "用法: $0 <文件或目录1> [文件或目录2] ..."
+    echo "验证每个路径是否存在，文件用 test -f，目录用 test -d"
     exit 1
 }
 
@@ -22,12 +22,14 @@ TOTAL=0
 echo "=== 交付物验证 ==="
 echo ""
 
-for file in "$@"; do
+for path in "$@"; do
     TOTAL=$((TOTAL + 1))
-    if [ -f "$file" ]; then
-        echo "✅ $file"
+    if [ -f "$path" ]; then
+        echo "✅ $path (文件存在)"
+    elif [ -d "$path" ]; then
+        echo "✅ $path (目录存在)"
     else
-        echo "❌ $file (不存在)"
+        echo "❌ $path (不存在)"
         FAILED=$((FAILED + 1))
     fi
 done
