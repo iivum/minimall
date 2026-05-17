@@ -236,12 +236,92 @@ jobs:
           path: verification-report-*.txt
           retention-days: 30
 
+  # Pre-review gate - validates deliverables before agent marks in_review (MIN-2657)
+  pre-review-gate:
+    name: Pre-Review Gate
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    needs: [verify-deliverables]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Validate deliverables exist
+        run: |
+          echo "=== Pre-Review Gate: Deliverables Validation ==="
+          echo "This gate ensures deliverables exist before reviewer is assigned."
+          echo ""
+
+          # List all modified/added files (objective evidence)
+          echo "Changed files in this PR:"
+          git diff --name-only origin/main...HEAD 2>/dev/null || git diff --name-only HEAD~1...HEAD
+          echo ""
+
+          # Verify key deliverables exist (test -f)
+          echo "=== Verifying key deliverables ==="
+          FAILED=0
+
+          # Source files
+          for f in $(git diff --name-only origin/main...HEAD 2>/dev/null | grep -E '\.(java|xml|yml|yaml)$' | head -20); do
+            if [ -f "$f" ]; then
+              echo "✅ $f"
+            else
+              echo "❌ $f (missing)"
+              FAILED=$((FAILED + 1))
+            fi
+          done
+
+          # Verify test files exist if Java files changed
+          JAVA_CHANGED=$(git diff --name-only origin/main...HEAD 2>/dev/null | grep -c '\.java$' || echo "0")
+          if [ "$JAVA_CHANGED" -gt 0 ]; then
+            echo ""
+            echo "=== Java files changed: $JAVA_CHANGED ==="
+            TEST_DIR_COUNT=$(find src/test/java -type f -name '*Test.java' 2>/dev/null | wc -l)
+            echo "Test files found: $TEST_DIR_COUNT"
+            if [ "$TEST_DIR_COUNT" -eq 0 ]; then
+              echo "❌ No test files found but Java source was modified"
+              FAILED=$((FAILED + 1))
+            else
+              echo "✅ Test files exist"
+            fi
+          fi
+
+          echo ""
+          if [ $FAILED -gt 0 ]; then
+            echo "❌ Pre-review gate FAILED: $FAILED deliverables missing"
+            exit 1
+          else
+            echo "✅ Pre-review gate PASSED: All deliverables verified"
+          fi
+
+      - name: Generate pre-review evidence report
+        run: |
+          REPORT_FILE="pre-review-evidence-$(date +%Y%m%d-%H%M%S).txt"
+          echo "=== Pre-Review Gate Evidence Report ===" > $REPORT_FILE
+          echo "Generated: $(date)" >> $REPORT_FILE
+          echo "Repository: $GITHUB_REPOSITORY" >> $REPORT_FILE
+          echo "PR: $GITHUB_SHA" >> $REPORT_FILE
+          echo "" >> $REPORT_FILE
+          echo "Files changed:" >> $REPORT_FILE
+          git diff --name-only origin/main...HEAD 2>/dev/null | head -50 >> $REPORT_FILE || echo "Unable to list changed files" >> $REPORT_FILE
+          echo "" >> $REPORT_FILE
+          echo "Deliverables verification:" >> $REPORT_FILE
+          find . -type f \( -name "*.java" -o -name "*.xml" -o -name "*.yml" -o -name "*.yaml" \) -newer .git/index 2>/dev/null | head -30 >> $REPORT_FILE
+          cat $REPORT_FILE
+
+      - name: Upload pre-review evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: pre-review-evidence
+          path: pre-review-evidence-*.txt
+          retention-days: 30
+
   # Merge gate - prevents merge if checks fail (MIN-1545, MIN-2413)
   merge-gate:
     name: Merge Gate
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
-    needs: [merge-conflict-check, build, security, quality, semgrep-sast, trivy-scan, gitleaks-scan, verify-deliverables]
+    needs: [merge-conflict-check, build, security, quality, semgrep-sast, trivy-scan, gitleaks-scan, verify-deliverables, pre-review-gate]
     steps:
       - name: Verify all checks passed
         run: |
