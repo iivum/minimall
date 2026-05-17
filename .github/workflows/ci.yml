@@ -213,6 +213,18 @@ jobs:
           test -x scripts/verify-deliverables.sh && echo "验证脚本存在且可执行"
           ./scripts/verify-deliverables.sh pom.xml
 
+      - name: Verify fake delivery blacklist exists
+        run: |
+          echo "=== 检查虚假交付黑名单 ==="
+          if [ -f docs/fake-delivery-blacklist.md ]; then
+            echo "✅ 虚假交付黑名单文档存在"
+            echo "黑名单内容摘要:"
+            grep "^| " docs/fake-delivery-blacklist.md | head -10 || echo "无黑名单记录"
+          else
+            echo "❌ 警告: 虚假交付黑名单文档不存在"
+            echo "建议: 创建 docs/fake-delivery-blacklist.md 记录问题 Agent"
+          fi
+
       - name: Generate verification report
         if: always()
         run: |
