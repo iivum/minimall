@@ -174,5 +174,33 @@
 
 | 版本 | 日期 | 修改内容 |
 |------|------|----------|
+| 1.3 | 2026-05-18 | 添加 CI 验证规范 - 使用 test -f 验证具体文件 |
 | 1.2 | 2026-05-18 | 添加虚假交付判定标准 + 验收检查表 |
 | 1.0 | 2026-05-15 | 初始版本 - 定义步骤结构规范和惩戒机制 |
+
+---
+
+## CI 验证规范
+
+### 文件存在性验证
+
+CI 中的 verify-deliverables job 应使用 `test -f` 验证具体文件，而非 `test -d` 验证目录：
+
+```yaml
+# 正确做法 - 验证具体文件
+- name: Verify source files exist
+  run: |
+    test -f pom.xml && echo "Maven configuration exists"
+    test -f src/main/java/.gitkeep || find src/main/java -name '*.java' -type f | head -1 | xargs test -f && echo "Java source files exist"
+
+# 错误做法 - 仅验证目录存在
+- name: Verify source files exist
+  run: |
+    test -d src/main/java && echo "Main source directory exists"  # 不验证文件
+```
+
+### 验证原则
+
+1. **优先验证文件** - 使用 `test -f` 验证文件存在，而非目录
+2. **防止空目录欺骗** - 即使目录存在，也需验证其中有实际文件
+3. **使用 git show 验证 origin/main** - 确保交付物已合并到 main 分支

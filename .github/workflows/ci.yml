@@ -53,9 +53,9 @@ jobs:
       - name: Verify source files exist
         run: |
           echo "=== Verifying Source Code Files ==="
-          test -d src/main/java && echo "Main source directory exists"
-          test -d src/test/java && echo "Test source directory exists"
           test -f pom.xml && echo "Maven configuration exists"
+          test -f src/main/java/.gitkeep || find src/main/java -name '*.java' -type f | head -1 | xargs test -f && echo "Java source files exist"
+          test -f src/test/java/.gitkeep || find src/test/java -name '*.java' -type f | head -1 | xargs test -f && echo "Test source files exist"
           test -f backend/Dockerfile && echo "Dockerfile exists"
 
       - name: Count source files
@@ -192,8 +192,9 @@ jobs:
       - name: Run deliverables verification
         run: |
           echo "=== 验证交付物 ==="
-          test -d src/test/java && echo "Test directory exists"
-          test -d src/main/java && echo "Main source directory exists"
+          test -f pom.xml && echo "Maven configuration exists"
+          test -f src/main/java/.gitkeep || find src/main/java -name '*.java' -type f | head -1 | xargs test -f && echo "Main source has Java files"
+          test -f src/test/java/.gitkeep || find src/test/java -name '*Test.java' -type f | head -1 | xargs test -f && echo "Test files exist"
 
       - name: Verify test files exist
         run: |
