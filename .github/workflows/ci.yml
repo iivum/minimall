@@ -192,8 +192,27 @@ jobs:
       - name: Run deliverables verification
         run: |
           echo "=== 验证交付物 ==="
-          test -d src/test/java && echo "Test directory exists"
-          test -d src/main/java && echo "Main source directory exists"
+          test -f src/test/java/com/minimall/controller/ProductControllerTest.java && echo "✓ ProductControllerTest.java 存在"
+          test -f src/test/java/com/minimall/controller/AuthControllerTest.java && echo "✓ AuthControllerTest.java 存在"
+          test -f src/test/java/com/minimall/controller/HealthControllerTest.java && echo "✓ HealthControllerTest.java 存在"
+
+          REQUIRED_FILES=(
+            "src/test/java/com/minimall/controller/ProductControllerTest.java"
+            "src/test/java/com/minimall/controller/AuthControllerTest.java"
+            "src/test/java/com/minimall/controller/HealthControllerTest.java"
+          )
+          MISSING=0
+          for file in "${REQUIRED_FILES[@]}"; do
+            if [ ! -f "$file" ]; then
+              echo "❌ $file 不存在"
+              MISSING=$((MISSING + 1))
+            fi
+          done
+          if [ $MISSING -gt 0 ]; then
+            echo ""
+            echo "错误: $MISSING 个必需文件缺失，CI 失败"
+            exit 1
+          fi
 
       - name: Verify test files exist
         run: |
