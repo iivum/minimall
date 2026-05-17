@@ -50,13 +50,41 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Verify source files exist
+      - name: Verify source files exist in origin/main
         run: |
-          echo "=== Verifying Source Code Files ==="
-          test -d src/main/java && echo "Main source directory exists"
-          test -d src/test/java && echo "Test source directory exists"
-          test -f pom.xml && echo "Maven configuration exists"
-          test -f backend/Dockerfile && echo "Dockerfile exists"
+          echo "=== Verifying Source Code Files in origin/main ==="
+
+          # Verify pom.xml exists in main
+          if git show origin/main:pom.xml > /dev/null 2>&1; then
+            echo "✓ pom.xml exists in main"
+          else
+            echo "✗ pom.xml NOT found in main - CI must fail"
+            exit 1
+          fi
+
+          # Verify src/main/java exists in main
+          if git show origin/main:src/main/java > /dev/null 2>&1; then
+            echo "✓ src/main/java exists in main"
+          else
+            echo "✗ src/main/java NOT found in main - CI must fail"
+            exit 1
+          fi
+
+          # Verify src/test/java exists in main
+          if git show origin/main:src/test/java > /dev/null 2>&1; then
+            echo "✓ src/test/java exists in main"
+          else
+            echo "✗ src/test/java NOT found in main - CI must fail"
+            exit 1
+          fi
+
+          # Verify backend/Dockerfile exists in main
+          if git show origin/main:backend/Dockerfile > /dev/null 2>&1; then
+            echo "✓ backend/Dockerfile exists in main"
+          else
+            echo "✗ backend/Dockerfile NOT found in main - CI must fail"
+            exit 1
+          fi
 
       - name: Count source files
         run: |
