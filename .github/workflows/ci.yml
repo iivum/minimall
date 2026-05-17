@@ -201,17 +201,31 @@ jobs:
           TEST_FILES=$(find src/test/java -name '*Test.java' 2>/dev/null | wc -l)
           echo "测试文件数量: $TEST_FILES"
           if [ "$TEST_FILES" -eq 0 ]; then
-            echo "警告: 未找到测试文件"
+            echo "❌ 错误: 未找到任何测试文件 (要求: 至少1个)"
+            exit 1
           fi
-          ./scripts/verify-deliverables.sh \
-            src/test/java \
-            target/surefire-reports
+          echo "✅ 找到 $TEST_FILES 个测试文件"
+          ./scripts/verify-deliverables.sh src/test/java
 
       - name: Verify deliverables script is executable
         run: |
           echo "=== 验证 verify-deliverables.sh ==="
           test -x scripts/verify-deliverables.sh && echo "验证脚本存在且可执行"
-          ./scripts/verify-deliverables.sh pom.xml
+          ./scripts/verify-deliverables.sh pom.xml src/main/java
+
+      - name: Verify test reports exist
+        run: |
+          echo "=== 检查测试报告 ==="
+          if [ -d target/surefire-reports ]; then
+            REPORT_COUNT=$(ls target/surefire-reports/*.txt 2>/dev/null | wc -l)
+            if [ "$REPORT_COUNT" -eq 0 ]; then
+              echo "警告: surefire-reports 目录存在但无报告文件"
+            else
+              echo "✅ 找到 $REPORT_COUNT 个测试报告"
+            fi
+          else
+            echo "警告: target/surefire-reports 目录不存在 (可能未运行测试)"
+          fi
 
       - name: Pre-review file existence verification (MIN-2635)
         run: |
