@@ -32,6 +32,7 @@ com/minimall/repository/LiveLikeRepository.class
 com/minimall/model/CustomerServiceMessage$MessageType.class
 com/minimall/model/OrderItem.class
 com/minimall/service/OrderService.class
+com/minimall/config/CaffeineCacheConfig.class
 com/minimall/dto/ProductDTO.class
 com/minimall/controller/UserController.class
 com/minimall/model/AdminUser.class
@@ -48,6 +49,7 @@ com/minimall/dto/ShareResponse.class
 com/minimall/controller/CategoryController.class
 com/minimall/repository/PointAccountRepository.class
 com/minimall/controller/StatsController.class
+com/minimall/config/QueryPerformanceMonitor.class
 com/minimall/dto/ShareRequest.class
 com/minimall/dto/PointTransactionResponse.class
 com/minimall/controller/LiveController.class

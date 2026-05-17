@@ -1,0 +1,8 @@
+com/minimall/controller/CustomerServiceControllerTest.class
+com/minimall/repository/CustomerServiceMessageRepositoryTest.class
+com/minimall/service/ProductServiceTest.class
+com/minimall/controller/AuthControllerTest.class
+com/minimall/controller/ProductControllerTest.class
+com/minimall/service/MemberServiceTest.class
+com/minimall/service/JwtServiceTest.class
+com/minimall/model/CustomerServiceMessageTest.class
