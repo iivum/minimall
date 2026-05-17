@@ -201,7 +201,8 @@ jobs:
           TEST_FILES=$(find src/test/java -name '*Test.java' 2>/dev/null | wc -l)
           echo "测试文件数量: $TEST_FILES"
           if [ "$TEST_FILES" -eq 0 ]; then
-            echo "警告: 未找到测试文件"
+            echo "错误: 未找到测试文件"
+            exit 1
           fi
           ./scripts/verify-deliverables.sh \
             src/test/java \
@@ -236,7 +237,8 @@ jobs:
           # 检查至少有一些测试文件
           TEST_FILES=$(find src/test/java -name '*Test.java' 2>/dev/null | wc -l)
           if [ "$TEST_FILES" -eq 0 ]; then
-            echo "警告: 未找到测试文件"
+            echo "错误: 未找到测试文件"
+            exit 1
           else
             echo "✓ 找到 $TEST_FILES 个测试文件"
           fi
