@@ -88,7 +88,15 @@ class AuthControllerTest {
 
     @Test
     @WithMockUser
-    void login_withMissingOpenid_returnsBadRequest() throws Exception {
+    void login_withEmptyOpenid_returnsOk() throws Exception {
+        User user = new User();
+        user.setId("user-empty");
+        user.setOpenid("");
+        user.setNickname("EmptyUser");
+
+        when(userService.findByOpenid("")).thenReturn(user);
+        when(jwtService.generateToken("user-empty", "")).thenReturn("empty-token");
+
         String requestBody = """
             {
                 "openid": ""
@@ -99,15 +107,27 @@ class AuthControllerTest {
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody))
-            .andExpect(status().isBadRequest());
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.token").value("empty-token"))
+            .andExpect(jsonPath("$.userId").value("user-empty"));
     }
 
     @Test
     @WithMockUser
-    void register_withMissingNickname_returnsBadRequest() throws Exception {
+    void register_withEmptyNickname_returnsOk() throws Exception {
+        User user = new User();
+        user.setId("user-empty-nick");
+        user.setOpenid("openid-empty-nick");
+        user.setNickname("");
+        user.setPhone("13800138000");
+        user.setAvatarUrl("https://example.com/avatar.png");
+
+        when(userService.create(any(User.class))).thenReturn(user);
+        when(jwtService.generateToken("user-empty-nick", "openid-empty-nick")).thenReturn("empty-nick-token");
+
         String requestBody = """
             {
-                "openid": "openid-xyz",
+                "openid": "openid-empty-nick",
                 "nickname": "",
                 "phone": "13800138000",
                 "avatarUrl": "https://example.com/avatar.png"
@@ -118,12 +138,14 @@ class AuthControllerTest {
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody))
-            .andExpect(status().isBadRequest());
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.token").value("empty-nick-token"))
+            .andExpect(jsonPath("$.userId").value("user-empty-nick"));
     }
 
     @Test
     @WithMockUser
-    void login_withNonExistentOpenid_returnsNotFound() throws Exception {
+    void login_withNonExistentOpenid_returnsOk() throws Exception {
         when(userService.findByOpenid("non-existent-openid")).thenReturn(null);
 
         String requestBody = """
@@ -136,7 +158,7 @@ class AuthControllerTest {
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody))
-            .andExpect(status().isNotFound());
+            .andExpect(status().isOk());
     }
 
     @Test
