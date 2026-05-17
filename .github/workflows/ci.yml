@@ -53,10 +53,40 @@ jobs:
       - name: Verify source files exist
         run: |
           echo "=== Verifying Source Code Files ==="
-          test -d src/main/java && echo "Main source directory exists"
-          test -d src/test/java && echo "Test source directory exists"
-          test -f pom.xml && echo "Maven configuration exists"
-          test -f backend/Dockerfile && echo "Dockerfile exists"
+          FAILED=0
+
+          # 验证关键文件存在性，使用 test -f 确保文件存在且为普通文件
+          test -f pom.xml || { echo "错误: pom.xml 不存在"; FAILED=1; }
+          test -f backend/Dockerfile || { echo "错误: backend/Dockerfile 不存在"; FAILED=1; }
+
+          # 验证目录存在性
+          test -d src/main/java || { echo "错误: src/main/java 目录不存在"; FAILED=1; }
+          test -d src/test/java || { echo "错误: src/test/java 目录不存在"; FAILED=1; }
+
+          # 验证至少有一些 Java 源文件（防止虚假交付 - 只创建空目录）
+          JAVA_FILE_COUNT=$(find src/main/java -name '*.java' -type f 2>/dev/null | wc -l)
+          if [ "$JAVA_FILE_COUNT" -eq 0 ]; then
+            echo "错误: src/main/java 中没有 Java 源文件"
+            FAILED=1
+          else
+            echo "找到 $JAVA_FILE_COUNT 个 Java 源文件"
+          fi
+
+          # 验证至少有一些测试文件
+          TEST_FILE_COUNT=$(find src/test/java -name '*Test.java' -type f 2>/dev/null | wc -l)
+          if [ "$TEST_FILE_COUNT" -eq 0 ]; then
+            echo "错误: 没有找到测试文件"
+            FAILED=1
+          else
+            echo "找到 $TEST_FILE_COUNT 个测试文件"
+          fi
+
+          if [ "$FAILED" -eq 1 ]; then
+            echo ""
+            echo "❌ 文件存在性验证失败"
+            exit 1
+          fi
+          echo "✅ 所有文件存在性检查通过"
 
       - name: Count source files
         run: |
