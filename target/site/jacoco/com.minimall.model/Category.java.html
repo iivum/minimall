@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Category.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">minimall</a> &gt; <a href="index.source.html" class="el_package">com.minimall.model</a> &gt; <span class="el_source">Category.java</span></div><h1>Category.java</h1><pre class="source lang-java linenums">package com.minimall.model;
+
+import jakarta.persistence.*;
+import java.time.Instant;
+
+@Entity
+@Table(name = &quot;categories&quot;)
+<span class="fc" id="L8">public class Category {</span>
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
+
+    @Column(nullable = false)
+    private String name;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = &quot;parent_id&quot;)
+    private Category parent;
+
+<span class="fc" id="L20">    @Column(name = &quot;sort_order&quot;, nullable = false)</span>
+<span class="fc" id="L21">    private Integer sortOrder = 0;</span>
+
+<span class="fc" id="L23">    @Column(nullable = false)</span>
+<span class="fc" id="L24">    private Boolean active = true;</span>
+
+    @Column(name = &quot;created_at&quot;, nullable = false, updatable = false)
+    private Instant createdAt;
+
+    @Column(name = &quot;updated_at&quot;)
+    private Instant updatedAt;
+
+    @PrePersist
+    protected void onCreate() {
+<span class="nc" id="L34">        createdAt = Instant.now();</span>
+<span class="nc" id="L35">        updatedAt = Instant.now();</span>
+<span class="nc" id="L36">    }</span>
+
+    @PreUpdate
+    protected void onUpdate() {
+<span class="nc" id="L40">        updatedAt = Instant.now();</span>
+<span class="nc" id="L41">    }</span>
+
+<span class="nc" id="L43">    public String getId() { return id; }</span>
+<span class="nc" id="L44">    public void setId(String id) { this.id = id; }</span>
+<span class="nc" id="L45">    public String getName() { return name; }</span>
+<span class="nc" id="L46">    public void setName(String name) { this.name = name; }</span>
+<span class="nc" id="L47">    public Category getParent() { return parent; }</span>
+<span class="nc" id="L48">    public void setParent(Category parent) { this.parent = parent; }</span>
+<span class="nc" id="L49">    public Integer getSortOrder() { return sortOrder; }</span>
+<span class="nc" id="L50">    public void setSortOrder(Integer sortOrder) { this.sortOrder = sortOrder; }</span>
+<span class="nc" id="L51">    public Boolean getActive() { return active; }</span>
+<span class="nc" id="L52">    public void setActive(Boolean active) { this.active = active; }</span>
+<span class="nc" id="L53">    public Instant getCreatedAt() { return createdAt; }</span>
+<span class="nc" id="L54">    public Instant getUpdatedAt() { return updatedAt; }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

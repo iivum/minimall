@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MetricsConfig.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">minimall</a> &gt; <a href="index.source.html" class="el_package">com.minimall.config</a> &gt; <span class="el_source">MetricsConfig.java</span></div><h1>MetricsConfig.java</h1><pre class="source lang-java linenums">package com.minimall.config;
+
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Timer;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+<span class="nc" id="L10">public class MetricsConfig {</span>
+
+    @Bean
+    public Counter orderCreatedCounter(MeterRegistry registry) {
+<span class="nc" id="L14">        return Counter.builder(&quot;minimall.orders.created&quot;)</span>
+<span class="nc" id="L15">                .description(&quot;Total number of orders created&quot;)</span>
+<span class="nc" id="L16">                .tag(&quot;type&quot;, &quot;order&quot;)</span>
+<span class="nc" id="L17">                .register(registry);</span>
+    }
+
+    @Bean
+    public Counter orderPaidCounter(MeterRegistry registry) {
+<span class="nc" id="L22">        return Counter.builder(&quot;minimall.orders.paid&quot;)</span>
+<span class="nc" id="L23">                .description(&quot;Total number of orders paid successfully&quot;)</span>
+<span class="nc" id="L24">                .tag(&quot;type&quot;, &quot;payment&quot;)</span>
+<span class="nc" id="L25">                .register(registry);</span>
+    }
+
+    @Bean
+    public Counter orderFailedCounter(MeterRegistry registry) {
+<span class="nc" id="L30">        return Counter.builder(&quot;minimall.orders.failed&quot;)</span>
+<span class="nc" id="L31">                .description(&quot;Total number of failed orders&quot;)</span>
+<span class="nc" id="L32">                .tag(&quot;type&quot;, &quot;payment&quot;)</span>
+<span class="nc" id="L33">                .register(registry);</span>
+    }
+
+    @Bean
+    public Counter paymentSuccessCounter(MeterRegistry registry) {
+<span class="nc" id="L38">        return Counter.builder(&quot;minimall.payment.success&quot;)</span>
+<span class="nc" id="L39">                .description(&quot;Total number of successful payments&quot;)</span>
+<span class="nc" id="L40">                .tag(&quot;type&quot;, &quot;payment&quot;)</span>
+<span class="nc" id="L41">                .register(registry);</span>
+    }
+
+    @Bean
+    public Counter paymentFailureCounter(MeterRegistry registry) {
+<span class="nc" id="L46">        return Counter.builder(&quot;minimall.payment.failure&quot;)</span>
+<span class="nc" id="L47">                .description(&quot;Total number of failed payments&quot;)</span>
+<span class="nc" id="L48">                .tag(&quot;type&quot;, &quot;payment&quot;)</span>
+<span class="nc" id="L49">                .register(registry);</span>
+    }
+
+    @Bean
+    public Timer apiResponseTimer(MeterRegistry registry) {
+<span class="nc" id="L54">        return Timer.builder(&quot;minimall.api.response.time&quot;)</span>
+<span class="nc" id="L55">                .description(&quot;API response time&quot;)</span>
+<span class="nc" id="L56">                .tag(&quot;type&quot;, &quot;http&quot;)</span>
+<span class="nc" id="L57">                .publishPercentiles(0.5, 0.9, 0.95, 0.99)</span>
+<span class="nc" id="L58">                .register(registry);</span>
+    }
+
+    @Bean
+    public Timer paymentProcessingTimer(MeterRegistry registry) {
+<span class="nc" id="L63">        return Timer.builder(&quot;minimall.payment.processing.time&quot;)</span>
+<span class="nc" id="L64">                .description(&quot;Payment processing time&quot;)</span>
+<span class="nc" id="L65">                .tag(&quot;type&quot;, &quot;payment&quot;)</span>
+<span class="nc" id="L66">                .publishPercentiles(0.5, 0.9, 0.95, 0.99)</span>
+<span class="nc" id="L67">                .register(registry);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

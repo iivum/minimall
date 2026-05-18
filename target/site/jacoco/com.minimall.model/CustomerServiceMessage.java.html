@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CustomerServiceMessage.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">minimall</a> &gt; <a href="index.source.html" class="el_package">com.minimall.model</a> &gt; <span class="el_source">CustomerServiceMessage.java</span></div><h1>CustomerServiceMessage.java</h1><pre class="source lang-java linenums">package com.minimall.model;
+
+import jakarta.persistence.*;
+import java.time.Instant;
+
+@Entity
+@Table(name = &quot;customer_service_messages&quot;)
+<span class="fc" id="L8">public class CustomerServiceMessage {</span>
+
+<span class="fc" id="L10">    public enum MessageType {</span>
+<span class="fc" id="L11">        TEXT, IMAGE, VOICE, VIDEO, LINK</span>
+    }
+
+<span class="fc" id="L14">    public enum Status {</span>
+<span class="fc" id="L15">        PENDING, PROCESSING, COMPLETED, TRANSFERRED</span>
+    }
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
+
+    @Column(nullable = false)
+    private String openid;
+
+    @Column(nullable = false, length = 4000)
+    private String content;
+
+<span class="fc" id="L28">    @Enumerated(EnumType.STRING)</span>
+    @Column(name = &quot;message_type&quot;, nullable = false)
+    private MessageType messageType = MessageType.TEXT;
+
+<span class="fc" id="L32">    @Enumerated(EnumType.STRING)</span>
+    @Column(nullable = false)
+    private Status status = Status.PENDING;
+
+<span class="fc" id="L36">    @Column(name = &quot;from_customer&quot;, nullable = false)</span>
+    private boolean fromCustomer = false;
+
+    @Column(name = &quot;handler_id&quot;)
+    private String handlerId;
+
+    @Column(length = 4000)
+    private String reply;
+
+    @Column(name = &quot;auto_reply_rule&quot;)
+    private String autoReplyRule;
+
+    @Column(name = &quot;read_at&quot;)
+    private Instant readAt;
+
+    @Column(name = &quot;completed_at&quot;)
+    private Instant completedAt;
+
+    @Column(name = &quot;transferred_at&quot;)
+    private Instant transferredAt;
+
+    @Column(nullable = false)
+    private Instant createdAt;
+
+    @Column
+    private Instant updatedAt;
+
+    @PrePersist
+    protected void onCreate() {
+<span class="fc" id="L65">        createdAt = Instant.now();</span>
+<span class="fc" id="L66">        updatedAt = Instant.now();</span>
+<span class="fc" id="L67">    }</span>
+
+    @PreUpdate
+    protected void onUpdate() {
+<span class="nc" id="L71">        updatedAt = Instant.now();</span>
+<span class="nc" id="L72">    }</span>
+
+    public void markAsRead() {
+<span class="fc" id="L75">        this.status = Status.PROCESSING;</span>
+<span class="fc" id="L76">        this.readAt = Instant.now();</span>
+<span class="fc" id="L77">    }</span>
+
+    public void complete() {
+<span class="fc" id="L80">        this.status = Status.COMPLETED;</span>
+<span class="fc" id="L81">        this.completedAt = Instant.now();</span>
+<span class="fc" id="L82">    }</span>
+
+    public void transferToHuman(String handlerId) {
+<span class="fc" id="L85">        this.status = Status.TRANSFERRED;</span>
+<span class="fc" id="L86">        this.handlerId = handlerId;</span>
+<span class="fc" id="L87">        this.transferredAt = Instant.now();</span>
+<span class="fc" id="L88">    }</span>
+
+<span class="fc" id="L90">    public String getId() { return id; }</span>
+<span class="fc" id="L91">    public void setId(String id) { this.id = id; }</span>
+<span class="nc" id="L92">    public String getOpenid() { return openid; }</span>
+<span class="fc" id="L93">    public void setOpenid(String openid) { this.openid = openid; }</span>
+<span class="fc" id="L94">    public String getContent() { return content; }</span>
+<span class="fc" id="L95">    public void setContent(String content) { this.content = content; }</span>
+<span class="nc" id="L96">    public MessageType getMessageType() { return messageType; }</span>
+<span class="fc" id="L97">    public void setMessageType(MessageType messageType) { this.messageType = messageType; }</span>
+<span class="fc" id="L98">    public Status getStatus() { return status; }</span>
+<span class="fc" id="L99">    public void setStatus(Status status) { this.status = status; }</span>
+<span class="fc" id="L100">    public boolean isFromCustomer() { return fromCustomer; }</span>
+<span class="fc" id="L101">    public void setFromCustomer(boolean fromCustomer) { this.fromCustomer = fromCustomer; }</span>
+<span class="fc" id="L102">    public String getHandlerId() { return handlerId; }</span>
+<span class="fc" id="L103">    public void setHandlerId(String handlerId) { this.handlerId = handlerId; }</span>
+<span class="fc" id="L104">    public String getReply() { return reply; }</span>
+<span class="fc" id="L105">    public void setReply(String reply) { this.reply = reply; }</span>
+<span class="fc" id="L106">    public String getAutoReplyRule() { return autoReplyRule; }</span>
+<span class="fc" id="L107">    public void setAutoReplyRule(String autoReplyRule) { this.autoReplyRule = autoReplyRule; }</span>
+<span class="fc" id="L108">    public Instant getReadAt() { return readAt; }</span>
+<span class="fc" id="L109">    public Instant getCompletedAt() { return completedAt; }</span>
+<span class="fc" id="L110">    public Instant getTransferredAt() { return transferredAt; }</span>
+<span class="nc" id="L111">    public Instant getCreatedAt() { return createdAt; }</span>
+<span class="nc" id="L112">    public Instant getUpdatedAt() { return updatedAt; }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>
