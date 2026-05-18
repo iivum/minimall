@@ -7,6 +7,10 @@ import com.minimall.model.OrderItem;
 import com.minimall.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -24,12 +28,16 @@ public class OrderController {
     }
 
     @GetMapping("/user/{userId}")
-    @Operation(summary = "Get orders by user ID")
-    public ResponseEntity<List<Order>> getUserOrders(@PathVariable String userId) {
+    @Operation(summary = "Get orders by user ID (paginated)")
+    public ResponseEntity<Page<Order>> getUserOrders(
+            @PathVariable String userId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
         if (!securityUtils.isCurrentUser(userId)) {
             throw new UnauthorizedException("You can only access your own orders");
         }
-        return ResponseEntity.ok(orderService.findByUserId(userId));
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        return ResponseEntity.ok(orderService.findByUserId(userId, pageable));
     }
 
     @GetMapping("/{id}")

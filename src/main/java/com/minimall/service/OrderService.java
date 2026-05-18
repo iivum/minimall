@@ -4,6 +4,8 @@ import com.minimall.model.Order;
 import com.minimall.model.OrderItem;
 import com.minimall.model.User;
 import com.minimall.repository.OrderRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
@@ -36,6 +38,10 @@ public class OrderService {
 
     public List<Order> findByUserId(String userId) {
         return orderRepository.findByUserIdOrderByCreatedAtDesc(userId);
+    }
+
+    public Page<Order> findByUserId(String userId, Pageable pageable) {
+        return orderRepository.findByUserId(userId, pageable);
     }
 
     public List<Order> findAll() {
