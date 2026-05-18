@@ -467,6 +467,136 @@
 
 ---
 
+## 异常响应格式 Exception Responses
+
+所有异常响应均遵循以下统一格式：
+
+```json
+{
+  "error": "错误类型",
+  "message": "详细错误信息"
+}
+```
+
+### 403 Forbidden - 无权限访问
+
+**触发条件：** 用户未被授权访问某个资源
+
+```json
+{
+  "error": "Forbidden",
+  "message": "您没有权限访问此资源"
+}
+```
+
+**常见场景：**
+- 访问需要管理员权限的接口
+- 修改不属于当前用户的资源
+
+---
+
+### 400 Bad Request - 请求参数验证失败
+
+**触发条件：** 提交的参数不符合规范
+
+```json
+{
+  "error": "Bad Request",
+  "message": "Validation failed"
+}
+```
+
+**常见场景：**
+- 必填参数缺失
+- 参数格式错误（如手机号、邮箱格式）
+- 参数值超出有效范围
+
+---
+
+### 400 Bad Request - 业务异常
+
+**ValidationException（业务验证异常）：**
+
+```json
+{
+  "error": "VALIDATION_ERROR",
+  "message": "商品库存不足"
+}
+```
+
+**OrderException（订单异常）：**
+
+```json
+{
+  "error": "ORDER_ERROR",
+  "message": "订单状态不允许取消"
+}
+```
+
+**PaymentException（支付异常）：**
+
+```json
+{
+  "error": "PAYMENT_ERROR",
+  "message": "支付超时，请重新下单"
+}
+```
+
+**BusinessException（通用业务异常）：**
+
+```json
+{
+  "error": "BUSINESS_ERROR",
+  "message": "业务处理失败"
+}
+```
+
+或带自定义错误码：
+
+```json
+{
+  "error": "CUSTOM_ERROR_CODE",
+  "message": "自定义错误信息"
+}
+```
+
+---
+
+### 404 Not Found - 资源不存在
+
+**触发条件：** 请求的资源不存在
+
+```json
+{
+  "error": "Not Found",
+  "message": "商品不存在"
+}
+```
+
+**常见场景：**
+- 根据ID查询不存在的商品
+- 访问已删除的订单
+
+---
+
+### 500 Internal Server Error - 服务器内部错误
+
+**触发条件：** 服务器处理请求时发生未预期的错误
+
+```json
+{
+  "error": "Internal Server Error",
+  "message": "服务器繁忙，请稍后重试"
+}
+```
+
+**常见场景：**
+- 数据库连接失败
+- 外部服务调用超时
+- 程序逻辑错误
+
+---
+
 ## 错误码 Error Codes
 
 | Code | HTTP Status | Description |
@@ -480,6 +610,10 @@
 | `PAYMENT_FAILED` | 400 | 支付失败 |
 | `RATE_LIMITED` | 429 | 请求过于频繁 |
 | `INTERNAL_ERROR` | 500 | 服务器内部错误 |
+| `VALIDATION_ERROR` | 400 | 业务验证失败 |
+| `ORDER_ERROR` | 400 | 订单处理异常 |
+| `PAYMENT_ERROR` | 400 | 支付处理异常 |
+| `BUSINESS_ERROR` | 400/500 | 通用业务错误 |
 
 ---
 
