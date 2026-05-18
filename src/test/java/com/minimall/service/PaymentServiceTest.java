@@ -9,7 +9,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -61,5 +60,32 @@ class PaymentServiceTest {
         payService.processCallback(callbackBody);
 
         verify(orderService, never()).pay(any(), any());
+    }
+
+    @Test
+    void processCallback_paysOrderWhenStatusSuccess() {
+        Order order = new Order();
+        order.setId("order-1");
+        order.setOrderNo("ORD-001");
+
+        when(orderService.findByOrderNo("ORD-001")).thenReturn(order);
+
+        String callbackBody = "{\"resource\":{\"out_trade_no\":\"ORD-001\",\"transaction_id\":\"WX123456\",\"amount\":{\"state\":\"SUCCESS\"}}}";
+        payService.processCallback(callbackBody);
+
+        verify(orderService).pay("order-1", "WX123456");
+    }
+
+    @Test
+    void createUnifiedOrder_returnsPrepayIdWithCorrectPrefix() {
+        Order order = new Order();
+        order.setOrderNo("ORD-TEST-001");
+        order.setTotalAmount(BigDecimal.valueOf(100.00));
+
+        String prepayId = payService.createUnifiedOrder(order, "openid-test");
+
+        assertNotNull(prepayId);
+        assertTrue(prepayId.startsWith("prepay_"));
+        assertEquals(39, prepayId.length());
     }
 }
