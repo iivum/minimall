@@ -195,6 +195,26 @@ jobs:
           test -d src/test/java && echo "Test directory exists"
           test -d src/main/java && echo "Main source directory exists"
 
+      - name: Verify files exist on origin/main
+        run: |
+          echo "=== 验证文件已合并到 origin/main ==="
+          # 验证关键文件是否实际存在于 origin/main
+          FILES_TO_CHECK=(
+            "pom.xml"
+            "src/main/java"
+            "src/test/java"
+          )
+          for file in "${FILES_TO_CHECK[@]}"; do
+            if git show origin/main:$file > /dev/null 2>&1; then
+              echo "✓ $file 存在于 origin/main"
+            else
+              echo "✗ 错误: $file 不存在于 origin/main - 文件尚未合并到 main 分支"
+              exit 1
+            fi
+          done
+          echo ""
+          echo "所有关键交付物已验证存在于 origin/main"
+
       - name: Verify test files exist
         run: |
           echo "=== 检查测试文件 ==="
@@ -283,6 +303,26 @@ jobs:
       - name: Verify all checks passed
         run: |
           echo "=== Merge Gate Verification ==="
+
+          # Verify commit exists on origin/main (prevents force-push bypass)
+          echo "检查 PR commit 是否已合并到 origin/main..."
+          if git show origin/main:$GITHUB_SHA > /dev/null 2>&1; then
+            echo "✓ Commit $GITHUB_SHA 已存在于 origin/main"
+          else
+            echo "✗ 错误: Commit $GITHUB_SHA 不存在于 origin/main"
+            echo "✗ 这可能是因为 PR 未通过 CI 或使用了 force-push"
+            exit 1
+          fi
+
+          # Verify CI workflow itself exists on origin/main (acceptance criteria)
+          if git show origin/main:.github/workflows/ci.yml | grep -q "git show origin/main"; then
+            echo "✓ CI.yml 已包含 origin/main 验证逻辑"
+          else
+            echo "✗ 错误: CI.yml 缺少 origin/main 验证逻辑"
+            exit 1
+          fi
+
+          echo ""
           echo "All required checks have passed."
           echo "This PR is cleared for merge."
 
