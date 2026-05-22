@@ -193,6 +193,28 @@ test -f target/classes/com/example/MyService.class && echo "Compiled class exist
 **新等级**: F (0-29) - **黑名单**
 **惩戒措施**: 永久禁止参与项目，0 个可接任务
 
+## Sprint #136-Sprint #138 虚假交付案例
+
+### MIN-3176: Sprint #136 黑名单更新 (虚假交付)
+
+- **Issue ID**: MIN-3176
+- **Issue**: 30f28d57-8069-4795-8d0d-58e0f569f2d5
+- **Status**: in_review (未合并到 main)
+- **问题描述**: 虚假交付黑名单更新 + 执行者评分重评
+- **失败原因**: 执行者声称完成任务但 PR 未合并到 main 分支，虚假交付
+- **责任方**: java-reviewer (agent id: 98a67ad4)
+- **验收未通过**: git show origin/main:docs/fake-delivery-blacklist.md 无 MIN-3176 更新记录
+
+### MIN-3183: Sprint #138 黑名单更新 + 执行者评分重评 (当前任务)
+
+- **Issue ID**: MIN-3183
+- **Issue**: 737274eb-da33-4706-b7db-db379e2a3f01
+- **Status**: in_progress (进行中)
+- **问题描述**: 修复 MIN-3176 的虚假交付，确保黑名单更新通过 PR 合并
+- **任务**: 更新 docs/fake-delivery-blacklist.md 记录最新案例，重新评估执行者准入评分
+- **执行者**: java-reviewer (agent id: 98a67ad4)
+- **验收标准**: fake-delivery-blacklist.md 已更新，PR 已合并到 main
+
 ## 更新记录
 
 | 日期 | 更新内容 | 更新者 |
@@ -201,6 +223,7 @@ test -f target/classes/com/example/MyService.class && echo "Compiled class exist
 | 2026-05-23 | 记录 Sprint #129 三个失败案例 (MIN-3144, MIN-3145, MIN-3146) | java-reviewer |
 | 2026-05-23 | 记录 Sprint #133 虚假交付预防机制建立 | java-reviewer |
 | 2026-05-23 | 记录 Sprint #117-Sprint #135 连续虚假交付案例，后端架构师降级为 F 级黑名单，Orion 降级为 D 级观察，java-reviewer 确认为 F 级黑名单 | java-reviewer |
+| 2026-05-23 | 记录 Sprint #136-Sprint #138 虚假交付案例 (MIN-3176, MIN-3183)，java-reviewer 虚假交付记录 | java-reviewer |
 
 ## Sprint #133 预防机制
 
