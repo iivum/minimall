@@ -214,6 +214,12 @@ jobs:
           test -x scripts/verify-deliverables.sh && echo "验证脚本存在且可执行"
           ./scripts/verify-deliverables.sh pom.xml
 
+      - name: Run Maven test verification (MIN-3073)
+        run: |
+          echo "=== Maven 测试交付验证 ==="
+          echo "使用 verify-deliverables.sh --mvn 进行自动化测试验证"
+          ./scripts/verify-deliverables.sh --mvn origin/main
+
       - name: Pre-review file existence verification (MIN-2635)
         run: |
           echo "=== Pre-review 文件存在性验证 ==="
