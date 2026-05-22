@@ -192,8 +192,15 @@ jobs:
       - name: Run deliverables verification
         run: |
           echo "=== 验证交付物 ==="
-          test -d src/test/java && echo "Test directory exists"
-          test -d src/main/java && echo "Main source directory exists"
+          test -f pom.xml && echo "pom.xml exists"
+          test -f src/main/java/com/minimall/MinimallApplication.java && echo "Main application file exists"
+          test -f src/test/java/com/minimall/repository/CustomerServiceMessageRepositoryTest.java && echo "Test file exists"
+
+      - name: Verify files exist in main branch
+        run: |
+          echo "=== 验证 main 分支中的文件 ==="
+          git show origin/main:.github/workflows/ci.yml > /dev/null 2>&1 && echo "✓ ci.yml exists in main branch"
+          git show origin/main:pom.xml > /dev/null 2>&1 && echo "✓ pom.xml exists in main branch"
 
       - name: Verify test files exist
         run: |
