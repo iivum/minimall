@@ -179,6 +179,65 @@ jobs:
           echo "Main source lines: $(find src/main/java -name '*.java' -exec cat {} \; 2>/dev/null | wc -l)"
           echo "Test source lines: $(find src/test/java -name '*.java' -exec cat {} \; 2>/dev/null | wc -l)"
 
+  # Tech Debt Backlog Sync Verification (MIN-3169)
+  tech-debt-sync:
+    name: Tech Debt Backlog Sync
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify tech debt changes include backlog updates
+        run: |
+          echo "=== Tech Debt Backlog Sync Check ==="
+
+          # Get list of changed files
+          CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
+
+          echo "Changed files:"
+          echo "$CHANGED_FILES"
+
+          # Check if any tech debt related files were changed
+          TECH_DEBT_CHANGED=$(echo "$CHANGED_FILES" | grep -E "(tech-debt| Tech)" || true)
+
+          if [ -n "$TECH_DEBT_CHANGED" ]; then
+            echo "Tech debt related files changed:"
+            echo "$TECH_DEBT_CHANGED"
+
+            # Check if docs/tech-debt-backlog.md was updated when tech debt code was changed
+            BACKLOG_UPDATED=$(echo "$CHANGED_FILES" | grep -E "docs/tech-debt-backlog" || true)
+            CODE_CHANGED=$(echo "$CHANGED_FILES" | grep -E "\.(java|kt|js|ts)$" || true)
+
+            if [ -n "$CODE_CHANGED" ] && [ -z "$BACKLOG_UPDATED" ]; then
+              echo "ERROR: Code changes detected without tech-debt-backlog.md update"
+              echo "When modifying tech debt items, you MUST update docs/tech-debt-backlog.md"
+              echo "to mark the item as completed or in progress."
+              exit 1
+            fi
+
+            # If backlog was updated, verify the format is correct
+            if [ -n "$BACKLOG_UPDATED" ]; then
+              echo "Backlog update detected - verifying format..."
+
+              # Check that the update follows the claiming mechanism format
+              # Look for Status change patterns
+              BACKLOG_DIFF=$(git diff origin/main...HEAD -- docs/tech-debt-backlog.md)
+
+              # Verify status values are valid
+              INVALID_STATUS=$(echo "$BACKLOG_DIFF" | grep -E "Status.*:.*(Claimed|In progress|Completed|Not started)" -A1 | grep -v "^[-+]*Status" | grep -v "^-" | grep -E "^(?!.*(Claimed|In progress|Completed|Not started))" || true)
+              if [ -n "$INVALID_STATUS" ]; then
+                echo "Warning: Invalid status value detected"
+              fi
+
+              echo "Tech debt backlog sync verified successfully!"
+            fi
+          else
+            echo "No tech debt related files changed - skipping sync check"
+          fi
+
   # Verify deliverables (MIN-2400, MIN-2413)
   verify-deliverables:
     name: Verify Deliverables
@@ -281,7 +340,7 @@ jobs:
     name: Merge Gate
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
-    needs: [merge-conflict-check, build, security, quality, semgrep-sast, trivy-scan, gitleaks-scan, verify-deliverables]
+    needs: [merge-conflict-check, build, security, quality, semgrep-sast, trivy-scan, gitleaks-scan, verify-deliverables, tech-debt-sync]
     steps:
       - name: Verify all checks passed
         run: |
