@@ -192,8 +192,8 @@ jobs:
       - name: Run deliverables verification
         run: |
           echo "=== 验证交付物 ==="
-          test -d src/test/java && echo "Test directory exists"
-          test -d src/main/java && echo "Main source directory exists"
+          test -f pom.xml && echo "pom.xml exists"
+          test -f src/main/java && echo "Main source file exists" || test -d src/main/java && echo "Main source directory exists (checking for files)"
 
       - name: Verify test files exist
         run: |
