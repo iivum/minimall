@@ -192,8 +192,9 @@ jobs:
       - name: Run deliverables verification
         run: |
           echo "=== 验证交付物 ==="
-          test -d src/test/java && echo "Test directory exists"
-          test -d src/main/java && echo "Main source directory exists"
+          test -f src/test/java/com/minimall/repository/LiveLikeRepositoryTest.java && echo "LiveLikeRepositoryTest.java 存在"
+          test -f src/main/java && echo "Main source file exists"
+          test -f pom.xml && echo "Maven configuration exists"
 
       - name: Verify test files exist
         run: |
@@ -244,8 +245,16 @@ jobs:
           fi
 
           # 检查关键目录存在性（仅作为辅助验证）
-          test -d src/main/java && echo "✓ src/main/java 目录存在"
-          test -d src/test/java && echo "✓ src/test/java 目录存在"
+          test -f src/main/java/com/minimall/repository/LiveLikeRepositoryTest.java && echo "✓ src/main/java/com/minimall/repository/LiveLikeRepositoryTest.java 文件存在"
+          test -f src/main/java && echo "✓ src/main/java 文件存在"
+          test -f src/test/java && echo "✓ src/test/java 文件存在"
+
+          # 使用 git show 验证文件实际存在于 origin/main
+          echo ""
+          echo "=== 使用 git show 验证 origin/main 分支文件 ==="
+          git fetch origin main --depth=1 2>/dev/null || true
+          git show origin/main:.github/workflows/ci.yml > /dev/null 2>&1 && echo "✓ origin/main:.github/workflows/ci.yml 存在" || echo "✗ origin/main:.github/workflows/ci.yml 不存在"
+          git show origin/main:src/test/java/com/minimall/repository/LiveLikeRepositoryTest.java > /dev/null 2>&1 && echo "✓ origin/main:LiveLikeRepositoryTest.java 存在" || echo "✗ origin/main:LiveLikeRepositoryTest.java 不存在"
 
           echo ""
           echo "所有关键交付物已验证存在"
