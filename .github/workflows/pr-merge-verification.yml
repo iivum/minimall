@@ -1,0 +1,94 @@
+name: PR Merge Verification
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  verify-merge:
+    name: Verify PR Merged to Main
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify PR branch was merged (not rebased/ff-merged)
+        run: |
+          echo "=== PR Merge Verification ==="
+          echo "PR #${{ github.event.pull_request.number }}: ${{ github.event.pull_request.title }}"
+          echo "Merged by: ${{ github.event.pull_request.merge_commit_sha }}"
+          echo ""
+
+          # Check if merge commit exists in main
+          MERGE_SHA="${{ github.event.pull_request.merge_commit_sha }}"
+          if git log --oneline origin/main | grep -q "$MERGE_SHA"; then
+            echo "✅ Merge commit found in origin/main"
+          else
+            echo "❌ Merge commit NOT found in origin/main"
+            echo "This PR may have been rebased or fast-forwarded instead of merged"
+            exit 1
+          fi
+
+      - name: Verify changed files exist in main
+        run: |
+          echo "=== Verifying Changed Files in Main ==="
+
+          # Get list of files changed in this PR
+          CHANGED_FILES=$(git diff-tree --no-commit-id --name-only -r ${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }} | sort -u)
+
+          if [ -z "$CHANGED_FILES" ]; then
+            echo "No files found to verify (可能全是新增文件)"
+            exit 0
+          fi
+
+          echo "Files changed in PR:"
+          echo "$CHANGED_FILES" | sed 's/^/  - /'
+          echo ""
+
+          FAILED=0
+          while IFS= read -r file; do
+            if [ -n "$file" ]; then
+              if git ls-tree origin/main "$file" > /dev/null 2>&1; then
+                echo "✅ $file exists in main"
+              else
+                echo "❌ $file NOT found in main"
+                FAILED=$((FAILED + 1))
+              fi
+            fi
+          done <<< "$CHANGED_FILES"
+
+          echo ""
+          if [ $FAILED -gt 0 ]; then
+            echo "❌ Verification failed: $FAILED files missing in main"
+            exit 1
+          else
+            echo "✅ All changed files verified in main"
+          fi
+
+      - name: Generate merge verification report
+        run: |
+          REPORT_FILE="pr-merge-verification-$(date +%Y%m%d-%H%M%S).txt"
+          {
+            echo "=== PR Merge Verification Report ==="
+            echo "PR: #${{ github.event.pull_request.number }}"
+            echo "Title: ${{ github.event.pull_request.title }}"
+            echo "Merged at: $(date -Iseconds)"
+            echo "Merge SHA: ${{ github.event.pull_request.merge_commit_sha }}"
+            echo "Author: ${{ github.event.pull_request.user.login }}"
+            echo ""
+            echo "Branch: ${{ github.event.pull_request.head.ref }}"
+            echo "Base: ${{ github.event.pull_request.base.ref }}"
+            echo ""
+            echo "Status: ✅ VERIFIED"
+          } > "$REPORT_FILE"
+          cat "$REPORT_FILE"
+
+      - name: Upload verification report
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr-merge-verification-${{ github.event.pull_request.number }}
+          path: pr-merge-verification-*.txt
+          retention-days: 30
