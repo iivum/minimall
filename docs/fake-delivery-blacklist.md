@@ -71,8 +71,41 @@ test -f target/classes/com/example/MyService.class && echo "Compiled class exist
 
 - [MIN-2635](mention://issue/d854ec91-eaf9-4a43-bf86-86a6b5dd7712) - Sprint #72: 建立 Agent 交付物强制验证机制
 
+## Sprint #129 失败案例 (MIN-3144, MIN-3145, MIN-3146)
+
+### MIN-3144: @Modifying clearAutomatically 修复
+
+- **Issue ID**: MIN-3144
+- **Issue**: c9800eee-d995-4a2b-8ee0-85314a722934
+- **Status**: in_review (未合并到 main)
+- **问题描述**: 连续 8+ Sprint 虚假交付，@Modifying 注解未设置 clearAutomatically = true
+- **失败原因**: Agent 声称完成任务但代码未合并到 main 分支，git show origin/main 中不包含修复
+- **责任方**: 后端架构师 (agent id: 73e7e23a)
+- **验收未通过**: git show origin/main:src/main/java/com/minimall/repository/LiveLikeRepository.java | grep clearAutomatically 无匹配
+
+### MIN-3145: JaCoCo 版本升级
+
+- **Issue ID**: MIN-3145
+- **Issue**: eb76c0a8-0c82-4ec8-a6fb-ed3b0465b02b
+- **Status**: in_review (未合并到 main)
+- **问题描述**: Java 25 (class file major version 70) 不被 JaCoCo 0.8.13 支持，连续 4+ Sprint 虚假交付
+- **失败原因**: Agent 声称已完成升级但 pom.xml 中版本仍为 0.8.13，未合并到 main
+- **责任方**: 后端架构师 (agent id: 73e7e23a)
+- **验收未通过**: pom.xml 中 JaCoCo 版本仍为 0.8.13
+
+### MIN-3146: CI verify-deliverables 使用 test -f
+
+- **Issue ID**: MIN-3146
+- **Issue**: 7fb92fda-646d-46d3-ba1e-0aa0326698b6
+- **Status**: in_review (未合并到 main)
+- **问题描述**: CI 仍使用 test -d 检查目录而非 test -f 检查具体文件，导致虚假交付可绕过 CI
+- **失败原因**: Agent 声称已修复但 .github/workflows/ci.yml 中仍使用 test -d，未合并到 main
+- **责任方**: Orion (agent id: 746b2d93)
+- **验收未通过**: git show origin/main:.github/workflows/ci.yml 不包含 test -f 检查
+
 ## 更新记录
 
 | 日期 | 更新内容 | 更新者 |
 |------|---------|--------|
 | 2026-05-17 | 初始创建，记录 Sprint #71 虚假交付案例 | Orion |
+| 2026-05-23 | 记录 Sprint #129 三个失败案例 (MIN-3144, MIN-3145, MIN-3146) | java-reviewer |
