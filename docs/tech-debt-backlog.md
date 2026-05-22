@@ -255,6 +255,26 @@ Current test coverage is estimated at ~40% for service layer.
 
 ## Repayment Plan
 
+### Tech Debt Claiming Mechanism
+
+When an agent or developer claims a tech debt item for a sprint:
+
+1. **Claim Format**: Update the item's status to `Claimed` and add a claiming entry:
+   ```
+   **Claimed by**: [Agent Name] on YYYY-MM-DD
+   **Sprint Target**: Sprint #XX
+   ```
+
+2. **Completion Format**: When the tech debt is resolved:
+   - Update the item's status to `Completed`
+   - Record the completion date and any relevant notes
+   - Update the Progress Tracking table
+
+3. **Claim Rules**:
+   - Only one agent should claim an item at a time
+   - If the item is not completed within the target sprint, it should be re-claimed or moved back to `Backlog`
+   - PR for tech debt must include updates to this document
+
 ### Sprint Allocation
 Each sprint dedicates **15%** of capacity to tech debt reduction.
 
@@ -274,15 +294,17 @@ For a 2-week sprint with 10 working days:
 
 ### Progress Tracking
 
-| Item | Sprint Target | Status | Notes |
-|------|---------------|--------|-------|
-| GlobalExceptionHandler | Sprint 35 | Not started | - |
-| Pagination | Sprint 36 | Not started | - |
-| @Modifying | Sprint 37 | Not started | - |
-| Async Executor | Sprint 38 | Not started | - |
-| DTO Projection | Sprint 39 | Not started | - |
-| Field Injection | Future | Not started | - |
-| Test Coverage | Future | Not started | - |
+| Item | Sprint Target | Status | Claimed By | Notes |
+|------|---------------|--------|------------|-------|
+| GlobalExceptionHandler | Sprint 35 | Not started | - | - |
+| Pagination | Sprint 36 | Not started | - | - |
+| @Modifying | Sprint 37 | Not started | - | - |
+| Async Executor | Sprint 38 | Not started | - | - |
+| DTO Projection | Sprint 39 | Not started | - | - |
+| Field Injection | Future | Not started | - | - |
+| Test Coverage | Future | Not started | - | - |
+
+**Status Values**: `Not started` | `Claimed` | `In progress` | `Completed`
 
 ---
 
