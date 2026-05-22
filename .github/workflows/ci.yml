@@ -273,12 +273,68 @@ jobs:
           path: verification-report-*.txt
           retention-days: 30
 
+  # Verify origin/main commit hash (MIN-3131)
+  verify-commit-hash:
+    name: Verify Commit Hash
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fetch main branch
+        run: git fetch origin main
+
+      - name: Extract commit hash from PR description
+        id: extract-hash
+        run: |
+          echo "=== Extracting origin/main commit hash from PR description ==="
+          COMMIT_HASH=$(echo "${{ github.event.pull_request.body }}" | grep -oP 'origin/main commit hash: \K[a-f0-9]{40}' | head -1 || true)
+          if [ -z "$COMMIT_HASH" ]; then
+            echo "ERROR: No origin/main commit hash found in PR description"
+            echo "The PR description must contain: 'origin/main commit hash: <40-character-hash>'"
+            exit 1
+          fi
+          echo "Found commit hash: $COMMIT_HASH"
+          echo "COMMIT_HASH=$COMMIT_HASH" >> $GITHUB_ENV
+
+      - name: Verify commit exists in origin/main
+        run: |
+          echo "=== Verifying commit $COMMIT_HASH exists in origin/main ==="
+          if git log --oneline origin/main | grep -q "$COMMIT_HASH"; then
+            echo "✓ Commit $COMMIT_HASH exists in origin/main"
+          else
+            echo "ERROR: Commit $COMMIT_HASH does NOT exist in origin/main"
+            echo "This PR claims changes are in this commit, but it doesn't exist in origin/main."
+            echo "Either the changes haven't been merged yet, or the wrong commit hash was provided."
+            exit 1
+          fi
+
+      - name: Verify modified files exist in the commit
+        run: |
+          echo "=== Verifying modified files exist in the commit ==="
+          COMMIT_HASH="${{ env.COMMIT_HASH }}"
+          CHANGED_FILES=$(git diff --name-only origin/main...HEAD 2>/dev/null | head -20)
+
+          echo "Changed files in this PR:"
+          for file in $CHANGED_FILES; do
+            echo "  - $file"
+            if git show "$COMMIT_HASH:$file" > /dev/null 2>&1; then
+              echo "    ✓ $file exists in commit $COMMIT_HASH"
+            else
+              echo "    ✗ WARNING: $file does NOT exist in commit $COMMIT_HASH"
+              echo "    This file was added in this PR but not in the claimed merge commit."
+            fi
+          done
+
   # Merge gate - prevents merge if checks fail (MIN-1545, MIN-2413)
   merge-gate:
     name: Merge Gate
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
-    needs: [merge-conflict-check, build, security, quality, semgrep-sast, trivy-scan, gitleaks-scan, verify-deliverables]
+    needs: [merge-conflict-check, build, security, quality, semgrep-sast, trivy-scan, gitleaks-scan, verify-deliverables, verify-commit-hash]
     steps:
       - name: Verify all checks passed
         run: |
