@@ -42,6 +42,50 @@ jobs:
           echo "=== Checking Branch Status ==="
           git branch -a --merged origin/main | grep -v "^\*" || echo "All branches merged"
 
+  # Commit hash validation (MIN-3135)
+  commit-hash-validation:
+    name: Validate Commit Hash Format
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate commit hash format
+        run: |
+          echo "=== Validating Commit Hash Format ==="
+          # Get all commits in this PR
+          COMMITS=$(git log origin/main..HEAD --format="%H")
+          if [ -z "$COMMITS" ]; then
+            echo "No commits to validate"
+            exit 0
+          fi
+
+          # Check each commit hash format (should be 40 hex characters)
+          INVALID_COMMITS=""
+          for commit in $COMMITS; do
+            if ! echo "$commit" | grep -qE '^[0-9a-f]{40}$'; then
+              INVALID_COMMITS="$INVALID_COMMITS $commit"
+            fi
+          done
+
+          if [ -n "$INVALID_COMMITS" ]; then
+            echo "ERROR: Invalid commit hash format found:"
+            echo "$INVALID_COMMITS"
+            exit 1
+          fi
+
+          echo "All commit hashes are valid"
+          echo "PR contains $(echo "$COMMITS" | wc -l) commits"
+
+      - name: Check for secret patterns in commits
+        run: |
+          echo "=== Scanning Commits for Secrets ==="
+          # Scan commit messages and diffs for potential secrets
+          git log origin/main..HEAD -p | grep -iE '(password|secret|api[_-]?key|token|private[_-]?key)' || echo "No obvious secrets found in commits"
+
   # Code existence verification (MIN-1444)
   verify-code:
     name: Verify Code Existence
@@ -278,7 +322,7 @@ jobs:
     name: Merge Gate
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
-    needs: [merge-conflict-check, build, security, quality, semgrep-sast, trivy-scan, gitleaks-scan, verify-deliverables]
+    needs: [merge-conflict-check, commit-hash-validation, build, security, quality, semgrep-sast, trivy-scan, gitleaks-scan, verify-deliverables]
     steps:
       - name: Verify all checks passed
         run: |
