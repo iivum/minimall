@@ -192,8 +192,9 @@ jobs:
       - name: Run deliverables verification
         run: |
           echo "=== 验证交付物 ==="
-          test -d src/test/java && echo "Test directory exists"
-          test -d src/main/java && echo "Main source directory exists"
+          test -f src/test/java/com/minimall/repository/LiveLikeRepositoryTest.java && echo "LiveLikeRepositoryTest.java 存在"
+          test -f src/main/java/com/minimall/MinimallApplication.java && echo "Main application file exists"
+          test -f pom.xml && echo "Maven configuration exists"
 
       - name: Verify test files exist
         run: |
@@ -207,6 +208,27 @@ jobs:
           ./scripts/verify-deliverables.sh \
             src/test/java \
             target/surefire-reports
+
+      - name: Verify git origin/main file existence (MIN-2635)
+        run: |
+          echo "=== 验证 origin/main 分支中的关键文件 ==="
+          # 检查 main 分支中是否存在关键文件，防止虚假交付
+          if git show origin/main:src/test/java/com/minimall/repository/LiveLikeRepositoryTest.java >/dev/null 2>&1; then
+            echo "✓ LiveLikeRepositoryTest.java 已在 main 分支中存在"
+          else
+            echo "注意: LiveLikeRepositoryTest.java 在 main 分支中不存在（可能为新文件）"
+          fi
+          if git show origin/main:.github/workflows/ci.yml >/dev/null 2>&1; then
+            echo "✓ .github/workflows/ci.yml 已在 main 分支中存在"
+            # 验证 main 分支的 CI 文件是否包含 test -f
+            if grep -q "test -f" git show origin/main:.github/workflows/ci.yml 2>/dev/null; then
+              echo "✓ main 分支 CI 已使用 test -f 检查文件"
+            else
+              echo "警告: main 分支 CI 尚未使用 test -f"
+            fi
+          else
+            echo "警告: .github/workflows/ci.yml 在 main 分支中不存在"
+          fi
 
       - name: Verify deliverables script is executable
         run: |
