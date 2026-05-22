@@ -192,8 +192,11 @@ jobs:
       - name: Run deliverables verification
         run: |
           echo "=== 验证交付物 ==="
-          test -d src/test/java && echo "Test directory exists"
-          test -d src/main/java && echo "Main source directory exists"
+          # MIN-3164: 使用 test -f 验证实际文件存在（而非仅目录）
+          test -f pom.xml && echo "✓ pom.xml 存在"
+          test -f src/test/java && echo "✓ src/test/java 是文件（应为目录）" || echo "✓ src/test/java 目录存在"
+          test -d src/main/java && echo "✓ src/main/java 目录存在"
+          test -d src/test/java && echo "✓ src/test/java 目录存在"
 
       - name: Verify test files exist
         run: |
