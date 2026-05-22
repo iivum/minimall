@@ -9,7 +9,7 @@ import java.util.Optional;
 public interface LiveLikeRepository extends JpaRepository<LiveLike, String> {
     Optional<LiveLike> findByLiveRoomIdAndUserId(String liveRoomId, String userId);
 
-    @Modifying
+    @Modifying(clearAutomatically = true)
     @Query("DELETE FROM LiveLike l WHERE l.liveRoomId = :liveRoomId AND l.userId = :userId")
     void deleteByLiveRoomIdAndUserId(String liveRoomId, String userId);
 }
