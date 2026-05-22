@@ -1,6 +1,104 @@
-# Delivery Verification
+# 交付物验证与虚假交付检测
 
-本文档提供验证交付物是否已正确合并到 `main` 分支的检查步骤。
+本文档提供验证交付物是否已正确合并到 `main` 分支的检查步骤，以及虚假交付的检测方法。
+
+## 虚假交付检测流程
+
+### 1. PR 描述与实际交付物对比
+
+虚假交付的典型特征：
+- PR 描述声称完成了某功能
+- 但代码中缺少相应的实现文件
+- 或文件存在但内容为空/无意义
+
+### 2. 关键检测步骤
+
+#### 2.1 文件存在性验证（强制）
+
+使用 `git show origin/main:<file>` 验证文件是否实际存在于 main 分支：
+
+```bash
+# 验证特定文件
+git show origin/main:src/main/java/com/example/Service.java
+
+# 验证目录下的文件数量
+git show origin/main:src/main/java | grep -c "\.java$"
+
+# 批量验证（检查关键文件列表）
+for file in "pom.xml" "src/main/java/..." "src/test/java/..."; do
+  if git show "origin/main:$file" > /dev/null 2>&1; then
+    echo "✓ $file exists in main"
+  else
+    echo "✗ $file NOT found in main"
+  fi
+done
+```
+
+#### 2.2 Git log 与 PR 对比验证
+
+```bash
+# 查看 main 分支的最近提交
+git log origin/main --oneline -20
+
+# 查看某个 PR 的合并状态
+gh pr list --state merged --base main --limit 100 | grep "PR编号或标题"
+
+# 对比 PR 创建时间和实际提交时间
+gh pr view PR编号 --json createdAt,mergedAt,title
+```
+
+#### 2.3 测试文件与构建产物验证
+
+真实的 Java 项目交付应该包含：
+- 单元测试文件 `*Test.java`
+- 测试报告存在于 `target/surefire-reports/`
+
+```bash
+# 验证测试文件存在
+find src/test/java -name '*Test.java' | wc -l
+
+# 验证测试报告存在
+ls -la target/surefire-reports/*.txt
+
+# 验证编译产物
+find target/classes -name '*.class' | wc -l
+```
+
+### 3. CI 验证机制
+
+CI 的 `verify-deliverables` job 会自动检查：
+
+1. **文件存在性检查** - 使用 `test -f` 验证关键文件
+2. **目录存在性检查** - 辅助验证
+3. **测试文件数量检查** - 确保存在测试文件
+4. **构建产物检查** - 验证编译成功
+
+### 4. Post-merge 验证清单
+
+PR 合并后，PR 作者必须在 24 小时内完成以下验证：
+
+- [ ] `git show origin/main:<file>` 确认关键文件存在于 main 分支
+- [ ] `git log origin/main --oneline` 确认提交记录存在
+- [ ] 构建成功且测试通过
+- [ ] 在 issue 下发布验证结果
+
+### 5. 常见虚假交付特征
+
+| 特征 | 说明 | 检测方法 |
+|------|------|----------|
+| PR 已合并但文件不存在 | Agent 声称完成但实际未提交 | `git show origin/main:<file>` |
+| 文件存在但内容为空 | 创建了空文件或无意义内容 | `git show origin/main:<file> \| wc -c` |
+| 目录存在但无文件 | 只有目录，没有实际源文件 | `find src -name '*.java' \| wc -l` |
+| 测试文件不存在 | 声称有测试但实际没有 | `find src/test -name '*Test.java'` |
+| 构建产物不存在 | 声称编译成功但 target 为空 | `ls target/classes/*.class` |
+
+---
+
+## 检查步骤
+
+### 1. 检查 PR 是否已合并
+
+使用 `gh pr list` 命令查看已合并到 main 的 PR 列表：
 
 ## 检查步骤
 
