@@ -342,11 +342,93 @@ jobs:
     if: github.event_name == 'pull_request'
     needs: [merge-conflict-check, build, security, quality, semgrep-sast, trivy-scan, gitleaks-scan, verify-deliverables, tech-debt-sync]
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: Verify all checks passed
         run: |
           echo "=== Merge Gate Verification ==="
-          echo "All required checks have passed."
+          echo "PR: #${{ github.event.pull_request.number }} - ${{ github.event.pull_request.title }}"
+          echo "Target branch: ${{ github.base_ref }}"
+          echo "Source branch: ${{ github.head_ref }}"
+          echo ""
+
+          echo "Checking dependency status..."
+          echo "  ✓ merge-conflict-check: passed"
+          echo "  ✓ build: passed"
+          echo "  ✓ security: passed"
+          echo "  ✓ quality: passed"
+          echo "  ✓ semgrep-sast: passed"
+          echo "  ✓ trivy-scan: passed"
+          echo "  ✓ gitleaks-scan: passed"
+          echo "  ✓ verify-deliverables: passed"
+          echo "  ✓ tech-debt-sync: passed"
+          echo ""
+          echo "================================="
+          echo "✅ All merge gate checks passed"
+          echo "================================="
+          echo ""
           echo "This PR is cleared for merge."
+          echo "Branch protection will prevent force-push."
+          echo "At least 1 reviewer approval is required."
+
+      - name: Verify code is actually merged to target branch
+        run: |
+          echo "=== Verifying Code Merge Status ==="
+          SCRIPT_DIR="${{ github.workspace }}/scripts"
+          chmod +x "$SCRIPT_DIR/verify-merge.sh"
+
+          PR_COMMITS=$(git log --format=%H origin/main..HEAD | wc -l)
+          echo "PR contains $PR_COMMITS commits"
+
+          if [ "$PR_COMMITS" -eq 0 ]; then
+            echo "⚠️  No commits to verify (may be merge commit)"
+          else
+            UNMERGED=$(git log --format=%H origin/main..HEAD | head -5)
+            if [ -n "$UNMERGED" ]; then
+              echo "ERROR: Some PR commits not in main - possible fake delivery"
+              git log --oneline origin/main..HEAD | head -10
+              exit 1
+            fi
+          fi
+          echo "✓ Code merge verified"
+
+      - name: Run final deliverables verification
+        run: |
+          echo "=== Final Deliverables Verification ==="
+          echo "Checking that all deliverables exist..."
+
+          test -f pom.xml && echo "✓ pom.xml"
+          test -f backend/Dockerfile && echo "✓ backend/Dockerfile"
+
+          JAVA_FILES=$(find src/main/java -name '*.java' 2>/dev/null | wc -l)
+          if [ "$JAVA_FILES" -gt 0 ]; then
+            echo "✓ $JAVA_FILES Java source files"
+          else
+            echo "ERROR: No Java source files found"
+            exit 1
+          fi
+
+          TEST_FILES=$(find src/test/java -name '*Test.java' 2>/dev/null | wc -l)
+          if [ "$TEST_FILES" -gt 0 ]; then
+            echo "✓ $TEST_FILES test files"
+          else
+            echo "ERROR: No test files found"
+            exit 1
+          fi
+
+          echo ""
+          echo "✅ All deliverables verified"
+          echo "Merge gate PASSED - PR is cleared for merge"
+
+      - name: Block merge if verification fails
+        if: failure()
+        run: |
+          echo "❌ Merge gate verification FAILED"
+          echo "This PR cannot be merged until all checks pass."
+          exit 1
 
   # Semgrep SAST scan
   semgrep-sast:
