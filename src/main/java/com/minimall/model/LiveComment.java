@@ -4,7 +4,9 @@ import jakarta.persistence.*;
 import java.time.Instant;
 
 @Entity
-@Table(name = "live_comments")
+@Table(name = "live_comments", indexes = {
+    @Index(name = "idx_live_comments_room", columnList = "live_room_id")
+})
 public class LiveComment {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
