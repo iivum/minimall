@@ -340,13 +340,32 @@ jobs:
     name: Merge Gate
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
-    needs: [merge-conflict-check, build, security, quality, semgrep-sast, trivy-scan, gitleaks-scan, verify-deliverables, tech-debt-sync]
+    needs: [merge-conflict-check, build, security, quality, semgrep-sast, trivy-scan, gitleaks-scan, verify-deliverables, tech-debt-sync, verify-merge]
     steps:
       - name: Verify all checks passed
         run: |
           echo "=== Merge Gate Verification ==="
           echo "All required checks have passed."
           echo "This PR is cleared for merge."
+
+  # Verify Merge Script (MIN-3281)
+  verify-merge:
+    name: Verify Merge
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run verify-merge.sh
+        run: |
+          echo "=== Running verify-merge.sh ==="
+          chmod +x scripts/verify-merge.sh
+          ./scripts/verify-merge.sh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   # Semgrep SAST scan
   semgrep-sast:
@@ -418,3 +437,27 @@ jobs:
         run: |
           echo "Secrets detected! Gitleaks scan failed."
           exit 1
+
+  # CI Failure Notification
+  notify-failure:
+    name: Notify CI Failure
+    runs-on: ubuntu-latest
+    if: failure()
+    steps:
+      - name: Notify CI failure
+        run: |
+          echo "=== CI/CD Pipeline Failed ==="
+          echo "Repository: $GITHUB_REPOSITORY"
+          echo "Workflow: $GITHUB_WORKFLOW"
+          echo "Run ID: $GITHUB_RUN_ID"
+          echo "Run URL: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+          echo ""
+          echo "Failed jobs summary:"
+          echo "Please check the workflow run for details."
+
+      - name: Send Slack notification
+        if: env.SLACK_WEBHOOK_URL != ''
+        run: |
+          curl -X POST "$SLACK_WEBHOOK_URL" \
+            -H 'Content-type: application/json' \
+            --data '{"text": "❌ CI/CD Pipeline Failed\nRepository: '"$GITHUB_REPOSITORY"'\nWorkflow: '"$GITHUB_WORKFLOW"'\nRun: '"$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"'\n"}'

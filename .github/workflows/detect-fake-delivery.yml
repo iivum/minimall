@@ -43,13 +43,13 @@ jobs:
 
           if [ $EXIT_CODE -eq 1 ]; then
             echo "FAKE_DELIVERY_DETECTED=true" >> $GITHUB_ENV
-            echo "::set-output name=fake_delivery::true"
+            echo "fake_delivery=true" >> $GITHUB_OUTPUT
           elif [ $EXIT_CODE -eq 2 ]; then
             echo "ERROR: Detection script failed"
             exit 2
           else
             echo "FAKE_DELIVERY_DETECTED=false" >> $GITHUB_ENV
-            echo "::set-output name=fake_delivery::false"
+            echo "fake_delivery=false" >> $GITHUB_OUTPUT
           fi
 
           exit $EXIT_CODE
@@ -105,12 +105,12 @@ jobs:
             }
 
       - name: Set PR status to blocking if fake delivery detected
-        if: steps.fake-delivery-check.outputs.fake_delivery == 'true'
+        if: env.FAKE_DELIVERY_DETECTED == 'true'
         run: |
           echo "::notice::Fake delivery detected - PR should be blocked from merging"
 
       - name: Fail workflow if fake delivery detected
-        if: steps.fake-delivery-check.outputs.fake_delivery == 'true'
+        if: env.FAKE_DELIVERY_DETECTED == 'true'
         run: |
           echo "❌ 虚假交付检测失败：发现疑似虚假交付"
           echo "请在合并前确认所有文件已正确合并到 main 分支"
