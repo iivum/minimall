@@ -1,8 +1,8 @@
 #!/bin/bash
 # verify-commit-hash.sh - 验证 commit hash 是否存在于 origin/main
-# 用法: ./verify-commit-hash.sh <commit-hash> [--check-worktree]
-#   <commit-hash>       : 要验证的 commit hash (4-40位十六进制)
-#   --check-worktree    : 额外检查 worktree 是否有未推送的提交
+# 用法: ./verify-commit-hash.sh [--check-worktree] <commit-hash>
+#   --check-worktree  : 额外检查 worktree 是否有未推送的提交
+#   <commit-hash>     : 要验证的 commit hash (4-40位十六进制)
 # 返回码: 0=存在且无虚假交付, 1=不存在或检测到虚假交付, 2=检测失败
 
 set -e
@@ -17,9 +17,9 @@ VERBOSE=0
 CHECK_WORKTREE=0
 
 usage() {
-    echo "用法: $0 <commit-hash> [--check-worktree]"
+    echo "用法: $0 [--check-worktree] <commit-hash>"
     echo "示例: $0 abc1234"
-    echo "示例: $0 abc1234 --check-worktree"
+    echo "示例: $0 --check-worktree abc1234"
     echo ""
     echo "选项:"
     echo "  --check-worktree  额外检查当前 worktree 是否有未推送的提交"
@@ -49,23 +49,32 @@ if [ -z "$1" ]; then
     usage
 fi
 
-COMMIT_HASH="$1"
-shift
-
+# 解析选项
 while [ $# -gt 0 ]; do
     case "$1" in
         --check-worktree)
             CHECK_WORKTREE=1
+            shift
             ;;
         --verbose)
             VERBOSE=1
+            shift
             ;;
-        *)
+        -h|--help)
+            usage
+            ;;
+        -*)
             log_error "未知选项: $1"
             usage
             ;;
+        *)
+            # 第一个非选项参数是 commit hash
+            if [ -z "$COMMIT_HASH" ]; then
+                COMMIT_HASH="$1"
+            fi
+            shift
+            ;;
     esac
-    shift
 done
 
 # 确保是有效的 commit hash 格式 (4-40位十六进制)
