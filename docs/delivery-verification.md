@@ -91,24 +91,111 @@ PR 合并后，PR 作者必须在 24 小时内完成以下验证：
 | 目录存在但无文件 | 只有目录，没有实际源文件 | `find src -name '*.java' \| wc -l` |
 | 测试文件不存在 | 声称有测试但实际没有 | `find src/test -name '*Test.java'` |
 | 构建产物不存在 | 声称编译成功但 target 为空 | `ls target/classes/*.class` |
+| **Worktree 未推送** | 本地有修改但未推送到远程 | `git log origin/main..HEAD` |
 
 ---
 
-## 检查步骤
+## 验证脚本使用指南
 
-### 1. 检查 PR 是否已合并
+### verify-commit-hash.sh
 
-使用 `gh pr list` 命令查看已合并到 main 的 PR 列表：
-
-## 检查步骤
-
-### 1. 检查 PR 是否已合并
-
-使用 `gh pr list` 命令查看已合并到 main 的 PR 列表：
+验证指定 commit 是否已合并到 `origin/main`：
 
 ```bash
-gh pr list --state merged --base main --limit 100
+# 基本用法 - 仅验证 commit 存在性
+./scripts/verify-commit-hash.sh <commit-hash>
+
+# 增强检测 - 验证 commit 且检查 worktree 未推送情况
+./scripts/verify-commit-hash.sh <commit-hash> --check-worktree
+
+# 示例
+./scripts/verify-commit-hash.sh abc1234
+./scripts/verify-commit-hash.sh abc1234 --check-worktree
 ```
+
+**返回值：**
+- `0` - commit 存在且无虚假交付
+- `1` - commit 不存在或检测到虚假交付
+- `2` - 检测失败（remote 不存在等）
+
+**增强检测场景：**
+- 检测当前分支是否有未推送的提交
+- 显示未推送的 commit 列表
+- 提醒 Agent 先推送再进行验证
+
+### detect-fake-delivery.sh
+
+批量检测所有 worktree 的虚假交付情况：
+
+```bash
+./scripts/detect-fake-delivery.sh           # 基本检测
+./scripts/detect-fake-delivery.sh --verbose  # 详细输出
+```
+
+### post-merge-hook.sh
+
+工作树一致性检查钩子，可在 git merge 后自动执行：
+
+```bash
+# 安装方法
+cp scripts/post-merge-hook.sh .git/hooks/post-merge
+chmod +x .git/hooks/post-merge
+```
+
+**检测内容：**
+- origin/main 是否有新提交
+- 当前分支是否有未推送的提交
+- 未推送的 commit 列表
+
+---
+
+## 检测流程图
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                      Agent 标记 in_review                    │
+└──────────────────────────────┬──────────────────────────────┘
+                               │
+                               ▼
+┌─────────────────────────────────────────────────────────────┐
+│ 1. verify-commit-hash.sh --check-worktree <commit-hash>    │
+│    - 验证 commit 是否存在于 origin/main                     │
+│    - 检测 worktree 是否有未推送的提交                        │
+└──────────────────────────────┬──────────────────────────────┘
+                               │
+              ┌────────────────┴────────────────┐
+              │                                 │
+              ▼                                 ▼
+        ✓ 验证通过                           ✗ 验证失败
+              │                                 │
+              ▼                                 ▼
+┌─────────────────────────────────────────────────────────────┐
+│ 2. detect-fake-delivery.sh --verbose                        │
+│    - 批量检测所有 worktree                                  │
+│    - 检查文件是否存在于 origin/main                         │
+└──────────────────────────────┬──────────────────────────────┘
+                               │
+              ┌────────────────┴────────────────┐
+              │                                 │
+              ▼                                 ▼
+        ✓ 无虚假交付                         ✗ 发现虚假交付
+              │                                 │
+              ▼                                 ▼
+┌─────────────────────────────────────────────────────────────┐
+│ 3. Post-merge hook (自动触发)                               │
+│    - 检测 main 分支更新                                     │
+│    - 检测未推送提交                                         │
+└──────────────────────────────┬──────────────────────────────┘
+                               │
+                               ▼
+                    ┌─────────────────────┐
+                    │  最终验收决定        │
+                    └─────────────────────┘
+```
+
+---
+
+## 验收标准
 
 查找目标 PR 的标题或编号，确认其状态为 `merged`。
 
