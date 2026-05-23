@@ -48,68 +48,36 @@
 - [ ] 无不必要的文件提交
 - [ ] 分支名称符合规范
 
----
+### 7. 技术债检查 / Tech Debt Check
 
-## 自动化验证脚本 / Automation Scripts
+**目标：技术债增长率 < 5% per Sprint**
 
-### 快速检查脚本
-
-```bash
-#!/bin/bash
-# code-merge-check.sh - 快速代码合并检查
-
-set -e
-
-echo "=== MiniMall 代码合并检查 ==="
-
-# 1. 检查 merge conflict markers
-echo "[1/5] 检查 merge conflict markers..."
-if grep -r "<<<<<<<\|=======\|>>>>>>>" --include="*.java" src/ backend/; then
-    echo "❌ 发现 merge conflict markers!"
-    exit 1
-fi
-echo "✅ 无 merge conflict markers"
-
-# 2. 运行 checkstyle
-echo "[2/5] 运行 checkstyle..."
-mvn checkstyle:check -q
-echo "✅ checkstyle 检查通过"
-
-# 3. 运行测试
-echo "[3/5] 运行测试..."
-mvn test -q -DskipITs
-echo "✅ 测试通过"
-
-# 4. 检查硬编码凭证
-echo "[4/5] 检查硬编码凭证..."
-if grep -rE "(apiKey|api_key|secret|password|token)\s*=\s*[\"'][a-zA-Z0-9]" --include="*.java" src/ backend/ 2>/dev/null; then
-    echo "⚠️ 发现可能的硬编码凭证，请检查"
-fi
-echo "✅ 凭证检查完成"
-
-# 5. 代码格式化
-echo "[5/5] 检查代码格式化..."
-mvn spotless:check -q 2>/dev/null || echo "⚠️ spotless 检查跳过"
-echo "✅ 格式化检查完成"
-
-echo ""
-echo "=== 所有检查通过 ✓ ==="
-```
-
-### 使用方法
-
-```bash
-# 直接运行
-chmod +x scripts/code-merge-check.sh
-./scripts/code-merge-check.sh
-
-# 或在 CI/CD 中集成
-mvn verify -Dcheckstyle.skip=false
-```
+- [ ] 新代码复杂度合理（方法不超过 50 行，类不超过 500 行）
+- [ ] 无重复代码（使用工具检测：PMD/CPD 或等效脚本）
+- [ ] 无硬编码值（魔法数字、字符串应提取为常量）
+- [ ] 无循环依赖或不合理耦合
+- [ ] 数据库查询有适当索引（如有新增查询）
+- [ ] 异步方法使用有界线程池（非 SimpleAsyncTaskExecutor）
+- [ ] 无 Field Injection（应使用构造器注入）
+- [ ] 变更已记录到 tech-debt-backlog.md（如引入新 tech debt）
 
 ---
 
-## 验收标准
+## 技术债增长率目标
+
+**目标：技术债增长率 < 5% per Sprint**
+
+### 计算方法
+
+```
+技术债增长率 = (新增 tech debt items / 总 items) × 100%
+```
+
+### 自动化检测脚本
+
+参考 `scripts/detect-tech-debt.sh`
+
+### 验收标准
 
 - [ ] 所有 PR 必须包含本检查单执行结果
 - [ ] checkstyle.xml 无 merge conflict markers
@@ -121,4 +89,6 @@ mvn verify -Dcheckstyle.skip=false
 
 | 版本 | 日期 | 修改内容 |
 |------|------|----------|
+| 1.2 | 2026-05-24 | 添加技术债检查项（第7节），目标增长率 < 5% per Sprint（MIN-3285） |
+| 1.1 | 2026-05-23 | 添加 worktree→main 核心原则和 Post-Merge 验证清单（MIN-3202） |
 | 1.0 | 2026-05-09 | 初始版本 |
