@@ -6,36 +6,25 @@ Page({
     products: [],
     loading: true,
     searchKey: '',
+    showGuide: false,
   },
 
   onLoad() {
+    const hasSeenGuide = wx.getStorageSync('hasSeenGuide')
+    if (!hasSeenGuide) {
+      this.setData({ showGuide: true })
+    }
     this.loadProducts()
   },
 
   onShow() {
-    this.checkLoginAndLoad()
+    this.loadProducts()
   },
 
   onPullDownRefresh() {
     this.loadProducts().finally(() => {
       wx.stopPullDownRefresh()
     })
-  },
-
-  checkLoginAndLoad() {
-    if (!app.globalData.userId) {
-      wx.login({
-        success: (res) => {
-          if (res.code) {
-            app.login(res.code).catch(() => {}).finally(() => {
-              this.loadProducts()
-            })
-          }
-        },
-      })
-    } else {
-      this.loadProducts()
-    }
   },
 
   async loadProducts() {
@@ -82,5 +71,15 @@ Page({
 
   goToCart() {
     wx.switchTab({ url: '/pages/cart/cart' })
+  },
+
+  onGuideSkip() {
+    wx.setStorageSync('hasSeenGuide', true)
+    this.setData({ showGuide: false })
+  },
+
+  onGuideFinish() {
+    wx.setStorageSync('hasSeenGuide', true)
+    this.setData({ showGuide: false })
   },
 })

@@ -1,5 +1,6 @@
 <!-- pages/index/index.wxml -->
 <view class="container">
+  <guide visible="{{showGuide}}" bind:skip="onGuideSkip" bind:finish="onGuideFinish" />
   <view class="search-bar">
     <input class="search-input" placeholder="搜索商品" bindconfirm="onSearch" confirm-type="search" />
   </view>

@@ -11,15 +11,50 @@ App({
   },
 
   onLaunch() {
-    this.checkLoginStatus()
+    this.initApp()
   },
 
-  checkLoginStatus() {
+  async initApp() {
     const token = wx.getStorageSync('token')
     const userId = wx.getStorageSync('userId')
+    const openid = wx.getStorageSync('openid')
+
     if (token && userId) {
       this.globalData.token = token
       this.globalData.userId = userId
+      this.globalData.openid = openid
+
+      const isValid = await this.checkSessionValid()
+      if (!isValid) {
+        await this.silentLogin()
+      }
+    } else {
+      await this.silentLogin()
+    }
+  },
+
+  async checkSessionValid() {
+    try {
+      const result = await new Promise((resolve) => {
+        wx.checkSession({
+          success: () => resolve(true),
+          fail: () => resolve(false),
+        })
+      })
+      return result
+    } catch {
+      return false
+    }
+  },
+
+  async silentLogin() {
+    try {
+      const { code } = await wx.login()
+      if (code) {
+        await this.login(code)
+      }
+    } catch (err) {
+      console.error('Silent login failed:', err)
     }
   },
 
@@ -34,8 +69,10 @@ App({
             const { token, userId } = res.data
             this.globalData.token = token
             this.globalData.userId = userId
+            this.globalData.openid = code
             wx.setStorageSync('token', token)
             wx.setStorageSync('userId', userId)
+            wx.setStorageSync('openid', code)
             resolve({ token, userId })
           } else {
             reject(new Error(res.data.message || '登录失败'))
@@ -108,8 +145,7 @@ App({
 
   async handleAuthError() {
     try {
-      const code = await wx.login()
-      await this.login(code)
+      await this.silentLogin()
     } catch (err) {
       throw err
     }
