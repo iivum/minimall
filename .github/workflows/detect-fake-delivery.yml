@@ -1,0 +1,117 @@
+name: Detect Fake Delivery
+
+on:
+  pull_request:
+    branches: [main, develop]
+    types: [opened, synchronize, reopened]
+
+jobs:
+  detect-fake-delivery:
+    name: Detect Fake Delivery
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check for fake delivery
+        id: fake-delivery-check
+        run: |
+          echo "=== Running Fake Delivery Detection ==="
+          echo "PR: #${{ github.event.pull_request.number }} - ${{ github.event.pull_request.title }}"
+          echo "Target branch: ${{ github.base_ref }}"
+          echo "Source branch: ${{ github.head_ref }}"
+          echo ""
+
+          SCRIPT_DIR="${{ github.workspace }}/scripts"
+          if [ ! -f "$SCRIPT_DIR/detect-fake-delivery.sh" ]; then
+            echo "ERROR: detect-fake-delivery.sh not found in scripts/"
+            exit 2
+          fi
+
+          chmod +x "$SCRIPT_DIR/detect-fake-delivery.sh"
+
+          echo "=== Executing detect-fake-delivery.sh ==="
+          "$SCRIPT_DIR/detect-fake-delivery.sh" --verbose
+          EXIT_CODE=$?
+
+          echo ""
+          echo "=== Detection Complete ==="
+          echo "Exit code: $EXIT_CODE"
+
+          if [ $EXIT_CODE -eq 1 ]; then
+            echo "FAKE_DELIVERY_DETECTED=true" >> $GITHUB_ENV
+            echo "::set-output name=fake_delivery::true"
+          elif [ $EXIT_CODE -eq 2 ]; then
+            echo "ERROR: Detection script failed"
+            exit 2
+          else
+            echo "FAKE_DELIVERY_DETECTED=false" >> $GITHUB_ENV
+            echo "::set-output name=fake_delivery::false"
+          fi
+
+          exit $EXIT_CODE
+
+      - name: Post detection result as PR comment
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prNumber = context.payload.pull_request.number;
+            const isFakeDelivery = process.env.FAKE_DELIVERY_DETECTED === 'true';
+
+            const commentBody = isFakeDelivery
+              ? `## ⚠️ 虚假交付检测警告
+
+检测到疑似虚假交付！请确认所有相关文件已合并到 main 分支。
+
+> 此检测由 [detect-fake-delivery.sh](scripts/detect-fake-delivery.sh) 自动生成`
+              : `## ✅ 虚假交付检测通过
+
+未检测到虚假交付。
+
+> 此检测由 [detect-fake-delivery.sh](scripts/detect-fake-delivery.sh) 自动生成`;
+
+            // Check if comment already exists
+            const comments = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber
+            });
+
+            const existingComment = comments.data.find(c =>
+              c.user.login === 'github-actions[bot]' &&
+              c.body.includes('虚假交付检测')
+            );
+
+            if (existingComment) {
+              // Update existing comment
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existingComment.id,
+                body: commentBody
+              });
+            } else {
+              // Create new comment
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                body: commentBody
+              });
+            }
+
+      - name: Set PR status to blocking if fake delivery detected
+        if: steps.fake-delivery-check.outputs.fake_delivery == 'true'
+        run: |
+          echo "::notice::Fake delivery detected - PR should be blocked from merging"
+
+      - name: Fail workflow if fake delivery detected
+        if: steps.fake-delivery-check.outputs.fake_delivery == 'true'
+        run: |
+          echo "❌ 虚假交付检测失败：发现疑似虚假交付"
+          echo "请在合并前确认所有文件已正确合并到 main 分支"
+          exit 1
