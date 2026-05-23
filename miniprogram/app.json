@@ -62,7 +62,9 @@
     }
   },
   "requiredBackgroundModes": ["audio", "location"],
-  "usingComponents": {},
+  "usingComponents": {
+    "guide": "/components/guide/guide"
+  },
   "sitemapLocation": "sitemap.json",
   "style": "v2"
 }
