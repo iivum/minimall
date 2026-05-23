@@ -308,6 +308,103 @@ For a 2-week sprint with 10 working days:
 
 ---
 
+## Prevention Mechanisms
+
+### Goal: Tech Debt Growth Rate < 5% per Sprint
+
+To prevent tech debt accumulation, the following mechanisms are implemented:
+
+### 1. Code Review Checklist - Tech Debt Section
+
+All PRs must include tech debt checks (per `code-merge-checklist.md` Section 7):
+
+- [ ] Method complexity ≤ 50 lines, Class complexity ≤ 500 lines
+- [ ] No duplicate code (detected via PMD/CPD or equivalent)
+- [ ] No hardcoded values (magic numbers/strings should be constants)
+- [ ] No circular dependencies or unreasonable coupling
+- [ ] Database queries have appropriate indexes (if new queries added)
+- [ ] Async methods use bounded thread pools (not SimpleAsyncTaskExecutor)
+- [ ] No Field Injection (use constructor injection instead)
+- [ ] Changes documented in tech-debt-backlog.md (if introducing new tech debt)
+
+### 2. Automated Detection Script
+
+**Script**: `scripts/detect-tech-debt.sh`
+
+Executed during:
+- Pre-PR checks (required before `in_review` status)
+- CI/CD pipeline
+- Local development pre-commit hook
+
+**Detection Coverage**:
+| Check | Threshold | Severity |
+|-------|-----------|----------|
+| Method complexity | > 50 lines | HIGH |
+| Class complexity | > 500 lines | HIGH |
+| Duplicate code | > 5 occurrences | MEDIUM |
+| Hardcoded values | Any magic number | MEDIUM |
+| Field Injection | Any occurrence | HIGH |
+| Unbounded thread pool | Any occurrence | CRITICAL |
+| Missing @Modifying | Any UPDATE/DELETE without annotation | CRITICAL |
+
+### 3. Sprint Tech Debt Allocation
+
+- **15%** of sprint capacity allocated to tech debt reduction
+- For 2-week sprint: 1.5 days (12 hours) for tech debt
+- Remaining 8.5 days for feature work
+
+### 4. Tech Debt Growth Rate Calculation
+
+```
+Tech Debt Growth Rate = (New tech debt items / Total items) × 100%
+```
+
+- Measured per sprint
+- Target: < 5% growth rate
+- If exceeded, sprint retrospective must identify causes
+
+### 5. New Tech Debt Identification Process
+
+When new tech debt is identified:
+
+1. **Document**: Create entry in this file with RICE score
+2. **Assess**: Determine if it requires immediate fix or can wait
+3. **Assign**: Add to next sprint's tech debt slot if not critical
+4. **Track**: Monitor in quarterly review
+
+**Severity Classification**:
+| Severity | Description | Action |
+|----------|-------------|--------|
+| CRITICAL | Data loss risk, security vulnerability | Fix immediately, no deferral |
+| HIGH | Significant quality/performance issue | Fix within current sprint |
+| MEDIUM | Maintainability concern | Schedule for next sprint |
+| LOW | Minor issue, style preference | Backlog, address opportunistically |
+
+### 6. Integration with CI/CD
+
+The tech debt detection script is integrated into the CI pipeline:
+
+```yaml
+# .github/workflows/ci.yml
+- name: Tech Debt Detection
+  run: |
+    chmod +x scripts/detect-tech-debt.sh
+    ./scripts/detect-tech-debt.sh
+```
+
+**CI Failure Conditions**:
+- Any CRITICAL tech debt found
+- More than 3 HIGH severity issues
+- Any repeated violation (same issue across multiple PRs)
+
+### 7. Review Cycle
+
+- **Weekly**: Quick tech debt review during standup
+- **End of Sprint**: Full tech debt assessment during retrospective
+- **Quarterly**: Comprehensive review of tech debt trends
+
+---
+
 ## Adding New Tech Debt
 
 When new tech debt is identified:
