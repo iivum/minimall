@@ -59,14 +59,14 @@ public class PointController {
     }
 
     @PostMapping("/deduct")
-    public ResponseEntity<PointAccountResponse> deduct(@RequestBody DeductPointsRequest request) {
+    public ResponseEntity<PointAccountResponse> deduct(@Valid @RequestBody DeductPointsRequest request) {
         String userId = securityUtils.getCurrentUserId();
         return ResponseEntity.ok(PointAccountResponse.from(
             pointService.deduct(userId, request.points(), request.orderNo(), request.description())));
     }
 
     @PostMapping("/redeem/coupon")
-    public ResponseEntity<PointAccountResponse> redeemCoupon(@RequestBody DeductPointsRequest request) {
+    public ResponseEntity<PointAccountResponse> redeemCoupon(@Valid @RequestBody DeductPointsRequest request) {
         String userId = securityUtils.getCurrentUserId();
         return ResponseEntity.ok(PointAccountResponse.from(
             pointService.deduct(userId, request.points(), request.orderNo(),

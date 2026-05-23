@@ -5,6 +5,8 @@ import com.minimall.service.JwtService;
 import com.minimall.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,7 +24,7 @@ public class AuthController {
 
     @PostMapping("/login")
     @Operation(summary = "Login with WeChat openid, returns JWT token")
-    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
+    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
         if (request.openid() == null || request.openid().isBlank()) {
             return ResponseEntity.badRequest().build();
         }
@@ -36,7 +38,7 @@ public class AuthController {
 
     @PostMapping("/register")
     @Operation(summary = "Register a new user")
-    public ResponseEntity<LoginResponse> register(@RequestBody RegisterRequest request) {
+    public ResponseEntity<LoginResponse> register(@Valid @RequestBody RegisterRequest request) {
         if (request.nickname() == null || request.nickname().isBlank()) {
             return ResponseEntity.badRequest().build();
         }
@@ -50,7 +52,7 @@ public class AuthController {
         return ResponseEntity.ok(new LoginResponse(token, created.getId()));
     }
 
-    public record LoginRequest(String openid) {}
-    public record RegisterRequest(String openid, String nickname, String phone, String avatarUrl) {}
+    public record LoginRequest(@NotBlank String openid) {}
+    public record RegisterRequest(@NotBlank String openid, @NotBlank String nickname, String phone, String avatarUrl) {}
     public record LoginResponse(String token, String userId) {}
 }
