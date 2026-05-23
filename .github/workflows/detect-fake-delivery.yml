@@ -1,0 +1,138 @@
+name: Detect Fake Delivery
+
+on:
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
+    inputs:
+      verbose:
+        description: 'Enable verbose output'
+        required: false
+        default: 'false'
+
+env:
+  SCRIPT_VERSION: "1.0.0"
+
+jobs:
+  detect-fake-delivery:
+    name: Detect Fake Delivery
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Bash
+        run: |
+          echo "=== Detect Fake Delivery CI ==="
+          echo "Script version: $SCRIPT_VERSION"
+          echo "Event: ${{ github.event_name }}"
+          echo "Branch: ${{ github.ref_name }}"
+          echo ""
+
+      - name: Run fake delivery detection
+        id: detection
+        run: |
+          SCRIPT_PATH="scripts/detect-fake-delivery.sh"
+
+          if [ ! -f "$SCRIPT_PATH" ]; then
+            echo "ERROR: detect-fake-delivery.sh not found"
+            echo "The fake delivery detection script must exist at: $SCRIPT_PATH"
+            exit 1
+          fi
+
+          if [ ! -x "$SCRIPT_PATH" ]; then
+            echo "Making script executable..."
+            chmod +x "$SCRIPT_PATH"
+          fi
+
+          VERBOSE_FLAG=""
+          if [ "${{ github.event.inputs.verbose }}" = "true" ]; then
+            VERBOSE_FLAG="--verbose"
+          fi
+
+          echo "=== Running detection ==="
+          bash "$SCRIPT_PATH" $VERBOSE_FLAG
+          EXIT_CODE=$?
+
+          echo ""
+          echo "=== Detection completed with exit code: $EXIT_CODE ==="
+
+          if [ $EXIT_CODE -eq 1 ]; then
+            echo "FAKE_DELIVERY_DETECTED=true" >> $GITHUB_OUTPUT
+          else
+            echo "FAKE_DELIVERY_DETECTED=false" >> $GITHUB_OUTPUT
+          fi
+
+          exit $EXIT_CODE
+
+      - name: Post detection comment
+        if: github.event_name == 'pull_request'
+        run: |
+          if [ "${{ steps.detection.outputs.FAKE_DELIVERY_DETECTED }}" = "true" ]; then
+            echo "::notice::Fake delivery detected! PR cannot be merged until files are properly merged to main."
+            echo ""
+            echo "⚠️ **Blocking: Fake Delivery Detected**"
+            echo ""
+            echo "This PR contains worktree changes that have not been merged to the main branch."
+            echo "Please ensure all modified files are properly merged before merging this PR."
+            echo ""
+            echo "To learn more about fake delivery prevention, see [docs/sprints/fake-delivery-prevention-training.md](docs/sprints/fake-delivery-prevention-training.md)"
+          else
+            echo "✓ No fake delivery detected"
+          fi
+
+      - name: Report generation
+        if: always()
+        run: |
+          REPORT_FILE="fake-delivery-report-$(date +%Y%m%d-%H%M%S).txt"
+          echo "=== Fake Delivery Detection Report ===" > $REPORT_FILE
+          echo "Generated: $(date)" >> $REPORT_FILE
+          echo "Repository: ${{ github.repository }}" >> $REPORT_FILE
+          echo "PR: #${{ github.event.pull_request.number || 'N/A' }}" >> $REPORT_FILE
+          echo "Branch: ${{ github.ref_name }}" >> $REPORT_FILE
+          echo "" >> $REPORT_FILE
+
+          if [ "${{ steps.detection.outputs.FAKE_DELIVERY_DETECTED }}" = "true" ]; then
+            echo "Result: FAKE DELIVERY DETECTED" >> $REPORT_FILE
+            echo "Status: BLOCKING" >> $REPORT_FILE
+          else
+            echo "Result: CLEAN - No fake delivery detected" >> $REPORT_FILE
+            echo "Status: PASSING" >> $REPORT_FILE
+          fi
+
+          echo "" >> $REPORT_FILE
+          echo "For more details, see the workflow logs."
+          echo "" >> $REPORT_FILE
+          echo "Script: scripts/detect-fake-delivery.sh" >> $REPORT_FILE
+          echo "Version: $SCRIPT_VERSION" >> $REPORT_FILE
+
+          cat $REPORT_FILE
+
+      - name: Upload report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: fake-delivery-report
+          path: fake-delivery-report-*.txt
+          retention-days: 30
+
+      - name: Fail if fake delivery detected
+        if: steps.detection.outputs.FAKE_DELIVERY_DETECTED == 'true'
+        run: |
+          echo ""
+          echo "=========================================="
+          echo "❌ FAKE DELIVERY BLOCKED"
+          echo "=========================================="
+          echo ""
+          echo "This PR is blocked because fake delivery was detected."
+          echo "Files modified in this worktree have not been merged to main."
+          echo ""
+          echo "To resolve:"
+          echo "1. Merge your worktree changes to main branch"
+          echo "2. Wait for the merge to complete"
+          echo "3. Update your PR with the latest main"
+          echo ""
+          echo "See: docs/sprints/fake-delivery-prevention-training.md"
+          exit 1
