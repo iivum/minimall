@@ -4,6 +4,7 @@ import com.minimall.model.Product;
 import com.minimall.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -61,13 +62,13 @@ public class ProductController {
 
     @PostMapping
     @Operation(summary = "Create a new product")
-    public ResponseEntity<Product> createProduct(@RequestBody Product product) {
+    public ResponseEntity<Product> createProduct(@Valid @RequestBody Product product) {
         return ResponseEntity.ok(productService.create(product));
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Update a product")
-    public ResponseEntity<Product> updateProduct(@PathVariable String id, @RequestBody Product product) {
+    public ResponseEntity<Product> updateProduct(@PathVariable String id, @Valid @RequestBody Product product) {
         return ResponseEntity.ok(productService.update(id, product));
     }
 

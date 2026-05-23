@@ -7,6 +7,9 @@ import com.minimall.model.OrderItem;
 import com.minimall.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -54,7 +57,7 @@ public class OrderController {
 
     @PostMapping
     @Operation(summary = "Create a new order")
-    public ResponseEntity<Order> createOrder(@RequestBody CreateOrderRequest request) {
+    public ResponseEntity<Order> createOrder(@Valid @RequestBody CreateOrderRequest request) {
         if (!securityUtils.isCurrentUser(request.userId)) {
             throw new UnauthorizedException("You can only create orders for yourself");
         }
@@ -82,7 +85,9 @@ public class OrderController {
     }
 
     public static class CreateOrderRequest {
+        @NotNull
         public String userId;
+        @NotEmpty
         public List<OrderItem> items;
     }
 }
