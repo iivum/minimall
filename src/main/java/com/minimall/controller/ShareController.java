@@ -24,7 +24,7 @@ public class ShareController {
     @Operation(summary = "Create share link for a product")
     public ResponseEntity<ShareResponse> createShareLink(
             @RequestHeader("X-User-Id") String userId,
-            @RequestBody ShareRequest request) {
+            @Valid @RequestBody ShareRequest request) {
         return ResponseEntity.ok(shareService.createShareLink(userId, request));
     }
 

@@ -21,7 +21,7 @@ public class CouponController {
 
     @PostMapping
     @Operation(summary = "Create a new coupon (admin)")
-    public ResponseEntity<CouponResponse> createCoupon(@RequestBody CouponRequest request) {
+    public ResponseEntity<CouponResponse> createCoupon(@Valid @RequestBody CouponRequest request) {
         return ResponseEntity.ok(couponService.createCoupon(request));
     }
 

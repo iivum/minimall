@@ -35,7 +35,7 @@ public class CategoryController {
 
     @PostMapping
     @Operation(summary = "Create new category")
-    public ResponseEntity<Category> create(@RequestBody CategoryRequest request) {
+    public ResponseEntity<Category> create(@Valid @RequestBody CategoryRequest request) {
         Category category = new Category();
         category.setName(request.name());
         category.setSortOrder(request.sortOrder() != null ? request.sortOrder() : 0);
@@ -48,7 +48,7 @@ public class CategoryController {
 
     @PutMapping("/{id}")
     @Operation(summary = "Update category")
-    public ResponseEntity<Category> update(@PathVariable String id, @RequestBody CategoryRequest request) {
+    public ResponseEntity<Category> update(@PathVariable String id, @Valid @RequestBody CategoryRequest request) {
         return categoryRepository.findById(id).map(category -> {
             category.setName(request.name());
             if (request.sortOrder() != null) {
@@ -74,5 +74,5 @@ public class CategoryController {
         }).orElse(ResponseEntity.notFound().build());
     }
 
-    public record CategoryRequest(String name, Integer sortOrder, Boolean active, String parentId) {}
+    public record CategoryRequest(@NotBlank String name, Integer sortOrder, Boolean active, String parentId) {}
 }

@@ -1,9 +1,10 @@
 package com.minimall.dto;
 
+import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
 public record DeductPointsRequest(
-    int points,
+    @NotNull int points,
     String orderNo,
     String description
 ) {}
