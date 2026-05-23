@@ -6,7 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "live_rooms")
+@Table(name = "live_rooms", indexes = {
+    @Index(name = "idx_live_rooms_status", columnList = "status")
+})
 public class LiveRoom {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
