@@ -6,9 +6,14 @@ Page({
     products: [],
     loading: true,
     searchKey: '',
+    showGuide: false,
   },
 
   onLoad() {
+    const hasSeenGuide = wx.getStorageSync('hasSeenGuide')
+    if (!hasSeenGuide) {
+      this.setData({ showGuide: true })
+    }
     this.loadProducts()
   },
 
@@ -82,5 +87,15 @@ Page({
 
   goToCart() {
     wx.switchTab({ url: '/pages/cart/cart' })
+  },
+
+  onGuideSkip() {
+    wx.setStorageSync('hasSeenGuide', true)
+    this.setData({ showGuide: false })
+  },
+
+  onGuideFinish() {
+    wx.setStorageSync('hasSeenGuide', true)
+    this.setData({ showGuide: false })
   },
 })

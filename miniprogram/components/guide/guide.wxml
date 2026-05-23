@@ -1,0 +1,26 @@
+<!-- components/guide/guide.wxml -->
+<view class="guide-overlay" wx:if="{{visible}}" bindtap="onSkip">
+  <view class="guide-content">
+    <view class="guide-header">
+      <text class="guide-title">欢迎来到 Minimall</text>
+    </view>
+    <view class="guide-steps">
+      <view class="guide-step">
+        <view class="step-icon">1</view>
+        <view class="step-text">浏览商品，挑选心仪好物</view>
+      </view>
+      <view class="guide-step">
+        <view class="step-icon">2</view>
+        <view class="step-text">加入购物车，随时查看</view>
+      </view>
+      <view class="guide-step">
+        <view class="step-icon">3</view>
+        <view class="step-text">下单支付，轻松购物</view>
+      </view>
+    </view>
+    <view class="guide-actions">
+      <button class="btn-skip" bindtap="onSkip">跳过</button>
+      <button class="btn-finish" bindtap="onFinish">我知道了</button>
+    </view>
+  </view>
+</view>
