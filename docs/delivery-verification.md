@@ -2,6 +2,94 @@
 
 本文档提供验证交付物是否已正确合并到 `main` 分支的检查步骤，以及虚假交付的检测方法。
 
+---
+
+## 核心原则：本地存在 ≠ Main 存在
+
+> ⚠️ **Worktree 中的文件存在 ≠ Main 分支存在**
+>
+> 这是虚假交付的根本原因。Agent 在 worktree 中完成了修改，但忘记/未能推送到 main 分支，导致：
+> - PR 状态显示"已合并"
+> - 但 main 分支实际不存在对应文件
+> - 验收失败，重复多次（Phase 66, 67, 73, 74, 117, 118, 119 均出现此问题）
+
+---
+
+## Worktree → Main 标准流程
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                        WORKTREE 生命周期                          │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│   1. multica repo checkout <url>                                │
+│      → 创建 worktree 和分支（如 agent/technical-writer/xxx）      │
+│                                                                 │
+│   2. 在 worktree 中编辑文件                                      │
+│      → 文件存在于本地 worktree 分支                              │
+│                                                                 │
+│   3. git add + git commit                                       │
+│      → 提交到 worktree 分支本地仓库                              │
+│                                                                 │
+│   4. git push origin <branch-name>                              │
+│      → 推送到远程（origin）                                      │
+│                                                                 │
+│   5. 创建 PR 并合并到 main                                       │
+│      → PR 合并后，代码进入 main 分支                              │
+│                                                                 │
+│   ⚠️ 6. 验证：git show origin/main:<file>                        │
+│      → 确认 main 分支真正存在该文件                               │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### 每一步都必须验证
+
+| 步骤 | 验证命令 | 通过标准 |
+|------|----------|----------|
+| 文件编辑完成 | `ls -la <file>` | 文件存在且非空 |
+| commit 完成 | `git log --oneline -1` | 显示正确的 commit 信息 |
+| push 完成 | 无错误输出 | 远程分支包含 commit |
+| PR 合并完成 | `gh pr list --state merged` | PR 出现在列表中 |
+| **main 分支验证** | `git show origin/main:<file>` | 显示文件内容（不是错误） |
+
+---
+
+## Agent 自检 Checklist
+
+在将 issue 状态更新为 `in_review` 前，必须逐项确认：
+
+### 1. 文件存在性验证（强制）
+
+- [ ] `git show origin/main:<file>` 确认每个声称的文件存在于 main 分支
+- [ ] 使用 `test -f` 验证（非 `test -d`）
+- [ ] 文件内容非空且有意义
+- [ ] `git show origin/main:<file> | wc -c` 确认内容字节数 > 0
+
+### 2. Git 状态验证
+
+- [ ] `git status` 确认所有修改已提交
+- [ ] `git log --oneline -5` 确认 commit 记录正确
+- [ ] `git push origin <branch-name>` 已成功执行
+
+### 3. 构建与测试验证
+
+- [ ] `mvn compile` 构建成功
+- [ ] `mvn test` 测试通过
+- [ ] 无 merge conflict markers (`<<<<<<<`, `=======`, `>>>>>>>`)
+
+### 4. PR 状态验证
+
+- [ ] PR 已合并到 main 分支
+- [ ] `gh pr list --state merged --base main` 能看到 PR
+
+### 5. 验证结果发布
+
+- [ ] 在 issue 下发布 `git show origin/main:<file>` 的实际输出
+- [ ] 说明每个交付物的验证状态
+
+---
+
 ## 虚假交付检测流程
 
 ### 1. PR 描述与实际交付物对比
