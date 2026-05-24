@@ -6,6 +6,7 @@ import com.minimall.dto.PointAccountResponse;
 import com.minimall.dto.PointTransactionResponse;
 import com.minimall.service.PointService;
 import org.springframework.http.ResponseEntity;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
