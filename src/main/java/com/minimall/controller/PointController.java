@@ -5,6 +5,7 @@ import com.minimall.dto.DeductPointsRequest;
 import com.minimall.dto.PointAccountResponse;
 import com.minimall.dto.PointTransactionResponse;
 import com.minimall.service.PointService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
