@@ -95,6 +95,136 @@ jobs:
       - name: Check code coverage
         run: mvn jacoco:check -B
 
+      - name: Extract coverage metrics
+        id: coverage
+        run: |
+          echo "=== JaCoCo Coverage Report ==="
+
+          COVERAGE_FILE="target/site/jacoco/jacoco.xml"
+          if [ -f "$COVERAGE_FILE" ]; then
+            LINE_COVERED=$(grep -oP 'counter type="LINE" covered="\K[^"]*' "$COVERAGE_FILE" | head -1)
+            LINE_MISSED=$(grep -oP 'counter type="LINE" missed="\K[^"]*' "$COVERAGE_FILE" | head -1)
+            BRANCH_COVERED=$(grep -oP 'counter type="BRANCH" covered="\K[^"]*' "$COVERAGE_FILE" | head -1)
+            BRANCH_MISSED=$(grep -oP 'counter type="BRANCH" missed="\K[^"]*' "$COVERAGE_FILE" | head -1)
+
+            TOTAL_LINES=$((LINE_COVERED + LINE_MISSED))
+            TOTAL_BRANCHES=$((BRANCH_COVERED + BRANCH_MISSED))
+
+            if [ "$TOTAL_LINES" -gt 0 ]; then
+              LINE_PCT=$((LINE_COVERED * 100 / TOTAL_LINES))
+            else
+              LINE_PCT=0
+            fi
+
+            if [ "$TOTAL_BRANCHES" -gt 0 ]; then
+              BRANCH_PCT=$((BRANCH_COVERED * 100 / TOTAL_BRANCHES))
+            else
+              BRANCH_PCT=0
+            fi
+
+            echo "LINE_COVERED=$LINE_COVERED" >> $GITHUB_OUTPUT
+            echo "LINE_MISSED=$LINE_MISSED" >> $GITHUB_OUTPUT
+            echo "LINE_PCT=$LINE_PCT" >> $GITHUB_OUTPUT
+            echo "BRANCH_COVERED=$BRANCH_COVERED" >> $GITHUB_OUTPUT
+            echo "BRANCH_MISSED=$BRANCH_MISSED" >> $GITHUB_OUTPUT
+            echo "BRANCH_PCT=$BRANCH_PCT" >> $GITHUB_OUTPUT
+
+            echo "Line Coverage: $LINE_COVERED/$TOTAL_LINES ($LINE_PCT%)"
+            echo "Branch Coverage: $BRANCH_COVERED/$TOTAL_BRANCHES ($BRANCH_PCT%)"
+          else
+            echo "Warning: JaCoCo report not found at $COVERAGE_FILE"
+            echo "LINE_COVERED=0" >> $GITHUB_OUTPUT
+            echo "LINE_MISSED=0" >> $GITHUB_OUTPUT
+            echo "LINE_PCT=0" >> $GITHUB_OUTPUT
+            echo "BRANCH_COVERED=0" >> $GITHUB_OUTPUT
+            echo "BRANCH_MISSED=0" >> $GITHUB_OUTPUT
+            echo "BRANCH_PCT=0" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Download base coverage report
+        if: github.event_name == 'pull_request'
+        uses: actions/download-artifact@v4
+        with:
+          name: jacoco-report
+          path: target/site/jacoco-base/
+        continue-on-error: true
+
+      - name: Compare with base coverage
+        if: github.event_name == 'pull_request'
+        run: |
+          echo "=== Coverage Trend Analysis ==="
+
+          BASE_FILE="target/site/jacoco-base/jacoco.xml"
+          CURRENT_FILE="target/site/jacoco/jacoco.xml"
+
+          if [ -f "$BASE_FILE" ]; then
+            BASE_LINE=$(grep -oP 'counter type="LINE" covered="\K[^"]*' "$BASE_FILE" | head -1)
+            BASE_LINE_MISSED=$(grep -oP 'counter type="LINE" missed="\K[^"]*' "$BASE_FILE" | head -1)
+            BASE_BRANCH=$(grep -oP 'counter type="BRANCH" covered="\K[^"]*' "$BASE_FILE" | head -1)
+            BASE_BRANCH_MISSED=$(grep -oP 'counter type="BRANCH" missed="\K[^"]*' "$BASE_FILE" | head -1)
+
+            CURRENT_LINE=$(grep -oP 'counter type="LINE" covered="\K[^"]*' "$CURRENT_FILE" | head -1)
+            CURRENT_LINE_MISSED=$(grep -oP 'counter type="LINE" missed="\K[^"]*' "$CURRENT_FILE" | head -1)
+            CURRENT_BRANCH=$(grep -oP 'counter type="BRANCH" covered="\K[^"]*' "$CURRENT_FILE" | head -1)
+            CURRENT_BRANCH_MISSED=$(grep -oP 'counter type="BRANCH" missed="\K[^"]*' "$CURRENT_FILE" | head -1)
+
+            if [ -n "$BASE_LINE" ] && [ -n "$BASE_LINE_MISSED" ] && [ "$((BASE_LINE + BASE_LINE_MISSED))" -gt 0 ]; then
+              BASE_LINE_PCT=$((BASE_LINE * 100 / (BASE_LINE + BASE_LINE_MISSED)))
+            else
+              BASE_LINE_PCT=0
+            fi
+
+            if [ -n "$CURRENT_LINE" ] && [ -n "$CURRENT_LINE_MISSED" ] && [ "$((CURRENT_LINE + CURRENT_LINE_MISSED))" -gt 0 ]; then
+              CURRENT_LINE_PCT=$((CURRENT_LINE * 100 / (CURRENT_LINE + CURRENT_LINE_MISSED)))
+            else
+              CURRENT_LINE_PCT=0
+            fi
+
+            if [ -n "$BASE_BRANCH" ] && [ -n "$BASE_BRANCH_MISSED" ] && [ "$((BASE_BRANCH + BASE_BRANCH_MISSED))" -gt 0 ]; then
+              BASE_BRANCH_PCT=$((BASE_BRANCH * 100 / (BASE_BRANCH + BASE_BRANCH_MISSED)))
+            else
+              BASE_BRANCH_PCT=0
+            fi
+
+            if [ -n "$CURRENT_BRANCH" ] && [ -n "$CURRENT_BRANCH_MISSED" ] && [ "$((CURRENT_BRANCH + CURRENT_BRANCH_MISSED))" -gt 0 ]; then
+              CURRENT_BRANCH_PCT=$((CURRENT_BRANCH * 100 / (CURRENT_BRANCH + CURRENT_BRANCH_MISSED)))
+            else
+              CURRENT_BRANCH_PCT=0
+            fi
+
+            LINE_CHANGE=$((CURRENT_LINE_PCT - BASE_LINE_PCT))
+            BRANCH_CHANGE=$((CURRENT_BRANCH_PCT - BASE_BRANCH_PCT))
+
+            echo ""
+            echo "📊 Coverage Comparison (PR vs Base)"
+            echo "| Metric | Base | Current | Change |"
+            echo "|--------|------|---------|--------|"
+            echo "| Line Coverage | ${BASE_LINE_PCT}% | ${CURRENT_LINE_PCT}% | $([ $LINE_CHANGE -gt 0 ] && echo "↑+$LINE_CHANGE%" || echo "↓$LINE_CHANGE%") |"
+            echo "| Branch Coverage | ${BASE_BRANCH_PCT}% | ${CURRENT_BRANCH_PCT}% | $([ $BRANCH_CHANGE -gt 0 ] && echo "↑+$BRANCH_CHANGE%" || echo "↓$BRANCH_CHANGE%") |"
+            echo ""
+
+            if [ $LINE_CHANGE -gt 0 ]; then
+              echo "✅ Line coverage improved by $LINE_CHANGE%"
+            elif [ $LINE_CHANGE -lt 0 ]; then
+              echo "⚠️ Line coverage decreased by $LINE_CHANGE%"
+            else
+              echo "➡️ Line coverage unchanged"
+            fi
+
+            if [ $BRANCH_CHANGE -gt 0 ]; then
+              echo "✅ Branch coverage improved by $BRANCH_CHANGE%"
+            elif [ $BRANCH_CHANGE -lt 0 ]; then
+              echo "⚠️ Branch coverage decreased by $BRANCH_CHANGE%"
+            else
+              echo "➡️ Branch coverage unchanged"
+            fi
+          else
+            echo "No base coverage report found (first PR or artifact expired)"
+            echo "Current coverage:"
+            echo "  - Line: ${{ steps.coverage.outputs.LINE_PCT }}%"
+            echo "  - Branch: ${{ steps.coverage.outputs.BRANCH_PCT }}%"
+          fi
+
       - name: Upload coverage report
         uses: actions/upload-artifact@v4
         with:
