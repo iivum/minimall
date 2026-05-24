@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+
 @RestController
 @RequestMapping("/api/admin/categories")
 @Tag(name = "Category", description = "Category Management APIs")
