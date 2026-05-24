@@ -1,7 +1,7 @@
 # Tech Debt Backlog
 
 **created**: 2026-05-15
-**last updated**: 2026-05-15
+**last updated**: 2026-05-25
 **sprint capacity allocation**: 15% per sprint
 
 ---
@@ -193,8 +193,9 @@ private ProductRepository productRepository;
 ### 6. Missing @RestControllerAdvice
 
 **Category**: Error Handling
-**Status**: Backlog
+**Status**: Completed
 **Created**: 2026-05-15
+**Completed**: 2026-05-24
 
 **Description**:
 Exception handling scattered across controllers. No centralized error response format.
@@ -253,6 +254,60 @@ Current test coverage is estimated at ~40% for service layer.
 
 ---
 
+### 8. Database Index Optimization
+
+**Category**: Performance
+**Status**: Completed
+**Created**: 2026-05-24
+**Completed**: 2026-05-24
+
+**Description**:
+Add database indexes to improve query performance on high-frequency queries. Five indexes added in commit `131bfbd`:
+
+**Evidence**:
+```java
+// LiveRoom.java - Index on status column
+@Table(name = "live_rooms", indexes = {
+    @Index(name = "idx_live_rooms_status", columnList = "status")
+})
+
+// LiveComment.java - Index on live_room_id
+@Table(name = "live_comments", indexes = {
+    @Index(name = "idx_live_comments_room", columnList = "live_room_id")
+})
+
+// LiveLike.java - Composite index on (live_room_id, user_id)
+@Table(name = "live_likes", indexes = {
+    @Index(name = "idx_live_likes_room_user", columnList = "live_room_id, user_id")
+})
+
+// ShareReward.java - Index on sharer_id
+@Table(name = "share_rewards", indexes = {
+    @Index(name = "idx_share_rewards_sharer", columnList = "sharer_id")
+})
+
+// PointTransaction.java - Index on account_id
+@Table(name = "point_transactions", indexes = {
+    @Index(name = "idx_point_transactions_account", columnList = "account_id")
+})
+```
+
+**RICE Scoring**:
+| Factor | Value | Rationale |
+|--------|-------|-----------|
+| Reach | 50 | All live room and transaction users |
+| Impact | 2 | Faster query response for common operations |
+| Confidence | 1.0 | Confirmed via commit 131bfbd |
+| Effort | 0.5 | Add @Index annotations to entity classes |
+| **RICE** | **200** | High priority |
+
+**Remediation**:
+1. Add indexes to entity classes (already completed in commit 131bfbd)
+2. Monitor query performance via slow query log
+3. Consider composite indexes for frequently joined queries
+
+---
+
 ## Repayment Plan
 
 ### Tech Debt Claiming Mechanism
@@ -296,13 +351,14 @@ For a 2-week sprint with 10 working days:
 
 | Item | Sprint Target | Status | Claimed By | Notes |
 |------|---------------|--------|------------|-------|
-| GlobalExceptionHandler | Sprint 35 | Not started | - | - |
+| GlobalExceptionHandler | Sprint 35 | Completed | Orion | Completed in commit 131bfbd |
 | Pagination | Sprint 36 | Not started | - | - |
 | @Modifying | Sprint 37 | Not started | - | - |
 | Async Executor | Sprint 38 | Not started | - | - |
 | DTO Projection | Sprint 39 | Not started | - | - |
 | Field Injection | Future | Not started | - | - |
 | Test Coverage | Future | Not started | - | - |
+| Database Indexes | Sprint 141 | Completed | Orion | Added in commit 131bfbd |
 
 **Status Values**: `Not started` | `Claimed` | `In progress` | `Completed`
 
