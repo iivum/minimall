@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MemberGrade.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">minimall</a> &gt; <a href="index.source.html" class="el_package">com.minimall.model</a> &gt; <span class="el_source">MemberGrade.java</span></div><h1>MemberGrade.java</h1><pre class="source lang-java linenums">package com.minimall.model;
+
+import jakarta.persistence.*;
+import java.math.BigDecimal;
+
+@Entity
+@Table(name = &quot;member_grades&quot;)
+public class MemberGrade {
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
+
+    @Column(unique = true, nullable = false)
+    private String code;
+
+    @Column(nullable = false)
+    private String name;
+
+    @Column(name = &quot;min_amount&quot;, nullable = false)
+    private BigDecimal minAmount;
+
+    @Column(name = &quot;discount_percent&quot;, nullable = false)
+    private Integer discountPercent;
+
+    @Column(name = &quot;point_multiplier&quot;, nullable = false)
+    private Integer pointMultiplier;
+
+<span class="fc" id="L28">    public MemberGrade() {}</span>
+
+<span class="fc" id="L30">    public MemberGrade(String code, String name, BigDecimal minAmount, Integer discountPercent, Integer pointMultiplier) {</span>
+<span class="fc" id="L31">        this.code = code;</span>
+<span class="fc" id="L32">        this.name = name;</span>
+<span class="fc" id="L33">        this.minAmount = minAmount;</span>
+<span class="fc" id="L34">        this.discountPercent = discountPercent;</span>
+<span class="fc" id="L35">        this.pointMultiplier = pointMultiplier;</span>
+<span class="fc" id="L36">    }</span>
+
+<span class="nc" id="L38">    public String getId() { return id; }</span>
+<span class="nc" id="L39">    public void setId(String id) { this.id = id; }</span>
+<span class="fc" id="L40">    public String getCode() { return code; }</span>
+<span class="nc" id="L41">    public void setCode(String code) { this.code = code; }</span>
+<span class="fc" id="L42">    public String getName() { return name; }</span>
+<span class="nc" id="L43">    public void setName(String name) { this.name = name; }</span>
+<span class="fc" id="L44">    public BigDecimal getMinAmount() { return minAmount; }</span>
+<span class="nc" id="L45">    public void setMinAmount(BigDecimal minAmount) { this.minAmount = minAmount; }</span>
+<span class="fc" id="L46">    public Integer getDiscountPercent() { return discountPercent; }</span>
+<span class="nc" id="L47">    public void setDiscountPercent(Integer discountPercent) { this.discountPercent = discountPercent; }</span>
+<span class="fc" id="L48">    public Integer getPointMultiplier() { return pointMultiplier; }</span>
+<span class="nc" id="L49">    public void setPointMultiplier(Integer pointMultiplier) { this.pointMultiplier = pointMultiplier; }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

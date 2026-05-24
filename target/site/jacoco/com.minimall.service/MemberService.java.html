@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MemberService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">minimall</a> &gt; <a href="index.source.html" class="el_package">com.minimall.service</a> &gt; <span class="el_source">MemberService.java</span></div><h1>MemberService.java</h1><pre class="source lang-java linenums">package com.minimall.service;
+
+import com.minimall.dto.MemberBenefitsResponse;
+import com.minimall.model.MemberGrade;
+import com.minimall.model.User;
+import com.minimall.repository.MemberGradeRepository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Optional;
+
+@Service
+public class MemberService {
+    private final MemberGradeRepository memberGradeRepository;
+    private final UserService userService;
+
+<span class="fc" id="L18">    public MemberService(MemberGradeRepository memberGradeRepository, UserService userService) {</span>
+<span class="fc" id="L19">        this.memberGradeRepository = memberGradeRepository;</span>
+<span class="fc" id="L20">        this.userService = userService;</span>
+<span class="fc" id="L21">    }</span>
+
+    public MemberBenefitsResponse getBenefits(String userId) {
+<span class="fc" id="L24">        User user = userService.findById(userId);</span>
+<span class="fc" id="L25">        MemberGrade currentGrade = memberGradeRepository.findByCode(user.getMemberGrade())</span>
+<span class="pc" id="L26">            .orElseThrow(() -&gt; new RuntimeException(&quot;Grade not found: &quot; + user.getMemberGrade()));</span>
+
+<span class="fc" id="L28">        Optional&lt;MemberGrade&gt; nextGrade = memberGradeRepository.findAll().stream()</span>
+<span class="fc bfc" id="L29" title="All 2 branches covered.">            .filter(g -&gt; g.getMinAmount().compareTo(currentGrade.getMinAmount()) &gt; 0)</span>
+<span class="fc" id="L30">            .findFirst();</span>
+
+<span class="fc" id="L32">        return MemberBenefitsResponse.from(user, currentGrade, nextGrade.orElse(null));</span>
+    }
+
+    @Transactional
+    public void redeem(String userId, String benefitType, BigDecimal amount) {
+<span class="nc" id="L37">        User user = userService.findById(userId);</span>
+        // Benefit redemption logic - implementation depends on specific requirements
+        // This is a placeholder for actual redemption logic
+<span class="nc" id="L40">    }</span>
+
+    @Transactional
+    public void updateTotalSpent(String userId, BigDecimal orderAmount) {
+<span class="fc" id="L44">        User user = userService.findById(userId);</span>
+<span class="fc" id="L45">        BigDecimal newTotal = user.getTotalSpent().add(orderAmount);</span>
+<span class="fc" id="L46">        user.setTotalSpent(newTotal);</span>
+
+        // Check if user qualifies for a higher grade
+<span class="fc" id="L49">        Optional&lt;MemberGrade&gt; newGrade = memberGradeRepository.findGradeForAmount(newTotal);</span>
+<span class="pc bpc" id="L50" title="1 of 4 branches missed.">        if (newGrade.isPresent() &amp;&amp; !newGrade.get().getCode().equals(user.getMemberGrade())) {</span>
+<span class="fc" id="L51">            user.setMemberGrade(newGrade.get().getCode());</span>
+        }
+
+<span class="fc" id="L54">        userService.save(user);</span>
+<span class="fc" id="L55">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

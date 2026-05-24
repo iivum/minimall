@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>LiveService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">minimall</a> &gt; <a href="index.source.html" class="el_package">com.minimall.service</a> &gt; <span class="el_source">LiveService.java</span></div><h1>LiveService.java</h1><pre class="source lang-java linenums">package com.minimall.service;
+
+import com.minimall.dto.*;
+import com.minimall.model.*;
+import com.minimall.repository.*;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import java.util.List;
+
+@Service
+public class LiveService {
+    private final LiveRoomRepository liveRoomRepository;
+    private final LiveGoodsRepository liveGoodsRepository;
+    private final LiveCommentRepository liveCommentRepository;
+    private final LiveLikeRepository liveLikeRepository;
+
+    public LiveService(
+            LiveRoomRepository liveRoomRepository,
+            LiveGoodsRepository liveGoodsRepository,
+            LiveCommentRepository liveCommentRepository,
+<span class="nc" id="L21">            LiveLikeRepository liveLikeRepository) {</span>
+<span class="nc" id="L22">        this.liveRoomRepository = liveRoomRepository;</span>
+<span class="nc" id="L23">        this.liveGoodsRepository = liveGoodsRepository;</span>
+<span class="nc" id="L24">        this.liveCommentRepository = liveCommentRepository;</span>
+<span class="nc" id="L25">        this.liveLikeRepository = liveLikeRepository;</span>
+<span class="nc" id="L26">    }</span>
+
+    public List&lt;LiveRoomResponse&gt; getLiveRooms() {
+<span class="nc" id="L29">        return liveRoomRepository.findActiveRooms().stream()</span>
+<span class="nc" id="L30">            .map(LiveRoomResponse::from)</span>
+<span class="nc" id="L31">            .toList();</span>
+    }
+
+    public LiveRoomResponse getLiveRoom(String roomId) {
+<span class="nc" id="L35">        LiveRoom room = liveRoomRepository.findById(roomId)</span>
+<span class="nc" id="L36">            .orElseThrow(() -&gt; new RuntimeException(&quot;Live room not found: &quot; + roomId));</span>
+<span class="nc" id="L37">        return LiveRoomResponse.from(room);</span>
+    }
+
+    public List&lt;LiveGoodsResponse&gt; getLiveGoods(String roomId) {
+<span class="nc" id="L41">        return liveGoodsRepository.findByLiveRoomIdOrderBySortOrderAsc(roomId).stream()</span>
+<span class="nc" id="L42">            .map(LiveGoodsResponse::from)</span>
+<span class="nc" id="L43">            .toList();</span>
+    }
+
+    @Transactional
+    public LikeResponse toggleLike(String roomId, String userId) {
+<span class="nc" id="L48">        LiveRoom room = liveRoomRepository.findById(roomId)</span>
+<span class="nc" id="L49">            .orElseThrow(() -&gt; new RuntimeException(&quot;Live room not found: &quot; + roomId));</span>
+
+<span class="nc" id="L51">        var existingLike = liveLikeRepository.findByLiveRoomIdAndUserId(roomId, userId);</span>
+
+<span class="nc bnc" id="L53" title="All 2 branches missed.">        if (existingLike.isPresent()) {</span>
+<span class="nc" id="L54">            liveLikeRepository.delete(existingLike.get());</span>
+<span class="nc" id="L55">            room.setLikeCount(Math.max(0, room.getLikeCount() - 1));</span>
+<span class="nc" id="L56">            liveRoomRepository.save(room);</span>
+<span class="nc" id="L57">            return new LikeResponse(false, room.getLikeCount());</span>
+        } else {
+<span class="nc" id="L59">            LiveLike like = new LiveLike();</span>
+<span class="nc" id="L60">            like.setLiveRoomId(roomId);</span>
+<span class="nc" id="L61">            like.setUserId(userId);</span>
+<span class="nc" id="L62">            liveLikeRepository.save(like);</span>
+<span class="nc" id="L63">            room.setLikeCount(room.getLikeCount() + 1);</span>
+<span class="nc" id="L64">            liveRoomRepository.save(room);</span>
+<span class="nc" id="L65">            return new LikeResponse(true, room.getLikeCount());</span>
+        }
+    }
+
+    public List&lt;LiveCommentResponse&gt; getComments(String roomId) {
+<span class="nc" id="L70">        return liveCommentRepository.findByLiveRoomIdOrderByCreatedAtDesc(roomId).stream()</span>
+<span class="nc" id="L71">            .map(LiveCommentResponse::from)</span>
+<span class="nc" id="L72">            .toList();</span>
+    }
+
+    @Transactional
+    public LiveCommentResponse addComment(String roomId, String userId, String nickname, String avatar, String content) {
+<span class="nc" id="L77">        LiveRoom room = liveRoomRepository.findById(roomId)</span>
+<span class="nc" id="L78">            .orElseThrow(() -&gt; new RuntimeException(&quot;Live room not found: &quot; + roomId));</span>
+
+<span class="nc" id="L80">        LiveComment comment = new LiveComment();</span>
+<span class="nc" id="L81">        comment.setLiveRoomId(roomId);</span>
+<span class="nc" id="L82">        comment.setUserId(userId);</span>
+<span class="nc" id="L83">        comment.setUserNickname(nickname);</span>
+<span class="nc" id="L84">        comment.setUserAvatar(avatar);</span>
+<span class="nc" id="L85">        comment.setContent(content);</span>
+<span class="nc" id="L86">        return LiveCommentResponse.from(liveCommentRepository.save(comment));</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>
