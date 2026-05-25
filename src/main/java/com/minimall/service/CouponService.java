@@ -9,6 +9,8 @@ import com.minimall.repository.CouponRepository;
 import com.minimall.repository.OrderRepository;
 import com.minimall.repository.UserCouponRepository;
 import com.minimall.repository.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
@@ -51,10 +53,18 @@ public class CouponService {
             .toList();
     }
 
+    public Page<CouponResponse> getAvailableCoupons(Pageable pageable) {
+        return couponRepository.findByIsActiveTrue(pageable).map(this::toResponse);
+    }
+
     public List<CouponResponse> getNewUserCoupons() {
         return couponRepository.findByCouponType(Coupon.CouponType.NEW_USER).stream()
             .map(this::toResponse)
             .toList();
+    }
+
+    public Page<CouponResponse> getNewUserCoupons(Pageable pageable) {
+        return couponRepository.findByCouponType(Coupon.CouponType.NEW_USER, pageable).map(this::toResponse);
     }
 
     @Transactional
