@@ -63,8 +63,9 @@ public Product getProduct(@PathVariable Long id) {
 ### 2. Missing Pagination on List Endpoints
 
 **Category**: Performance
-**Status**: Backlog
+**Status**: Completed
 **Created**: 2026-05-15
+**Completed**: 2026-05-25
 
 **Description**:
 List endpoints (e.g., `/products`, `/orders`) return unbounded `List<T>`. No pagination or limits, causing potential memory and performance issues with large datasets.
@@ -295,7 +296,7 @@ For a 2-week sprint with 10 working days:
 | Sprint | Focus Area | Items |
 |--------|------------|-------|
 | Sprint 35 | Error Handling | GlobalExceptionHandler (#6) |
-| Sprint 36 | Pagination | Add pagination to list endpoints (#2) |
+| Sprint 36 | Pagination | Completed (#2) |
 | Sprint 37 | Data Integrity | Fix @Modifying issues (#3) |
 | Sprint 38 | Concurrency | Configure async executor (#4) |
 | Sprint 39 | Architecture | Create DTO projections (#1) |
@@ -305,7 +306,7 @@ For a 2-week sprint with 10 working days:
 | Item | Sprint Target | Status | Claimed By | Notes |
 |------|---------------|--------|------------|-------|
 | GlobalExceptionHandler | Sprint 35 | Not started | - | - |
-| Pagination | Sprint 36 | Not started | - | - |
+| Pagination | Sprint 36 | Completed | 后端架构师 | Add pagination via Pageable (#142) |
 | @Modifying | Sprint 37 | Completed | 后端架构师 | Verified compliant — no code changes needed |
 | Async Executor | Sprint 38 | Not started | - | - |
 | DTO Projection | Sprint 39 | Not started | - | - |
