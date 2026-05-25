@@ -17,12 +17,16 @@ NC='\033[0m'
 VERBOSE=0
 FILES=()
 SKIP_FAKE_DETECTION=0
+SKIP_INDEX_CHECK=0
+SKIP_DEPENDENCY_CHECK=0
 
 usage() {
     echo "用法: $0 [--files file1 file2 ...] [--verbose] [--skip-fake-detection]"
-    echo "  --files      指定要验证的关键文件列表（相对于仓库根目录）"
-    echo "  --verbose    显示详细输出"
+    echo "  --files                指定要验证的关键文件列表（相对于仓库根目录）"
+    echo "  --verbose              显示详细输出"
     echo "  --skip-fake-detection  跳过虚假交付检测"
+    echo "  --skip-index-check     跳过 Java entity @Index 注解验证"
+    echo "  --skip-dependency-check 跳过 pom.xml 依赖验证"
     exit 1
 }
 
@@ -60,6 +64,14 @@ while [ $# -gt 0 ]; do
             ;;
         --skip-fake-detection)
             SKIP_FAKE_DETECTION=1
+            shift
+            ;;
+        --skip-index-check)
+            SKIP_INDEX_CHECK=1
+            shift
+            ;;
+        --skip-dependency-check)
+            SKIP_DEPENDENCY_CHECK=1
             shift
             ;;
         *)
@@ -172,6 +184,130 @@ detect_fake_delivery() {
     fi
 }
 
+# Java Entity @Index 注解验证
+verify_index_annotations() {
+    echo ""
+    echo "=== Java Entity @Index 注解验证 ==="
+    echo ""
+
+    local INDEX_CHECK_FAILED=0
+    local MODEL_DIR="src/main/java/com/minimall/model"
+
+    if ! git show "origin/main:$MODEL_DIR" > /dev/null 2>&1; then
+        log_warn "未找到 model 目录: $MODEL_DIR，跳过 @Index 验证"
+        return 0
+    fi
+
+    echo "检查 main 分支中的 @Index 注解..."
+    echo ""
+
+    # 使用 git ls-tree 列出 main 分支的 entity 文件
+    local entity_files=$(git ls-tree -r --name-only origin/main "$MODEL_DIR" 2>/dev/null | grep -E '\.java$' | grep -v '/Test' || echo "")
+
+    if [ -z "$entity_files" ]; then
+        log_warn "main 分支中未找到任何 Java entity 文件"
+        return 0
+    fi
+
+    local entities_with_index=0
+    local entities_without_index=0
+
+    for entity_path in $entity_files; do
+        local entity_file=$(basename "$entity_path")
+        if git show "origin/main:$entity_path" 2>/dev/null | grep -q "@Index"; then
+            local index_name=$(git show "origin/main:$entity_path" 2>/dev/null | grep '@Index' | head -1 | sed -n 's/.*@Index(name = "\([^"]*\)".*/\1/p')
+            echo "  ✅ $entity_file - 发现 @Index 注解"
+            [ -n "$index_name" ] && echo "     索引名: $index_name"
+            entities_with_index=$((entities_with_index + 1))
+        else
+            echo "  ⚪ $entity_file - 无 @Index 注解"
+            entities_without_index=$((entities_without_index + 1))
+        fi
+    done
+
+    echo ""
+    echo "汇总: $entities_with_index 个 entity 带有 @Index 注解，$entities_without_index 个无 @Index"
+
+    if [ $entities_with_index -eq 0 ]; then
+        log_warn "警告: main 分支中没有任何带 @Index 注解的 entity"
+        INDEX_CHECK_FAILED=$((INDEX_CHECK_FAILED + 1))
+    fi
+
+    if [ $INDEX_CHECK_FAILED -gt 0 ]; then
+        echo ""
+        log_error "@Index 注解验证失败: $INDEX_CHECK_FAILED 项检查未通过"
+        return 1
+    else
+        log_info "@Index 注解验证通过 ✅"
+        return 0
+    fi
+}
+
+# pom.xml 依赖验证
+verify_pom_dependencies() {
+    echo ""
+    echo "=== pom.xml 依赖配置验证 ==="
+    echo ""
+
+    local DEP_CHECK_FAILED=0
+
+    if ! git show "origin/main:pom.xml" > /dev/null 2>&1; then
+        log_warn "main 分支中未找到 pom.xml，跳过依赖验证"
+        return 0
+    fi
+
+    echo "检查 main 分支 pom.xml 中的关键依赖..."
+    echo ""
+
+    # 关键依赖列表（必须有）
+    local required_deps=(
+        "spring-boot-starter-web"
+        "spring-boot-starter-data-jpa"
+        "spring-boot-starter-validation"
+        "postgresql"
+    )
+
+    local missing_deps=0
+
+    for dep in "${required_deps[@]}"; do
+        if git show origin/main:pom.xml 2>/dev/null | grep -q "<artifactId>$dep</artifactId>"; then
+            echo "  ✅ $dep"
+        else
+            echo "  ❌ $dep (缺失)"
+            missing_deps=$((missing_deps + 1))
+        fi
+    done
+
+    echo ""
+
+    # 检查 JaCoCo 配置
+    if git show origin/main:pom.xml 2>/dev/null | grep -q "jacoco"; then
+        log_info "JaCoCo 依赖已配置"
+    else
+        log_warn "未发现 JaCoCo 依赖配置"
+    fi
+
+    # 检查测试容器配置
+    if git show origin/main:pom.xml 2>/dev/null | grep -q "testcontainers"; then
+        log_info "Testcontainers 依赖已配置"
+    else
+        log_warn "未发现 Testcontainers 依赖配置"
+    fi
+
+    if [ $missing_deps -gt 0 ]; then
+        echo ""
+        log_error "pom.xml 依赖验证失败: 缺少 $missing_deps 个关键依赖"
+        DEP_CHECK_FAILED=$((DEP_CHECK_FAILED + missing_deps))
+    fi
+
+    if [ $DEP_CHECK_FAILED -gt 0 ]; then
+        return 1
+    else
+        log_info "pom.xml 依赖验证通过 ✅"
+        return 0
+    fi
+}
+
 # 主检测逻辑
 main() {
     echo "=========================================="
@@ -224,6 +360,30 @@ main() {
     else
         echo ""
         log_info "已跳过虚假交付检测 (--skip-fake-detection)"
+    fi
+
+    # @Index 注解验证
+    if [ $SKIP_INDEX_CHECK -eq 0 ]; then
+        if ! verify_index_annotations; then
+            echo ""
+            log_error "@Index 注解验证失败"
+            FAILED=$((FAILED + 1))
+        fi
+    else
+        echo ""
+        log_info "已跳过 @Index 注解验证 (--skip-index-check)"
+    fi
+
+    # pom.xml 依赖验证
+    if [ $SKIP_DEPENDENCY_CHECK -eq 0 ]; then
+        if ! verify_pom_dependencies; then
+            echo ""
+            log_error "pom.xml 依赖验证失败"
+            FAILED=$((FAILED + 1))
+        fi
+    else
+        echo ""
+        log_info "已跳过 pom.xml 依赖验证 (--skip-dependency-check)"
     fi
 
     echo "=========================================="
