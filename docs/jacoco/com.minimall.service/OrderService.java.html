@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>OrderService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">minimall</a> &gt; <a href="index.source.html" class="el_package">com.minimall.service</a> &gt; <span class="el_source">OrderService.java</span></div><h1>OrderService.java</h1><pre class="source lang-java linenums">package com.minimall.service;
+
+import com.minimall.model.Order;
+import com.minimall.model.OrderItem;
+import com.minimall.model.User;
+import com.minimall.repository.OrderRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import java.math.BigDecimal;
+import java.time.Instant;
+import java.util.List;
+import java.util.UUID;
+
+@Service
+public class OrderService {
+    private final OrderRepository orderRepository;
+    private final UserService userService;
+    private final ProductService productService;
+    private final WeChatSubscribeService subscribeService;
+    private final PointService pointService;
+    private final MemberService memberService;
+
+    public OrderService(OrderRepository orderRepository,
+                       UserService userService,
+                       ProductService productService,
+                       WeChatSubscribeService subscribeService,
+                       PointService pointService,
+<span class="fc" id="L30">                       MemberService memberService) {</span>
+<span class="fc" id="L31">        this.orderRepository = orderRepository;</span>
+<span class="fc" id="L32">        this.userService = userService;</span>
+<span class="fc" id="L33">        this.productService = productService;</span>
+<span class="fc" id="L34">        this.subscribeService = subscribeService;</span>
+<span class="fc" id="L35">        this.pointService = pointService;</span>
+<span class="fc" id="L36">        this.memberService = memberService;</span>
+<span class="fc" id="L37">    }</span>
+
+    public List&lt;Order&gt; findByUserId(String userId) {
+<span class="fc" id="L40">        return orderRepository.findByUserIdOrderByCreatedAtDesc(userId);</span>
+    }
+
+    public List&lt;Order&gt; findAll() {
+<span class="fc" id="L44">        return orderRepository.findAll();</span>
+    }
+
+    public Page&lt;Order&gt; findAll(Pageable pageable) {
+<span class="nc" id="L48">        return orderRepository.findAll(pageable);</span>
+    }
+
+    public Order findById(String id) {
+<span class="fc" id="L52">        return orderRepository.findById(id)</span>
+<span class="fc" id="L53">            .orElseThrow(() -&gt; new RuntimeException(&quot;Order not found: &quot; + id));</span>
+    }
+
+    public Order findByOrderNo(String orderNo) {
+<span class="fc" id="L57">        return orderRepository.findByOrderNo(orderNo)</span>
+<span class="fc" id="L58">            .orElseThrow(() -&gt; new RuntimeException(&quot;Order not found: &quot; + orderNo));</span>
+    }
+
+    @Transactional
+    public Order create(String userId, List&lt;OrderItem&gt; items) {
+<span class="fc" id="L63">        User user = userService.findById(userId);</span>
+<span class="fc" id="L64">        Order order = new Order();</span>
+<span class="fc" id="L65">        order.setOrderNo(UUID.randomUUID().toString());</span>
+<span class="fc" id="L66">        order.setUser(user);</span>
+
+<span class="fc" id="L68">        BigDecimal total = BigDecimal.ZERO;</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">        for (OrderItem item : items) {</span>
+<span class="fc" id="L70">            item.setOrder(order);</span>
+<span class="fc" id="L71">            item.setPrice(productService.findById(item.getProduct().getId()).getPrice());</span>
+<span class="fc" id="L72">            total = total.add(item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())));</span>
+<span class="fc" id="L73">        }</span>
+<span class="fc" id="L74">        order.setItems(items);</span>
+<span class="fc" id="L75">        order.setTotalAmount(total);</span>
+
+<span class="fc" id="L77">        Order savedOrder = orderRepository.save(order);</span>
+
+<span class="fc" id="L79">        subscribeService.sendOrderCreatedMessage(savedOrder, user);</span>
+
+<span class="fc" id="L81">        return savedOrder;</span>
+    }
+
+    @Transactional
+    public Order updateStatus(String id, Order.Status status) {
+<span class="fc" id="L86">        Order order = findById(id);</span>
+<span class="fc" id="L87">        Order.Status oldStatus = order.getStatus();</span>
+<span class="fc" id="L88">        order.setStatus(status);</span>
+<span class="fc" id="L89">        Order savedOrder = orderRepository.save(order);</span>
+
+<span class="pc bpc" id="L91" title="1 of 4 branches missed.">        if (status == Order.Status.SHIPPED &amp;&amp; oldStatus != Order.Status.SHIPPED) {</span>
+<span class="fc" id="L92">            subscribeService.sendOrderShippedMessage(savedOrder, order.getUser(), &quot;&quot;);</span>
+<span class="pc bpc" id="L93" title="2 of 4 branches missed.">        } else if (status == Order.Status.COMPLETED &amp;&amp; oldStatus != Order.Status.COMPLETED) {</span>
+<span class="fc" id="L94">            subscribeService.sendOrderCompletedMessage(savedOrder, order.getUser());</span>
+<span class="fc" id="L95">            String userId = order.getUser().getId();</span>
+<span class="fc" id="L96">            pointService.earnOrderPoints(userId, order.getOrderNo(), order.getTotalAmount());</span>
+        }
+
+<span class="fc" id="L99">        return savedOrder;</span>
+    }
+
+    @Transactional
+    public Order pay(String id, String tradeNo) {
+<span class="fc" id="L104">        Order order = findById(id);</span>
+<span class="fc" id="L105">        order.setPayStatus(Order.PayStatus.PAID);</span>
+<span class="fc" id="L106">        order.setStatus(Order.Status.PAID);</span>
+<span class="fc" id="L107">        order.setPayTime(Instant.now());</span>
+<span class="fc" id="L108">        order.setTradeNo(tradeNo);</span>
+<span class="fc" id="L109">        Order savedOrder = orderRepository.save(order);</span>
+
+<span class="fc" id="L111">        subscribeService.sendOrderPaidMessage(savedOrder, order.getUser());</span>
+
+<span class="fc" id="L113">        memberService.updateTotalSpent(order.getUser().getId(), order.getTotalAmount());</span>
+
+<span class="fc" id="L115">        return savedOrder;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

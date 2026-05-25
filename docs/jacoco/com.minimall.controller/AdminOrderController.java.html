@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AdminOrderController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">minimall</a> &gt; <a href="index.source.html" class="el_package">com.minimall.controller</a> &gt; <span class="el_source">AdminOrderController.java</span></div><h1>AdminOrderController.java</h1><pre class="source lang-java linenums">package com.minimall.controller;
+
+import com.minimall.model.Order;
+import com.minimall.service.OrderService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping(&quot;/api/admin/orders&quot;)
+@Tag(name = &quot;AdminOrder&quot;, description = &quot;Admin Order Management APIs&quot;)
+public class AdminOrderController {
+    private final OrderService orderService;
+
+<span class="nc" id="L22">    public AdminOrderController(OrderService orderService) {</span>
+<span class="nc" id="L23">        this.orderService = orderService;</span>
+<span class="nc" id="L24">    }</span>
+
+    @GetMapping
+    @Operation(summary = &quot;Get all orders (admin, paginated)&quot;)
+    public ResponseEntity&lt;Page&lt;Order&gt;&gt; getAllOrders(
+            @RequestParam(defaultValue = &quot;0&quot;) int page,
+            @RequestParam(defaultValue = &quot;10&quot;) int size) {
+<span class="nc" id="L31">        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, &quot;createdAt&quot;));</span>
+<span class="nc" id="L32">        return ResponseEntity.ok(orderService.findAll(pageable));</span>
+    }
+
+    @GetMapping(&quot;/all&quot;)
+    @Operation(summary = &quot;Get all orders (admin, non-paginated)&quot;)
+    public ResponseEntity&lt;List&lt;Order&gt;&gt; getAllOrdersAll() {
+<span class="nc" id="L38">        return ResponseEntity.ok(orderService.findAll());</span>
+    }
+
+    @GetMapping(&quot;/{id}&quot;)
+    @Operation(summary = &quot;Get order by ID (admin)&quot;)
+    public ResponseEntity&lt;Order&gt; getOrder(@PathVariable String id) {
+<span class="nc" id="L44">        return ResponseEntity.ok(orderService.findById(id));</span>
+    }
+
+    @GetMapping(&quot;/no/{orderNo}&quot;)
+    @Operation(summary = &quot;Get order by order number (admin)&quot;)
+    public ResponseEntity&lt;Order&gt; getOrderByNo(@PathVariable String orderNo) {
+<span class="nc" id="L50">        return ResponseEntity.ok(orderService.findByOrderNo(orderNo));</span>
+    }
+
+    @PatchMapping(&quot;/{id}/status&quot;)
+    @Operation(summary = &quot;Update order status (admin)&quot;)
+    public ResponseEntity&lt;Order&gt; updateStatus(@PathVariable String id, @RequestParam Order.Status status) {
+<span class="nc" id="L56">        return ResponseEntity.ok(orderService.updateStatus(id, status));</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

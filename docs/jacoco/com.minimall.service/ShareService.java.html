@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ShareService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">minimall</a> &gt; <a href="index.source.html" class="el_package">com.minimall.service</a> &gt; <span class="el_source">ShareService.java</span></div><h1>ShareService.java</h1><pre class="source lang-java linenums">package com.minimall.service;
+
+import com.minimall.dto.ShareRequest;
+import com.minimall.dto.ShareResponse;
+import com.minimall.model.Product;
+import com.minimall.model.ShareReward;
+import com.minimall.model.User;
+import com.minimall.repository.ProductRepository;
+import com.minimall.repository.ShareRewardRepository;
+import com.minimall.repository.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
+import java.util.UUID;
+
+@Service
+public class ShareService {
+    private final ShareRewardRepository shareRewardRepository;
+    private final UserRepository userRepository;
+    private final ProductRepository productRepository;
+
+<span class="nc" id="L27">    private static final BigDecimal DEFAULT_REWARD_AMOUNT = new BigDecimal(&quot;5.00&quot;);</span>
+    private static final String SHARE_BASE_URL = &quot;https://minimall.com/share/&quot;;
+
+    public ShareService(ShareRewardRepository shareRewardRepository,
+                        UserRepository userRepository,
+<span class="nc" id="L32">                        ProductRepository productRepository) {</span>
+<span class="nc" id="L33">        this.shareRewardRepository = shareRewardRepository;</span>
+<span class="nc" id="L34">        this.userRepository = userRepository;</span>
+<span class="nc" id="L35">        this.productRepository = productRepository;</span>
+<span class="nc" id="L36">    }</span>
+
+    @Transactional
+    public ShareResponse createShareLink(String userId, ShareRequest request) {
+<span class="nc" id="L40">        User sharer = userRepository.findById(userId)</span>
+<span class="nc" id="L41">            .orElseThrow(() -&gt; new IllegalArgumentException(&quot;User not found&quot;));</span>
+
+<span class="nc" id="L43">        Product product = productRepository.findById(request.productId())</span>
+<span class="nc" id="L44">            .orElseThrow(() -&gt; new IllegalArgumentException(&quot;Product not found&quot;));</span>
+
+<span class="nc" id="L46">        String shareId = UUID.randomUUID().toString();</span>
+<span class="nc" id="L47">        String shareUrl = SHARE_BASE_URL + shareId;</span>
+<span class="nc" id="L48">        String posterUrl = generatePosterUrl(product, sharer);</span>
+<span class="nc" id="L49">        Instant expiresAt = Instant.now().plus(7, ChronoUnit.DAYS);</span>
+
+<span class="nc" id="L51">        ShareReward reward = new ShareReward();</span>
+<span class="nc" id="L52">        reward.setSharer(sharer);</span>
+<span class="nc" id="L53">        reward.setRewardType(ShareReward.RewardType.CASH);</span>
+<span class="nc" id="L54">        reward.setRewardAmount(DEFAULT_REWARD_AMOUNT);</span>
+<span class="nc" id="L55">        shareRewardRepository.save(reward);</span>
+
+<span class="nc" id="L57">        return new ShareResponse(shareId, shareUrl, posterUrl, expiresAt);</span>
+    }
+
+    public List&lt;ShareReward&gt; getUserRewards(String userId) {
+<span class="nc" id="L61">        return shareRewardRepository.findBySharerId(userId);</span>
+    }
+
+    public Page&lt;ShareReward&gt; getUserRewards(String userId, Pageable pageable) {
+<span class="nc" id="L65">        return shareRewardRepository.findBySharerId(userId, pageable);</span>
+    }
+
+    @Transactional
+    public void recordShareEffect(String sharerId, String orderId, BigDecimal orderAmount) {
+<span class="nc" id="L70">        User sharer = userRepository.findById(sharerId)</span>
+<span class="nc" id="L71">            .orElseThrow(() -&gt; new IllegalArgumentException(&quot;Sharer not found&quot;));</span>
+
+<span class="nc" id="L73">        ShareReward reward = new ShareReward();</span>
+<span class="nc" id="L74">        reward.setSharer(sharer);</span>
+<span class="nc" id="L75">        reward.setRewardType(ShareReward.RewardType.CASH);</span>
+<span class="nc" id="L76">        reward.setRewardAmount(orderAmount.multiply(new BigDecimal(&quot;0.05&quot;)));</span>
+<span class="nc" id="L77">        reward.setOrderId(orderId);</span>
+<span class="nc" id="L78">        shareRewardRepository.save(reward);</span>
+<span class="nc" id="L79">    }</span>
+
+    private String generatePosterUrl(Product product, User sharer) {
+<span class="nc" id="L82">        return &quot;https://minimall.com/posters/&quot; + product.getId() + &quot;?from=&quot; + sharer.getId();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

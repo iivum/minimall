@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PointController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">minimall</a> &gt; <a href="index.source.html" class="el_package">com.minimall.controller</a> &gt; <span class="el_source">PointController.java</span></div><h1>PointController.java</h1><pre class="source lang-java linenums">package com.minimall.controller;
+
+import com.minimall.config.SecurityUtils;
+import com.minimall.dto.DeductPointsRequest;
+import com.minimall.dto.PointAccountResponse;
+import com.minimall.dto.PointTransactionResponse;
+import com.minimall.service.PointService;
+import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
+
+@RestController
+@RequestMapping(&quot;/api/points&quot;)
+public class PointController {
+    private final PointService pointService;
+    private final SecurityUtils securityUtils;
+
+<span class="nc" id="L19">    public PointController(PointService pointService, SecurityUtils securityUtils) {</span>
+<span class="nc" id="L20">        this.pointService = pointService;</span>
+<span class="nc" id="L21">        this.securityUtils = securityUtils;</span>
+<span class="nc" id="L22">    }</span>
+
+    @GetMapping(&quot;/account&quot;)
+    public ResponseEntity&lt;PointAccountResponse&gt; getCurrentAccount() {
+<span class="nc" id="L26">        String userId = securityUtils.getCurrentUserId();</span>
+<span class="nc" id="L27">        return ResponseEntity.ok(PointAccountResponse.from(pointService.getAccount(userId)));</span>
+    }
+
+    @GetMapping(&quot;/account/{userId}&quot;)
+    public ResponseEntity&lt;PointAccountResponse&gt; getAccount(@PathVariable String userId) {
+<span class="nc" id="L32">        return ResponseEntity.ok(PointAccountResponse.from(pointService.getAccountByUserId(userId)));</span>
+    }
+
+    @GetMapping(&quot;/history&quot;)
+    public ResponseEntity&lt;List&lt;PointTransactionResponse&gt;&gt; getCurrentHistory() {
+<span class="nc" id="L37">        String userId = securityUtils.getCurrentUserId();</span>
+<span class="nc" id="L38">        return ResponseEntity.ok(pointService.getHistory(userId).stream()</span>
+<span class="nc" id="L39">            .map(PointTransactionResponse::from)</span>
+<span class="nc" id="L40">            .toList());</span>
+    }
+
+    @GetMapping(&quot;/history/{userId}&quot;)
+    public ResponseEntity&lt;List&lt;PointTransactionResponse&gt;&gt; getHistory(@PathVariable String userId) {
+<span class="nc" id="L45">        return ResponseEntity.ok(pointService.getHistory(userId).stream()</span>
+<span class="nc" id="L46">            .map(PointTransactionResponse::from)</span>
+<span class="nc" id="L47">            .toList());</span>
+    }
+
+    @PostMapping(&quot;/sign-in&quot;)
+    public ResponseEntity&lt;PointAccountResponse&gt; signIn() {
+<span class="nc" id="L52">        String userId = securityUtils.getCurrentUserId();</span>
+<span class="nc" id="L53">        return ResponseEntity.ok(PointAccountResponse.from(pointService.signIn(userId)));</span>
+    }
+
+    @PostMapping(&quot;/earn/share/{shareId}&quot;)
+    public ResponseEntity&lt;PointAccountResponse&gt; earnShareReward(@PathVariable String shareId) {
+<span class="nc" id="L58">        String userId = securityUtils.getCurrentUserId();</span>
+<span class="nc" id="L59">        return ResponseEntity.ok(PointAccountResponse.from(pointService.earnShareReward(userId, shareId)));</span>
+    }
+
+    @PostMapping(&quot;/deduct&quot;)
+    public ResponseEntity&lt;PointAccountResponse&gt; deduct(@Valid @RequestBody DeductPointsRequest request) {
+<span class="nc" id="L64">        String userId = securityUtils.getCurrentUserId();</span>
+<span class="nc" id="L65">        return ResponseEntity.ok(PointAccountResponse.from(</span>
+<span class="nc" id="L66">            pointService.deduct(userId, request.points(), request.orderNo(), request.description())));</span>
+    }
+
+    @PostMapping(&quot;/redeem/coupon&quot;)
+    public ResponseEntity&lt;PointAccountResponse&gt; redeemCoupon(@Valid @RequestBody DeductPointsRequest request) {
+<span class="nc" id="L71">        String userId = securityUtils.getCurrentUserId();</span>
+<span class="nc" id="L72">        return ResponseEntity.ok(PointAccountResponse.from(</span>
+<span class="nc" id="L73">            pointService.deduct(userId, request.points(), request.orderNo(),</span>
+<span class="nc bnc" id="L74" title="All 2 branches missed.">                request.description() != null ? request.description() : &quot;积分兑换优惠券&quot;)));</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

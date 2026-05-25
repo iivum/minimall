@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PayController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">minimall</a> &gt; <a href="index.source.html" class="el_package">com.minimall.controller</a> &gt; <span class="el_source">PayController.java</span></div><h1>PayController.java</h1><pre class="source lang-java linenums">package com.minimall.controller;
+
+import com.minimall.model.Order;
+import com.minimall.service.OrderService;
+import com.minimall.service.PayService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
+@RestController
+@RequestMapping(&quot;/api/pay&quot;)
+@Tag(name = &quot;Payment&quot;, description = &quot;WeChat Pay APIs&quot;)
+public class PayController {
+    private final PayService payService;
+    private final OrderService orderService;
+
+<span class="nc" id="L21">    public PayController(PayService payService, OrderService orderService) {</span>
+<span class="nc" id="L22">        this.payService = payService;</span>
+<span class="nc" id="L23">        this.orderService = orderService;</span>
+<span class="nc" id="L24">    }</span>
+
+    @PostMapping(&quot;/create/{orderId}&quot;)
+    @Operation(summary = &quot;Create unified order and get prepay_id&quot;)
+    public ResponseEntity&lt;Map&lt;String, Object&gt;&gt; createPayRequest(@PathVariable String orderId, @RequestParam String openid) {
+<span class="nc" id="L29">        Order order = orderService.findById(orderId);</span>
+<span class="nc" id="L30">        String prepayId = payService.createUnifiedOrder(order, openid);</span>
+
+<span class="nc" id="L32">        long timestamp = System.currentTimeMillis() / 1000;</span>
+<span class="nc" id="L33">        String nonceStr = UUID.randomUUID().toString();</span>
+<span class="nc" id="L34">        String sign = payService.getJsApiSign(prepayId, timestamp, nonceStr);</span>
+
+<span class="nc" id="L36">        Map&lt;String, Object&gt; result = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L37">        result.put(&quot;timeStamp&quot;, timestamp);</span>
+<span class="nc" id="L38">        result.put(&quot;nonceStr&quot;, nonceStr);</span>
+<span class="nc" id="L39">        result.put(&quot;package&quot;, &quot;prepay_id=&quot; + prepayId);</span>
+<span class="nc" id="L40">        result.put(&quot;signType&quot;, &quot;RSA&quot;);</span>
+<span class="nc" id="L41">        result.put(&quot;paySign&quot;, sign);</span>
+
+<span class="nc" id="L43">        return ResponseEntity.ok(result);</span>
+    }
+
+    @PostMapping(&quot;/callback&quot;)
+    @Operation(summary = &quot;WeChat Pay callback notification&quot;)
+    public ResponseEntity&lt;String&gt; handleCallback(
+            @RequestBody String body,
+            @RequestHeader(&quot;Wechatpay-Signature&quot;) String signature,
+            @RequestHeader(&quot;Wechatpay-Serial&quot;) String serialNo) {
+
+<span class="nc bnc" id="L53" title="All 2 branches missed.">        if (!payService.verifyCallback(body, signature, serialNo)) {</span>
+<span class="nc" id="L54">            return ResponseEntity.badRequest().body(&quot;VERIFY_FAILED&quot;);</span>
+        }
+
+        try {
+<span class="nc" id="L58">            payService.processCallback(body);</span>
+<span class="nc" id="L59">            return ResponseEntity.ok(&quot;SUCCESS&quot;);</span>
+<span class="nc" id="L60">        } catch (Exception e) {</span>
+<span class="nc" id="L61">            return ResponseEntity.ok(&quot;FAIL&quot;);</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

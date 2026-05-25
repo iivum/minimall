@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ProductController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">minimall</a> &gt; <a href="index.source.html" class="el_package">com.minimall.controller</a> &gt; <span class="el_source">ProductController.java</span></div><h1>ProductController.java</h1><pre class="source lang-java linenums">package com.minimall.controller;
+
+import com.minimall.model.Product;
+import com.minimall.service.ProductService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
+
+@RestController
+@RequestMapping(&quot;/api/products&quot;)
+@Tag(name = &quot;Product&quot;, description = &quot;Product management APIs&quot;)
+public class ProductController {
+    private final ProductService productService;
+
+<span class="fc" id="L22">    public ProductController(ProductService productService) {</span>
+<span class="fc" id="L23">        this.productService = productService;</span>
+<span class="fc" id="L24">    }</span>
+
+    @GetMapping
+    @Operation(summary = &quot;Get all active products (paginated)&quot;)
+    public ResponseEntity&lt;Page&lt;Product&gt;&gt; getProducts(
+            @RequestParam(defaultValue = &quot;0&quot;) int page,
+            @RequestParam(defaultValue = &quot;10&quot;) int size,
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) String sort) {
+<span class="fc" id="L33">        Sort sortOrder = Sort.by(Sort.Direction.DESC, &quot;createdAt&quot;);</span>
+<span class="pc bpc" id="L34" title="1 of 2 branches missed.">        if (&quot;price-asc&quot;.equals(sort)) sortOrder = Sort.by(Sort.Direction.ASC, &quot;price&quot;);</span>
+<span class="pc bpc" id="L35" title="1 of 2 branches missed.">        else if (&quot;price-desc&quot;.equals(sort)) sortOrder = Sort.by(Sort.Direction.DESC, &quot;price&quot;);</span>
+<span class="pc bpc" id="L36" title="1 of 2 branches missed.">        else if (&quot;stock-asc&quot;.equals(sort)) sortOrder = Sort.by(Sort.Direction.ASC, &quot;stock&quot;);</span>
+<span class="pc bpc" id="L37" title="1 of 2 branches missed.">        else if (&quot;stock-desc&quot;.equals(sort)) sortOrder = Sort.by(Sort.Direction.DESC, &quot;stock&quot;);</span>
+<span class="fc" id="L38">        Pageable pageable = PageRequest.of(page, size, sortOrder);</span>
+<span class="pc bpc" id="L39" title="3 of 4 branches missed.">        if (search != null &amp;&amp; !search.isBlank()) {</span>
+<span class="nc" id="L40">            return ResponseEntity.ok(productService.searchByName(search.trim(), pageable));</span>
+        }
+<span class="fc" id="L42">        return ResponseEntity.ok(productService.findAllActive(pageable));</span>
+    }
+
+    @GetMapping(&quot;/all&quot;)
+    @Operation(summary = &quot;Get all active products (non-paginated)&quot;)
+    public ResponseEntity&lt;List&lt;Product&gt;&gt; getAllProducts() {
+<span class="fc" id="L48">        return ResponseEntity.ok(productService.findAllActive());</span>
+    }
+
+    @GetMapping(&quot;/{id}&quot;)
+    @Operation(summary = &quot;Get product by ID&quot;)
+    public ResponseEntity&lt;Product&gt; getProduct(@PathVariable String id) {
+<span class="fc" id="L54">        return ResponseEntity.ok(productService.findById(id));</span>
+    }
+
+    @GetMapping(&quot;/search&quot;)
+    @Operation(summary = &quot;Search products by name (non-paginated)&quot;)
+    public ResponseEntity&lt;List&lt;Product&gt;&gt; searchProducts(@RequestParam String name) {
+<span class="fc" id="L60">        return ResponseEntity.ok(productService.searchByName(name));</span>
+    }
+
+    @PostMapping
+    @Operation(summary = &quot;Create a new product&quot;)
+    public ResponseEntity&lt;Product&gt; createProduct(@Valid @RequestBody Product product) {
+<span class="fc" id="L66">        return ResponseEntity.ok(productService.create(product));</span>
+    }
+
+    @PutMapping(&quot;/{id}&quot;)
+    @Operation(summary = &quot;Update a product&quot;)
+    public ResponseEntity&lt;Product&gt; updateProduct(@PathVariable String id, @Valid @RequestBody Product product) {
+<span class="fc" id="L72">        return ResponseEntity.ok(productService.update(id, product));</span>
+    }
+
+    @DeleteMapping(&quot;/{id}&quot;)
+    @Operation(summary = &quot;Delete (deactivate) a product&quot;)
+    public ResponseEntity&lt;Void&gt; deleteProduct(@PathVariable String id) {
+<span class="fc" id="L78">        productService.delete(id);</span>
+<span class="fc" id="L79">        return ResponseEntity.noContent().build();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>
