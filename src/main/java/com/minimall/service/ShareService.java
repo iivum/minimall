@@ -8,6 +8,8 @@ import com.minimall.model.User;
 import com.minimall.repository.ProductRepository;
 import com.minimall.repository.ShareRewardRepository;
 import com.minimall.repository.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
@@ -55,8 +57,8 @@ public class ShareService {
         return new ShareResponse(shareId, shareUrl, posterUrl, expiresAt);
     }
 
-    public List<ShareReward> getUserRewards(String userId) {
-        return shareRewardRepository.findBySharerId(userId);
+    public Page<ShareReward> getUserRewards(String userId, Pageable pageable) {
+        return shareRewardRepository.findBySharerId(userId, pageable);
     }
 
     @Transactional

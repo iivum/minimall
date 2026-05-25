@@ -6,6 +6,8 @@ import com.minimall.service.CouponService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -28,14 +30,14 @@ public class CouponController {
 
     @GetMapping
     @Operation(summary = "Get all available coupons")
-    public ResponseEntity<List<CouponResponse>> getAvailableCoupons() {
-        return ResponseEntity.ok(couponService.getAvailableCoupons());
+    public ResponseEntity<Page<CouponResponse>> getAvailableCoupons(Pageable pageable) {
+        return ResponseEntity.ok(couponService.getAvailableCoupons(pageable));
     }
 
     @GetMapping("/new-user")
     @Operation(summary = "Get new user exclusive coupons")
-    public ResponseEntity<List<CouponResponse>> getNewUserCoupons() {
-        return ResponseEntity.ok(couponService.getNewUserCoupons());
+    public ResponseEntity<Page<CouponResponse>> getNewUserCoupons(Pageable pageable) {
+        return ResponseEntity.ok(couponService.getNewUserCoupons(pageable));
     }
 
     @PostMapping("/{couponId}/claim")
