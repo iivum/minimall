@@ -94,8 +94,9 @@ List<Product> findAll(); // No limit
 ### 3. Missing @Modifying Annotation
 
 **Category**: Data Integrity
-**Status**: Backlog
+**Status**: Completed
 **Created**: 2026-05-15
+**Completed**: 2026-05-25
 
 **Description**:
 Mutating `@Query` methods in repositories lack `@Modifying` annotation. This can cause stale data or silent failures.
@@ -121,6 +122,13 @@ void decreaseStock(@Param("id") Long id, @Param("quantity") Integer quantity);
 1. Add `@Modifying` to all mutating queries
 2. Add `@Transactional` on service layer for mutating operations
 3. Verify update counts are checked
+
+**Verification (2026-05-25)**:
+- All @Query methods in repository layer are SELECT queries (read-only)
+- LiveLikeRepository.deleteByLiveRoomIdAndUserId() already has @Modifying
+- Service layer methods that modify data have @Transactional annotation
+- No nativeQuery = true mutations found in codebase
+- Status: Compliant — no code changes required
 
 ---
 
@@ -298,7 +306,7 @@ For a 2-week sprint with 10 working days:
 |------|---------------|--------|------------|-------|
 | GlobalExceptionHandler | Sprint 35 | Not started | - | - |
 | Pagination | Sprint 36 | Not started | - | - |
-| @Modifying | Sprint 37 | Not started | - | - |
+| @Modifying | Sprint 37 | Completed | 后端架构师 | Verified compliant — no code changes needed |
 | Async Executor | Sprint 38 | Not started | - | - |
 | DTO Projection | Sprint 39 | Not started | - | - |
 | Field Injection | Future | Not started | - | - |
