@@ -4,6 +4,8 @@ import com.minimall.model.Order;
 import com.minimall.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,8 +23,8 @@ public class AdminOrderController {
 
     @GetMapping
     @Operation(summary = "Get all orders (admin)")
-    public ResponseEntity<List<Order>> getAllOrders() {
-        return ResponseEntity.ok(orderService.findAll());
+    public ResponseEntity<Page<Order>> getAllOrders(Pageable pageable) {
+        return ResponseEntity.ok(orderService.findAll(pageable));
     }
 
     @GetMapping("/{id}")

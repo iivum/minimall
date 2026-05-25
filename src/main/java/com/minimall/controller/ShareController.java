@@ -7,6 +7,8 @@ import com.minimall.service.ShareService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -31,8 +33,9 @@ public class ShareController {
 
     @GetMapping("/rewards")
     @Operation(summary = "Get user's share rewards")
-    public ResponseEntity<List<ShareReward>> getUserRewards(
-            @RequestHeader("X-User-Id") String userId) {
-        return ResponseEntity.ok(shareService.getUserRewards(userId));
+    public ResponseEntity<Page<ShareReward>> getUserRewards(
+            @RequestHeader("X-User-Id") String userId,
+            Pageable pageable) {
+        return ResponseEntity.ok(shareService.getUserRewards(userId, pageable));
     }
 }

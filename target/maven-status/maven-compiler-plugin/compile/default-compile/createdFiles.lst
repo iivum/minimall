@@ -74,6 +74,7 @@ com/minimall/repository/AdminUserRepository.class
 com/minimall/controller/AuthController.class
 com/minimall/dto/LiveRoomResponse.class
 com/minimall/exception/OrderException.class
+com/minimall/exception/GlobalExceptionHandler$ErrorResponse.class
 com/minimall/service/CouponService.class
 com/minimall/repository/LiveCommentRepository.class
 com/minimall/controller/CouponController.class
