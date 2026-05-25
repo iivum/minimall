@@ -4,7 +4,9 @@ import jakarta.persistence.*;
 import java.time.Instant;
 
 @Entity
-@Table(name = "categories")
+@Table(name = "categories", indexes = {
+    @Index(name = "idx_category_parent_active", columnList = "parent_id, active")
+})
 public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
