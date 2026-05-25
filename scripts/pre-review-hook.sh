@@ -2,7 +2,8 @@
 #
 # pre-review-hook.sh - Sprint 预审查 Hook
 # 在 issue 状态转为 in_review 前验证关键文件是否已合并到 main 分支
-# 用法: ./scripts/pre-review-hook.sh [--files file1 file2 ...]
+# 并检测虚假交付（worktree 中有修改但未合并到 main 分支）
+# 用法: ./scripts/pre-review-hook.sh [--files file1 file2 ...] [--skip-fake-detection]
 # 退出码: 0 = 验证通过, 1 = 验证失败, 2 = 检测失败
 
 set -e
@@ -15,11 +16,13 @@ NC='\033[0m'
 
 VERBOSE=0
 FILES=()
+SKIP_FAKE_DETECTION=0
 
 usage() {
-    echo "用法: $0 [--files file1 file2 ...] [--verbose]"
+    echo "用法: $0 [--files file1 file2 ...] [--verbose] [--skip-fake-detection]"
     echo "  --files      指定要验证的关键文件列表（相对于仓库根目录）"
     echo "  --verbose    显示详细输出"
+    echo "  --skip-fake-detection  跳过虚假交付检测"
     exit 1
 }
 
@@ -55,6 +58,10 @@ while [ $# -gt 0 ]; do
             VERBOSE=1
             shift
             ;;
+        --skip-fake-detection)
+            SKIP_FAKE_DETECTION=1
+            shift
+            ;;
         *)
             usage
             ;;
@@ -86,6 +93,82 @@ verify_file_in_main() {
     else
         log_debug "  ❌ 不存在于 main 分支"
         return 1
+    fi
+}
+
+# 虚假交付检测
+detect_fake_delivery() {
+    echo ""
+    echo "=== 虚假交付自动检测 ==="
+    echo ""
+
+    local FAKE_DELIVERY_COUNT=0
+
+    # 获取所有 worktree
+    local WORKTREE_LIST=$(git worktree list --porcelain 2>/dev/null | grep "worktree" | sed 's/worktree //' | tr -d '"')
+
+    if [ -z "$WORKTREE_LIST" ]; then
+        log_info "未发现任何 worktree，跳过虚假交付检测"
+        return 0
+    fi
+
+    echo "检测到的 Worktrees:"
+    echo ""
+
+    for worktree_path in $WORKTREE_LIST; do
+        # 获取 worktree 的分支名
+        local branch=$(cd "$worktree_path" && git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "unknown")
+        echo "  📁 $worktree_path"
+        echo "     分支: $branch"
+
+        # 跳过 main 分支的 worktree
+        if [ "$branch" = "main" ] || [ "$branch" = "origin/main" ]; then
+            echo "     状态: ✅ main 分支，跳过"
+            echo ""
+            continue
+        fi
+
+        # 检查是否有未合并到 main 的提交
+        local unmerged_files=$(cd "$worktree_path" && git log origin/main..HEAD --oneline 2>/dev/null || echo "")
+
+        if [ -n "$unmerged_files" ]; then
+            echo "     状态: ⚠️  发现未合并到 main 的提交"
+            echo "     提交记录:"
+            echo "$unmerged_files" | head -5 | sed 's/^/       /'
+            if echo "$unmerged_files" | wc -l | grep -q "[2-9]"; then
+                echo "       ... (更多提交)"
+            fi
+
+            # 检查关键文件是否存在
+            echo ""
+            echo "     验证关键文件:"
+
+            local local_files=$(cd "$worktree_path" && git diff --name-only origin/main..HEAD 2>/dev/null | head -20 || echo "")
+
+            if [ -n "$local_files" ]; then
+                for file in $local_files; do
+                    if git ls-tree origin/main "$file" > /dev/null 2>&1; then
+                        echo "       ✅ $file (已存在于 main)"
+                    else
+                        echo "       ❌ $file (未合并到 main)"
+                        FAKE_DELIVERY_COUNT=$((FAKE_DELIVERY_COUNT + 1))
+                    fi
+                done
+            fi
+        else
+            echo "     状态: ✅ 无未合并提交"
+        fi
+
+        echo ""
+    done
+
+    if [ $FAKE_DELIVERY_COUNT -gt 0 ]; then
+        echo ""
+        log_error "检测到 $FAKE_DELIVERY_COUNT 个疑似虚假交付"
+        return 1
+    else
+        log_info "未检测到虚假交付"
+        return 0
     fi
 }
 
@@ -130,6 +213,18 @@ main() {
         fi
         echo ""
     done
+
+    # 虚假交付检测
+    if [ $SKIP_FAKE_DETECTION -eq 0 ]; then
+        if ! detect_fake_delivery; then
+            echo ""
+            echo "⚠️  虚假交付检测失败，请先合并相关文件到 main 分支"
+            exit 1
+        fi
+    else
+        echo ""
+        log_info "已跳过虚假交付检测 (--skip-fake-detection)"
+    fi
 
     echo "=========================================="
     echo "验证结果汇总"
