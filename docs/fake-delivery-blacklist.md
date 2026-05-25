@@ -156,6 +156,8 @@ test -f target/classes/com/example/MyService.class && echo "Compiled class exist
 | [MIN-3146](mention://issue/3146) | Sprint #129 | CI verify-deliverables 使用 test -f | 虚假交付 |
 | [MIN-3147](mention://issue/3147) | Sprint #129 | delivery-verification.md 创建 | 虚假交付 |
 | [MIN-3150](mention://issue/3150) | Sprint #130 | CI verify-deliverables 添加 origin/main 验证 | 待验证 |
+| [MIN-3469](mention://issue/3469) | Sprint #136 | 声称创建 portal.md 但文件不存在于 main 分支 | 虚假交付 |
+| [MIN-3470](mention://issue/3470) | Sprint #136 | 声称创建 e2e-test-health-check.md 但文件不存在于 main 分支 | 虚假交付 |
 
 **执行者评分重新评估**:
 
