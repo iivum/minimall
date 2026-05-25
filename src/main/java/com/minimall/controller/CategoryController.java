@@ -6,6 +6,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,8 +26,17 @@ public class CategoryController {
     }
 
     @GetMapping
-    @Operation(summary = "List all active categories")
-    public ResponseEntity<List<Category>> list() {
+    @Operation(summary = "List all active categories (paginated)")
+    public ResponseEntity<Page<Category>> list(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "sortOrder"));
+        return ResponseEntity.ok(categoryRepository.findByActiveTrue(pageable));
+    }
+
+    @GetMapping("/all")
+    @Operation(summary = "List all active categories (non-paginated)")
+    public ResponseEntity<List<Category>> listAll() {
         return ResponseEntity.ok(categoryRepository.findByActiveTrueOrderBySortOrderAsc());
     }
 

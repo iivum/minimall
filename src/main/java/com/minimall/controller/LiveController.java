@@ -5,6 +5,10 @@ import com.minimall.dto.*;
 import com.minimall.service.LiveService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -21,8 +25,17 @@ public class LiveController {
     }
 
     @GetMapping
-    @Operation(summary = "Get all live rooms")
-    public ResponseEntity<List<LiveRoomResponse>> getLiveRooms() {
+    @Operation(summary = "Get all live rooms (paginated)")
+    public ResponseEntity<Page<LiveRoomResponse>> getLiveRooms(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        return ResponseEntity.ok(liveService.getLiveRooms(pageable));
+    }
+
+    @GetMapping("/all")
+    @Operation(summary = "Get all live rooms (non-paginated)")
+    public ResponseEntity<List<LiveRoomResponse>> getLiveRoomsAll() {
         return ResponseEntity.ok(liveService.getLiveRooms());
     }
 

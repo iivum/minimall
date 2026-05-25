@@ -6,6 +6,10 @@ import com.minimall.service.CouponService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -27,14 +31,32 @@ public class CouponController {
     }
 
     @GetMapping
-    @Operation(summary = "Get all available coupons")
-    public ResponseEntity<List<CouponResponse>> getAvailableCoupons() {
+    @Operation(summary = "Get all available coupons (paginated)")
+    public ResponseEntity<Page<CouponResponse>> getAvailableCoupons(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        return ResponseEntity.ok(couponService.getAvailableCoupons(pageable));
+    }
+
+    @GetMapping("/all")
+    @Operation(summary = "Get all available coupons (non-paginated)")
+    public ResponseEntity<List<CouponResponse>> getAvailableCouponsAll() {
         return ResponseEntity.ok(couponService.getAvailableCoupons());
     }
 
     @GetMapping("/new-user")
-    @Operation(summary = "Get new user exclusive coupons")
-    public ResponseEntity<List<CouponResponse>> getNewUserCoupons() {
+    @Operation(summary = "Get new user exclusive coupons (paginated)")
+    public ResponseEntity<Page<CouponResponse>> getNewUserCoupons(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        return ResponseEntity.ok(couponService.getNewUserCoupons(pageable));
+    }
+
+    @GetMapping("/new-user/all")
+    @Operation(summary = "Get new user exclusive coupons (non-paginated)")
+    public ResponseEntity<List<CouponResponse>> getNewUserCouponsAll() {
         return ResponseEntity.ok(couponService.getNewUserCoupons());
     }
 

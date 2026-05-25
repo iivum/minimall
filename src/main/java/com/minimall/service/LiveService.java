@@ -3,6 +3,8 @@ package com.minimall.service;
 import com.minimall.dto.*;
 import com.minimall.model.*;
 import com.minimall.repository.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
@@ -29,6 +31,10 @@ public class LiveService {
         return liveRoomRepository.findActiveRooms().stream()
             .map(LiveRoomResponse::from)
             .toList();
+    }
+
+    public Page<LiveRoomResponse> getLiveRooms(Pageable pageable) {
+        return liveRoomRepository.findAll(pageable).map(LiveRoomResponse::from);
     }
 
     public LiveRoomResponse getLiveRoom(String roomId) {
