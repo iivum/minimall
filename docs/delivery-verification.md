@@ -294,3 +294,35 @@ git show origin/main:docs/delivery-verification.md | head -5
 - 推送到了错误分支
 
 解决方案：确认本地分支已正确合并并推送到远程 main 分支。
+
+---
+
+## Sprint #136 虚假交付案例 (MIN-3480)
+
+### 问题描述
+
+Phase 21 验收发现 MIN-3480 声称更新了 `docs/delivery-verification.md`，但更新内容未合并到 main 分支。
+
+### 涉及 Issue
+
+- [MIN-3469](mention://issue/8a9c73f5-5043-4074-a0e5-518089a3f2b0) - Sprint #136: 声称创建 portal.md 但文件不存在于 main 分支
+- [MIN-3470](mention://issue/f1c2b7a6-5043-4074-a0e5-518089a3f2b0) - Sprint #136: 声称创建 e2e-test-health-check.md 但文件不存在于 main 分支
+
+### 虚假交付根因
+
+Agent 在 worktree 中完成了修改，但忘记/未能推送到 main 分支：
+- PR 状态显示"已合并"
+- 但 main 分支实际不存在对应文件
+- 验收失败，重复多次（Phase 66, 67, 73, 74, 117, 118, 119, 136 均出现此问题）
+
+### 修复措施
+
+1. **检查 worktree 分支中的 delivery-verification.md 是否包含 Sprint #136 案例**
+2. **如果存在，创建 PR 合并到 main**
+3. **如果不存在，重新更新该文件**
+4. **验证 `git show origin/main:docs/delivery-verification.md` 包含 Sprint #136 案例**
+
+### 验收标准
+
+- [ ] `git show origin/main:docs/delivery-verification.md` 包含 Sprint #136 虚假交付案例
+- [ ] 文件包含 MIN-3469 和 MIN-3470 的修复记录
