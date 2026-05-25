@@ -1,0 +1,42 @@
+package com.minimall.e2e;
+
+import com.minimall.miniapp.Application;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.web.servlet.MockMvc;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@SpringBootTest(classes = Application.class)
+@AutoConfigureMockMvc
+class PaymentFlowE2ETest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Test
+    void initiatePaymentFlow_withValidOrder_returnsPaymentInfo() throws Exception {
+        mockMvc.perform(post("/api/payments/initiate")
+                .param("orderId", "ORD-001")
+                .param("amount", "99.99"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void getPaymentStatusFlow_whenPaymentExists_returnsStatus() throws Exception {
+        mockMvc.perform(get("/api/payments/status/PAY-001"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void callbackPaymentFlow_withValidSignature_returnsSuccess() throws Exception {
+        mockMvc.perform(post("/api/payments/callback")
+                .param("transactionId", "TXN-12345")
+                .param("status", "SUCCESS"))
+                .andExpect(status().isOk());
+    }
+}
