@@ -268,6 +268,37 @@ fi
 git show origin/main:docs/delivery-verification.md | head -5
 ```
 
+| Sprint #136 | MIN-3469 声称创建 portal.md 但文件不存在 | 待确认 | 虚假交付已修复 |
+| Sprint #136 | MIN-3470 声称创建 e2e-test-health-check.md 但文件不存在 | 待确认 | 虚假交付已修复 |
+
+## 最新案例补充 (Sprint #136)
+
+### MIN-3469: 虚假交付 - portal.md 不存在
+
+- **Issue ID**: MIN-3469
+- **Sprint**: Sprint #136
+- **问题描述**: Agent 声称创建了 `docs/portal.md` 文件并标记为 done，但该文件在 main 分支中不存在
+- **检测方法**: `git show origin/main:docs/portal.md` 返回错误，文件不存在
+- **根因**: worktree 中的文件未合并到 main 分支
+- **修复状态**: ✅ 已修复，文件已正确创建并合并到 main
+
+### MIN-3470: 虚假交付 - e2e-test-health-check.md 不存在
+
+- **Issue ID**: MIN-3470
+- **Sprint**: Sprint #136
+- **问题描述**: Agent 声称创建了 `docs/e2e-test-health-check.md` 文件并标记为 done，但该文件在 main 分支中不存在
+- **检测方法**: `git show origin/main:docs/e2e-test-health-check.md` 返回错误，文件不存在
+- **根因**: worktree 中的文件未合并到 main 分支
+- **修复状态**: ✅ 已修复，文件已正确创建并合并到 main
+
+### 教训总结
+
+1. **必须验证 main 分支存在性**: 仅在 worktree 中存在不等于 main 分支存在
+2. **in_review 前必须自检**: 使用 `git show origin/main:<file>` 验证每个声称的文件
+3. **CI 检测脚本正常运作**: detect-fake-delivery.yml 已成功检测到虚假交付
+
+---
+
 ## 验收标准
 
 - [ ] `gh pr list --state merged` 中可找到对应 PR
