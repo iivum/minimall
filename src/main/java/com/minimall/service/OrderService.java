@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 @Service
 public class OrderService {
@@ -46,6 +47,11 @@ public class OrderService {
 
     public Page<Order> findAll(Pageable pageable) {
         return orderRepository.findAll(pageable);
+    }
+
+    public Page<Order> findByFilters(String userId, Order.Status status,
+            Order.PayStatus payStatus, Instant startDate, Instant endDate, Pageable pageable) {
+        return orderRepository.findByFilters(userId, status, payStatus, startDate, endDate, pageable);
     }
 
     public Order findById(String id) {
@@ -113,5 +119,11 @@ public class OrderService {
         memberService.updateTotalSpent(order.getUser().getId(), order.getTotalAmount());
 
         return savedOrder;
+    }
+
+    public Stream<Order> findByFiltersStream(String userId, Order.Status status,
+            Order.PayStatus payStatus, Instant startDate, Instant endDate) {
+        List<Order> orders = orderRepository.findByFiltersNoPage(userId, status, payStatus, startDate, endDate);
+        return orders.stream();
     }
 }
