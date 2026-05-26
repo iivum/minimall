@@ -317,9 +317,51 @@ For a 2-week sprint with 10 working days:
 | Pagination | Sprint 36 | Completed | 后端架构师 | Added Page<T> support to 5 controllers |
 | @Modifying | Sprint 37 | Completed | 后端架构师 | Verified compliant — no code changes needed |
 | Async Executor | Sprint 38 | Completed | 后端架构师 | AsyncConfig with bounded queue |
-| DTO Projection | Sprint 39 | Not started | - | - |
-| Field Injection | Future | Not started | - | - |
-| Test Coverage | Future | Not started | - | - |
+| DTO Projection | Sprint 180 | Not started | - | Carried from Sprint #179 — false delivery |
+| Field Injection | Future | Not started | - | Moved to future backlog |
+| Test Coverage | Sprint 180 | Not started | - | - |
+
+---
+
+## Sprint #179 Review (2026-05-27)
+
+### Acceptance Failed
+
+| Item | Sprint Target | Reason |
+|------|---------------|--------|
+| DTO Projection (#1) | Sprint 39 | **FALSE DELIVERY** — No code merged to main |
+| Field Injection (#5) | Sprint 39 | **FALSE DELIVERY** — No code merged to main |
+
+### False Delivery Case
+
+**Issue**: All issues marked as "Completed" in Sprint #179 were not actually delivered to main branch.
+
+**Detection**: Verification command `git show origin/main:docs/tech-debt-backlog.md | grep "Sprint #180"` returned no results, confirming Sprint #180 Planning was never merged.
+
+**Root Cause**: Sprint capacity was insufficient due to concurrent feature work. Tech debt items were claimed but implementation was not completed or merged.
+
+**Corrective Action**:
+- Re-mark Sprint #179 items as `Not started` or `Claimed`
+- Move DTO Projection to Sprint #180
+- Field Injection moved to Future backlog
+- Increase sprint capacity planning to avoid over-commitment
+
+**Status**: `Not started` | `Claimed` | `In progress` | `Completed`
+
+---
+
+## Sprint #180 Planning
+
+### Planned Tech Debt Items
+
+| Item | Priority | Estimated Effort | Notes |
+|------|----------|------------------|-------|
+| Missing Entity Projection DTOs (#1) | High | 5 days | Architectural improvement — carried from Sprint #179 |
+| Missing Unit Test Coverage (#7) | Medium | 10 days | Ongoing effort |
+
+### Focus Area
+
+Sprint #180 will focus on **Architecture** improvements with DTO projections as the primary tech debt item. Unit test coverage will be addressed concurrently.
 
 ---
 
