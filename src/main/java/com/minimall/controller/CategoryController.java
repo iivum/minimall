@@ -1,5 +1,6 @@
 package com.minimall.controller;
 
+import com.minimall.dto.CategoryDTO;
 import com.minimall.model.Category;
 import com.minimall.repository.CategoryRepository;
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,30 +28,31 @@ public class CategoryController {
 
     @GetMapping
     @Operation(summary = "List all active categories (paginated)")
-    public ResponseEntity<Page<Category>> list(
+    public ResponseEntity<Page<CategoryDTO>> list(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "sortOrder"));
-        return ResponseEntity.ok(categoryRepository.findByActiveTrue(pageable));
+        return ResponseEntity.ok(categoryRepository.findByActiveTrue(pageable).map(CategoryDTO::from));
     }
 
     @GetMapping("/all")
     @Operation(summary = "List all active categories (non-paginated)")
-    public ResponseEntity<List<Category>> listAll() {
-        return ResponseEntity.ok(categoryRepository.findByActiveTrueOrderBySortOrderAsc());
+    public ResponseEntity<List<CategoryDTO>> listAll() {
+        return ResponseEntity.ok(categoryRepository.findByActiveTrueOrderBySortOrderAsc().stream().map(CategoryDTO::from).toList());
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Get category by id")
-    public ResponseEntity<Category> getById(@PathVariable String id) {
+    public ResponseEntity<CategoryDTO> getById(@PathVariable String id) {
         return categoryRepository.findById(id)
+                .map(CategoryDTO::from)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
     @Operation(summary = "Create new category")
-    public ResponseEntity<Category> create(@Valid @RequestBody CategoryRequest request) {
+    public ResponseEntity<CategoryDTO> create(@Valid @RequestBody CategoryRequest request) {
         Category category = new Category();
         category.setName(request.name());
         category.setSortOrder(request.sortOrder() != null ? request.sortOrder() : 0);
@@ -58,12 +60,12 @@ public class CategoryController {
         if (request.parentId() != null) {
             categoryRepository.findById(request.parentId()).ifPresent(category::setParent);
         }
-        return ResponseEntity.ok(categoryRepository.save(category));
+        return ResponseEntity.ok(CategoryDTO.from(categoryRepository.save(category)));
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Update category")
-    public ResponseEntity<Category> update(@PathVariable String id, @Valid @RequestBody CategoryRequest request) {
+    public ResponseEntity<CategoryDTO> update(@PathVariable String id, @Valid @RequestBody CategoryRequest request) {
         return categoryRepository.findById(id).map(category -> {
             category.setName(request.name());
             if (request.sortOrder() != null) {
@@ -75,7 +77,7 @@ public class CategoryController {
             if (request.parentId() != null) {
                 categoryRepository.findById(request.parentId()).ifPresent(category::setParent);
             }
-            return ResponseEntity.ok(categoryRepository.save(category));
+            return ResponseEntity.ok(CategoryDTO.from(categoryRepository.save(category)));
         }).orElse(ResponseEntity.notFound().build());
     }
 
