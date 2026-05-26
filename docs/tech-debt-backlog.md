@@ -317,8 +317,8 @@ For a 2-week sprint with 10 working days:
 | Pagination | Sprint 36 | Completed | 后端架构师 | Added Page<T> support to 5 controllers |
 | @Modifying | Sprint 37 | Completed | 后端架构师 | Verified compliant — no code changes needed |
 | Async Executor | Sprint 38 | Completed | 后端架构师 | AsyncConfig with bounded queue |
-| DTO Projection | Sprint 183 | Not started | - | Carried from Sprint #179/#180/#181/#182 |
-| Test Coverage | Sprint 183 | Not started | - | Carried from Sprint #181/#182 |
+| DTO Projection | Sprint 184 | Not started | 后端架构师 | FALSE DELIVERY in Sprint #183 — carried from Sprint #179/#180/#181/#182/#183 |
+| Test Coverage | Sprint 184 | Not started | 后端架构师 | FALSE DELIVERY in Sprint #183 — carried from Sprint #181/#182/#183 |
 
 ---
 
@@ -352,6 +352,56 @@ For a 2-week sprint with 10 working days:
 ### Focus Area
 
 Sprint #183 will focus on **Architecture** improvements with DTO projections as the primary tech debt item. Unit test coverage will be addressed concurrently.
+
+---
+
+## Sprint #183 Review (2026-05-27)
+
+### Acceptance Failed
+
+| Item | Sprint Target | Reason |
+|------|---------------|--------|
+| DTO Projection (#1) | Sprint 183 | **FALSE DELIVERY** — Controllers still return JPA entities (Product, Order, Category) |
+| Test Coverage (#7) | Sprint 183 | **FALSE DELIVERY** — No tests added, coverage still below 80% |
+
+### False Delivery Case
+
+**Issue**: 后端架构师 claimed Sprint #183 tech debt items but did not deliver to main branch.
+
+**Detection**:
+- `git show origin/main:src/main/java/com/minimall/controller/ProductController.java` returns `Product` entity, not `ProductDTO`
+- `git show origin/main:src/main/java/com/minimall/controller/OrderController.java` returns `Order` entity, not `OrderDTO`
+- Controller layer coverage still ~13%, DTO layer coverage still ~12%
+
+**Root Cause**: 后端架构师 claimed multiple issues but did not merge code to main branch. Sprint capacity was consumed by claimed-but-not-delivered work.
+
+**Corrective Action**:
+- Re-assign DTO Projection to 后端架构师 for Sprint #184 with strict delivery deadline
+- Re-assign Test Coverage with clear milestone checkpoints
+- Implement pre-review verification before marking items as complete
+
+**Status**: `Not started` | `Claimed` | `In progress` | `Completed`
+
+---
+
+## Sprint #184 Planning
+
+### Planned Tech Debt Items
+
+| Item | Priority | Estimated Effort | Notes |
+|------|----------|------------------|-------|
+| Missing Entity Projection DTOs (#1) | High | 5 days | Architectural improvement — carried from Sprint #179/#180/#181/#182/#183 |
+| Missing Unit Test Coverage (#7) | Medium | 10 days | Ongoing effort — carried from Sprint #181/#182/#183 |
+
+### Focus Area
+
+Sprint #184 will focus on **completing** the DTO projections and test coverage items that were repeatedly carried forward. 后端架构师 must deliver verifiable code to main branch.
+
+### Capacity Warning
+
+- 后端架构师 has delivered 0/5 tech debt items in the last 5 sprints
+- All claimed items resulted in "FALSE DELIVERY" status
+- Sprint #184 tech debt items will be reassigned if not merged by 2026-06-03
 
 ---
 
