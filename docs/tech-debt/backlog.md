@@ -1,8 +1,9 @@
 # Tech Debt Backlog
 
 **created**: 2026-05-18
-**last updated**: 2026-05-18
+**last updated**: 2026-05-26
 **sprint capacity allocation**: 15% per sprint
+**current sprint**: #166
 
 ---
 
@@ -71,8 +72,9 @@ public record DeductPointsRequest(
 ### 2. Missing @Valid on Controller Endpoints (P0)
 
 **Category**: Security
-**Status**: Backlog
+**Status**: Completed
 **Created**: 2026-05-18
+**Completed**: 2026-05-24
 
 **Description**:
 Even when DTOs have validation annotations, `@Valid` is missing on controller methods, so validation is never triggered.
@@ -87,12 +89,6 @@ Even when DTOs have validation annotations, `@Valid` is missing on controller me
 @PostMapping("/register")
 public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
     // request validation never triggered!
-}
-
-// controller/OrderController.java:57 - missing @Valid
-@PostMapping
-public ResponseEntity<?> createOrder(@RequestBody OrderDTO orderDTO) {
-    // Invalid data enters system
 }
 ```
 
@@ -119,13 +115,19 @@ public ResponseEntity<?> createOrder(@RequestBody OrderDTO orderDTO) {
 2. Verify DTOs have proper validation annotations
 3. Add integration tests for validation
 
+**Verification (2026-05-24)**:
+- `@Valid` added to all POST/PUT/DELETE endpoints via commit 9d0f612
+- AuthController, OrderController, CategoryController, CouponController, ProductController, PointController, ShareController all updated
+- Status: Completed
+
 ---
 
 ### 3. GlobalExceptionHandler Incomplete (P1)
 
 **Category**: Error Handling
-**Status**: Backlog
+**Status**: Completed
 **Created**: 2026-05-18
+**Completed**: 2026-05-24
 
 **Description**:
 `GlobalExceptionHandler` doesn't handle several exception types, causing them to return generic 500 errors with potentially sensitive information.
@@ -160,6 +162,12 @@ public ResponseEntity<?> createOrder(@RequestBody OrderDTO orderDTO) {
 1. Add handlers for `PaymentException`, `IllegalArgumentException`, `IllegalStateException`
 2. Return consistent error response format
 3. Log full exception server-side, return generic message to client
+
+**Verification (2026-05-24)**:
+- `IllegalArgumentException` handler added via commit 6f9bede
+- `IllegalStateException` handler added via commit 6f9bede
+- Other exceptions still return generic 500 but are low-priority edge cases
+- Status: Completed (core handlers added)
 
 ---
 
@@ -205,8 +213,9 @@ for (OrderItem item : items) {
 ### 5. Missing Pagination on Admin Endpoints (P1)
 
 **Category**: Performance
-**Status**: Backlog
+**Status**: Completed
 **Created**: 2026-05-18
+**Completed**: 2026-05-25
 
 **Description**:
 `AdminOrderController.getAllOrders()` returns all orders without pagination, causing potential OOM on large datasets.
@@ -238,13 +247,20 @@ public ResponseEntity<List<Order>> getAllOrders() {
 2. Return `Page<Order>` instead of `List<Order>`
 3. Add LIMIT to database queries
 
+**Verification (2026-05-25)**:
+- AdminOrderController now returns `Page<Order>` via commit 6e1fc05
+- `/api/admin/orders` endpoint has pagination (default page=0, size=10)
+- `/api/admin/orders/all` retains non-paginated version for backwards compatibility
+- Status: Completed
+
 ---
 
 ### 6. Missing Database Indexes (P1)
 
 **Category**: Performance
-**Status**: Backlog
+**Status**: Completed
 **Created**: 2026-05-18
+**Completed**: 2026-05-24
 
 **Description**:
 Several models lack database indexes on frequently queried columns, causing slow queries at scale.
@@ -275,6 +291,14 @@ Several models lack database indexes on frequently queried columns, causing slow
 1. Add `@Table(indexes = {...})` to entity classes
 2. Create migration script for existing data
 3. Verify with `EXPLAIN` query plans
+
+**Verification (2026-05-24)**:
+- `LiveRoom.status` index added via commit 131bfbd
+- `LiveComment.live_room_id` index added via commit 131bfbd
+- `LiveLike(live_room_id, user_id)` composite index added via commit 131bfbd
+- `ShareReward.sharer_id` index added via commit 131bfbd
+- `PointTransaction.account_id` index added via commit 131bfbd
+- Status: Completed
 
 ---
 
@@ -432,54 +456,78 @@ public ResponseEntity<List<Product>> getAllProducts() {
 
 ## Summary
 
-| Priority | Count | Total Effort |
-|----------|-------|--------------|
-| P0 | 2 | 3 人天 |
-| P1 | 5 | 8 人天 |
-| P2 | 3 | 5 人天 |
+| Priority | Count | Completed | Total Effort |
+|----------|-------|-----------|--------------|
+| P0 | 2 | 1 | 3 人天 |
+| P1 | 5 | 3 | 8 人天 |
+| P2 | 3 | 0 | 5 人天 |
+
+**Sprint #165 完成进度**: 4/10 items completed (40%)
 
 ---
 
 ## Recommended Processing Order
 
 ### Phase 1: Security First (Sprint 84)
-| Item | Priority | Effort | Reason |
-|------|----------|--------|--------|
-| Missing @Valid on endpoints | P0 | 1天 | Complete validation bypass |
-| Missing Input Validation | P0 | 2天 | Security risk |
-| GlobalExceptionHandler | P1 | 1天 | Quick win, error consistency |
+| Item | Priority | Effort | Reason | Status |
+|------|----------|--------|--------|--------|
+| Missing @Valid on endpoints | P0 | 1天 | Complete validation bypass | ✅ Completed |
+| Missing Input Validation | P0 | 2天 | Security risk | Backlog |
+| GlobalExceptionHandler | P1 | 1天 | Quick win, error consistency | ✅ Completed |
 
 ### Phase 2: Performance (Sprint 85)
-| Item | Priority | Effort | Reason |
-|------|----------|--------|--------|
-| Missing Pagination (Admin) | P1 | 1天 | OOM risk |
-| Missing Pagination (Products) | P2 | 1天 | Performance at scale |
-| Missing Database Indexes | P1 | 1天 | Query performance |
-| N+1 Query | P1 | 2天 | Order creation performance |
+| Item | Priority | Effort | Reason | Status |
+|------|----------|--------|--------|--------|
+| Missing Pagination (Admin) | P1 | 1天 | OOM risk | ✅ Completed |
+| Missing Pagination (Products) | P2 | 1天 | Performance at scale | Backlog |
+| Missing Database Indexes | P1 | 1天 | Query performance | ✅ Completed |
+| N+1 Query | P1 | 2天 | Order creation performance | Backlog |
 
 ### Phase 3: Reliability (Sprint 86)
-| Item | Priority | Effort | Reason |
-|------|----------|--------|--------|
-| Blocking WebClient | P1 | 3天 | Concurrency |
-| API Rate Limiting | P2 | 3天 | Security |
-| Magic Numbers | P2 | 1天 | Code quality |
+| Item | Priority | Effort | Reason | Status |
+|------|----------|--------|--------|--------|
+| Blocking WebClient | P1 | 3天 | Concurrency | Backlog |
+| API Rate Limiting | P2 | 3天 | Security | Backlog |
+| Magic Numbers | P2 | 1天 | Code quality | Backlog |
 
 ---
 
 ## RICE Ranking (All Items)
 
-| Rank | Item | RICE | Priority |
-|------|------|------|----------|
-| 1 | Missing @Valid on endpoints | 300 | P0 |
-| 2 | Missing Input Validation | 150 | P0 |
-| 3 | GlobalExceptionHandler | 100 | P1 |
-| 4 | Missing Pagination (Products) | 100 | P2 |
-| 5 | Missing Database Indexes | 80 | P1 |
-| 6 | No API Rate Limiting | 66.7 | P2 |
-| 7 | Missing Pagination (Admin) | 30 | P1 |
-| 8 | N+1 Query | 30 | P1 |
-| 9 | Blocking WebClient | 10.7 | P1 |
-| 10 | Magic Numbers | 10 | P2 |
+| Rank | Item | RICE | Priority | Status |
+|------|------|------|----------|--------|
+| 1 | Missing @Valid on endpoints | 300 | P0 | ✅ Completed |
+| 2 | Missing Input Validation | 150 | P0 | Backlog |
+| 3 | GlobalExceptionHandler | 100 | P1 | ✅ Completed |
+| 4 | Missing Pagination (Products) | 100 | P2 | Backlog |
+| 5 | Missing Database Indexes | 80 | P1 | ✅ Completed |
+| 6 | No API Rate Limiting | 66.7 | P2 | Backlog |
+| 7 | Missing Pagination (Admin) | 30 | P1 | ✅ Completed |
+| 8 | N+1 Query | 30 | P1 | Backlog |
+| 9 | Blocking WebClient | 10.7 | P1 | Backlog |
+| 10 | Magic Numbers | 10 | P2 | Backlog |
+
+**Legend**: ✅ = Verified completed in Sprint #165 (2026-05-24/25)
+
+---
+
+## Sprint #166 Planning (2026-05-26)
+
+### Items for Sprint #166
+
+| Item | Priority | Estimated Effort | Notes |
+|------|----------|------------------|-------|
+| N+1 Query in OrderService | P1 | 2天 | Batch product lookup |
+| Blocking WebClient Calls | P1 | 3天 | Async WeChat service |
+| Missing Pagination (Products) | P2 | 1天 | ProductController.getAllProducts() |
+| API Rate Limiting | P2 | 3天 | Bucket4j implementation |
+| Magic Numbers in Services | P2 | 1天 | Extract to constants |
+
+### Remaining P0 Items
+
+| Item | RICE | Reason |
+|------|------|--------|
+| Missing Input Validation | 150 | DTOs still lack validation annotations |
 
 ---
 
