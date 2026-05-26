@@ -37,6 +37,33 @@ public class OrderDTO {
     public Instant getCreatedAt() { return createdAt; }
     public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
 
+    public static OrderDTO from(com.minimall.model.Order order) {
+        OrderDTO dto = new OrderDTO();
+        dto.setId(order.getId());
+        dto.setOrderNo(order.getOrderNo());
+        dto.setUserId(order.getUser().getId());
+        dto.setTotalAmount(order.getTotalAmount());
+        dto.setStatus(order.getStatus().name());
+        dto.setPayStatus(order.getPayStatus().name());
+        dto.setPayTime(order.getPayTime());
+        dto.setTradeNo(order.getTradeNo());
+        dto.setCreatedAt(order.getCreatedAt());
+        if (order.getItems() != null) {
+            dto.setItems(order.getItems().stream()
+                .map(item -> {
+                    OrderItemDTO itemDTO = new OrderItemDTO();
+                    itemDTO.setId(item.getId());
+                    itemDTO.setProductId(item.getProduct().getId());
+                    itemDTO.setProductName(item.getProduct().getName());
+                    itemDTO.setQuantity(item.getQuantity());
+                    itemDTO.setPrice(item.getPrice());
+                    return itemDTO;
+                })
+                .toList());
+        }
+        return dto;
+    }
+
     public static class OrderItemDTO {
         private String id;
         private String productId;

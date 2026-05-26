@@ -25,4 +25,16 @@ public class ProductDTO {
     public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
     public Boolean getActive() { return active; }
     public void setActive(Boolean active) { this.active = active; }
+
+    public static ProductDTO from(com.minimall.model.Product product) {
+        ProductDTO dto = new ProductDTO();
+        dto.setId(product.getId());
+        dto.setName(product.getName());
+        dto.setDescription(product.getDescription());
+        dto.setPrice(product.getPrice());
+        dto.setStock(product.getStock());
+        dto.setImageUrl(product.getImageUrl());
+        dto.setActive(product.getActive());
+        return dto;
+    }
 }

@@ -1,6 +1,7 @@
 package com.minimall.controller;
 
 import com.minimall.config.SecurityUtils;
+import com.minimall.dto.OrderDTO;
 import com.minimall.exception.UnauthorizedException;
 import com.minimall.model.Order;
 import com.minimall.model.OrderItem;
@@ -28,60 +29,63 @@ public class OrderController {
 
     @GetMapping("/user/{userId}")
     @Operation(summary = "Get orders by user ID")
-    public ResponseEntity<List<Order>> getUserOrders(@PathVariable String userId) {
+    public ResponseEntity<List<OrderDTO>> getUserOrders(@PathVariable String userId) {
         if (!securityUtils.isCurrentUser(userId)) {
             throw new UnauthorizedException("You can only access your own orders");
         }
-        return ResponseEntity.ok(orderService.findByUserId(userId));
+        List<OrderDTO> orders = orderService.findByUserId(userId).stream()
+            .map(OrderDTO::from)
+            .toList();
+        return ResponseEntity.ok(orders);
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Get order by ID")
-    public ResponseEntity<Order> getOrder(@PathVariable String id) {
+    public ResponseEntity<OrderDTO> getOrder(@PathVariable String id) {
         Order order = orderService.findById(id);
         if (!securityUtils.isCurrentUser(order.getUser().getId())) {
             throw new UnauthorizedException("You can only access your own orders");
         }
-        return ResponseEntity.ok(order);
+        return ResponseEntity.ok(OrderDTO.from(order));
     }
 
     @GetMapping("/no/{orderNo}")
     @Operation(summary = "Get order by order number")
-    public ResponseEntity<Order> getOrderByNo(@PathVariable String orderNo) {
+    public ResponseEntity<OrderDTO> getOrderByNo(@PathVariable String orderNo) {
         Order order = orderService.findByOrderNo(orderNo);
         if (!securityUtils.isCurrentUser(order.getUser().getId())) {
             throw new UnauthorizedException("You can only access your own orders");
         }
-        return ResponseEntity.ok(order);
+        return ResponseEntity.ok(OrderDTO.from(order));
     }
 
     @PostMapping
     @Operation(summary = "Create a new order")
-    public ResponseEntity<Order> createOrder(@Valid @RequestBody CreateOrderRequest request) {
+    public ResponseEntity<OrderDTO> createOrder(@Valid @RequestBody CreateOrderRequest request) {
         if (!securityUtils.isCurrentUser(request.userId)) {
             throw new UnauthorizedException("You can only create orders for yourself");
         }
-        return ResponseEntity.ok(orderService.create(request.userId, request.items));
+        return ResponseEntity.ok(OrderDTO.from(orderService.create(request.userId, request.items)));
     }
 
     @PatchMapping("/{id}/status")
     @Operation(summary = "Update order status")
-    public ResponseEntity<Order> updateStatus(@PathVariable String id, @RequestParam Order.Status status) {
+    public ResponseEntity<OrderDTO> updateStatus(@PathVariable String id, @RequestParam Order.Status status) {
         Order order = orderService.findById(id);
         if (!securityUtils.isCurrentUser(order.getUser().getId())) {
             throw new UnauthorizedException("You can only update your own orders");
         }
-        return ResponseEntity.ok(orderService.updateStatus(id, status));
+        return ResponseEntity.ok(OrderDTO.from(orderService.updateStatus(id, status)));
     }
 
     @PatchMapping("/{id}/pay")
     @Operation(summary = "Mark order as paid")
-    public ResponseEntity<Order> payOrder(@PathVariable String id, @RequestParam String tradeNo) {
+    public ResponseEntity<OrderDTO> payOrder(@PathVariable String id, @RequestParam String tradeNo) {
         Order order = orderService.findById(id);
         if (!securityUtils.isCurrentUser(order.getUser().getId())) {
             throw new UnauthorizedException("You can only pay your own orders");
         }
-        return ResponseEntity.ok(orderService.pay(id, tradeNo));
+        return ResponseEntity.ok(OrderDTO.from(orderService.pay(id, tradeNo)));
     }
 
     public static class CreateOrderRequest {
