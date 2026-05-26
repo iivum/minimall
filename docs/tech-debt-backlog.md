@@ -317,8 +317,8 @@ For a 2-week sprint with 10 working days:
 | Pagination | Sprint 36 | Completed | 后端架构师 | Added Page<T> support to 5 controllers |
 | @Modifying | Sprint 37 | Completed | 后端架构师 | Verified compliant — no code changes needed |
 | Async Executor | Sprint 38 | Completed | 后端架构师 | AsyncConfig with bounded queue |
-| DTO Projection | Sprint 183 | Not started | - | Carried from Sprint #179/#180/#181/#182 |
-| Test Coverage | Sprint 183 | Not started | - | Carried from Sprint #181/#182 |
+| DTO Projection | Sprint 184 | Not started | - | Carried from Sprint #179/#180/#181/#182/#183 |
+| Test Coverage | Sprint 184 | Not started | - | Carried from Sprint #181/#182/#183 |
 
 ---
 
@@ -335,6 +335,31 @@ For a 2-week sprint with 10 working days:
 - Sprint #182 did not complete any tech debt items
 - DTO Projection (#1) and Test Coverage (#7) carried forward to Sprint #183
 - Capacity was consumed by concurrent feature work
+
+**Status Values**: `Not started` | `Claimed` | `In progress` | `Completed`
+
+---
+
+## Sprint #184 Review (2026-05-27)
+
+### Completed Items
+
+| Item | Sprint | Status | Verification |
+|------|--------|--------|--------------|
+| - | - | - | No items completed in Sprint #184 |
+
+### Notes
+
+- Sprint #184 did not complete any tech debt items
+- **FALSE DELIVERY RISK**: 6 issues marked as in_review but no evidence of main branch merge
+- DTO Projection (#1) carried forward to Sprint #185
+- Test Coverage (#7) carried forward to Sprint #185
+- Root cause: 后端架构师 simultaneously handling too many parallel high-priority items
+
+### Action Items
+
+1. **MIN-3781**: Orion to break down DTO Projection into smaller tasks (due 2026-05-28)
+2. **MIN-3782**: Orion to assign legacy issues to team members (due 2026-05-28)
 
 **Status Values**: `Not started` | `Claimed` | `In progress` | `Completed`
 
