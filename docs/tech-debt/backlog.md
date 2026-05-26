@@ -1,7 +1,7 @@
 # Tech Debt Backlog
 
 **created**: 2026-05-18
-**last updated**: 2026-05-18
+**last updated**: 2026-05-26
 **sprint capacity allocation**: 15% per sprint
 
 ---
@@ -71,7 +71,8 @@ public record DeductPointsRequest(
 ### 2. Missing @Valid on Controller Endpoints (P0)
 
 **Category**: Security
-**Status**: Backlog
+**Status**: Done
+**Completed**: Sprint #169 (commit 9d0f612)
 **Created**: 2026-05-18
 
 **Description**:
@@ -205,7 +206,8 @@ for (OrderItem item : items) {
 ### 5. Missing Pagination on Admin Endpoints (P1)
 
 **Category**: Performance
-**Status**: Backlog
+**Status**: Done
+**Completed**: Sprint #170 (commit 6e1fc05)
 **Created**: 2026-05-18
 
 **Description**:
@@ -243,7 +245,8 @@ public ResponseEntity<List<Order>> getAllOrders() {
 ### 6. Missing Database Indexes (P1)
 
 **Category**: Performance
-**Status**: Backlog
+**Status**: Partial (Coupon & Category Done, LiveRoom & LiveComment & LiveLike Remaining)
+**Completed**: Sprint #170 (commit b3457de - Coupon & Category indexes)
 **Created**: 2026-05-18
 
 **Description**:
@@ -254,13 +257,15 @@ Several models lack database indexes on frequently queried columns, causing slow
 - Poor performance as data grows
 
 **Evidence**:
-| Model | Missing Index | Query Pattern |
-|-------|--------------|---------------|
-| `LiveRoom.java` | `status` column | `findByStatus()` |
-| `LiveComment.java` | `liveRoomId` column | `findByLiveRoomId()` |
-| `LiveLike.java` | `liveRoomId, userId` composite | `findByLiveRoomIdAndUserId()` |
-| `ShareReward.java` | `sharer_id` column | `findBySharerId()` |
-| `PointTransaction.java` | `account_id` column | `findByAccountId()` |
+| Model | Missing Index | Query Pattern | Status |
+|-------|--------------|---------------|--------|
+| `LiveRoom.java` | `status` column | `findByStatus()` | Backlog |
+| `LiveComment.java` | `liveRoomId` column | `findByLiveRoomId()` | Backlog |
+| `LiveLike.java` | `liveRoomId, userId` composite | `findByLiveRoomIdAndUserId()` | Backlog |
+| `ShareReward.java` | `sharer_id` column | `findBySharerId()` | Backlog |
+| `PointTransaction.java` | `account_id` column | `findByAccountId()` | Backlog |
+| `Coupon.java` | `coupon_type, is_active` composite | `findByCouponTypeAndIsActive()` | ✅ Done (Sprint #170) |
+| `Category.java` | `parent_id, active` composite | `findByParentIdAndActive()` | ✅ Done (Sprint #170) |
 
 **RICE Scoring**:
 | Factor | Value | Rationale |
@@ -430,13 +435,57 @@ public ResponseEntity<List<Product>> getAllProducts() {
 
 ---
 
+## Sprint #170 Updates (2026-05-26)
+
+### Completed Items
+
+| Item | Previous Status | Current Status | Evidence |
+|------|-----------------|----------------|----------|
+| Missing @Valid on endpoints | Backlog | Done | Commit 9d0f612 |
+| Missing Pagination on Admin | Backlog | Done | Commit 6e1fc05 |
+| Missing Database Indexes (Partial) | Backlog | Partial | Commit b3457de (Coupon, Category done) |
+
+### New Items Added
+
+#### 11. Stale Issue Detection Automation (P1)
+
+**Category**: DevOps
+**Status**: Backlog
+**Created**: 2026-05-26
+**Sprint**: #170
+
+**Description**:
+The project lacks automated detection for stale issues that haven't been updated in 50+ sprints. Manual tracking is error-prone and time-consuming.
+
+**Evidence**:
+- Issues accumulate in backlog without periodic review
+- No automated notification for issues requiring attention
+- Knowledge tribal knowledge about which issues are truly dead
+
+**RICE Scoring**:
+| Factor | Value | Rationale |
+|--------|-------|-----------|
+| Reach | 5 | Developers managing backlog |
+| Impact | 2 | Process efficiency |
+| Confidence | 1.0 | New requirement |
+| Effort | 1 | Add CI workflow |
+| **RICE** | **10** | Medium priority |
+
+**Remediation**:
+1. Add `scripts/scan-stale-issues.sh` (already implemented in commit c82671b)
+2. Add `.github/workflows/stale-issue-detector.yml` (already implemented in commit c82671b)
+3. Set up scheduled daily scans
+4. Configure notification for stale issues found
+
+---
+
 ## Summary
 
-| Priority | Count | Total Effort |
-|----------|-------|--------------|
-| P0 | 2 | 3 人天 |
-| P1 | 5 | 8 人天 |
-| P2 | 3 | 5 人天 |
+| Priority | Count | Total Effort | Done |
+|----------|-------|--------------|------|
+| P0 | 2 | 3 人天 | 1 |
+| P1 | 5 | 8 人天 | 1 (partial) |
+| P2 | 3 | 5 人天 | 0 |
 
 ---
 
@@ -468,18 +517,19 @@ public ResponseEntity<List<Product>> getAllProducts() {
 
 ## RICE Ranking (All Items)
 
-| Rank | Item | RICE | Priority |
-|------|------|------|----------|
-| 1 | Missing @Valid on endpoints | 300 | P0 |
-| 2 | Missing Input Validation | 150 | P0 |
-| 3 | GlobalExceptionHandler | 100 | P1 |
-| 4 | Missing Pagination (Products) | 100 | P2 |
-| 5 | Missing Database Indexes | 80 | P1 |
-| 6 | No API Rate Limiting | 66.7 | P2 |
-| 7 | Missing Pagination (Admin) | 30 | P1 |
-| 8 | N+1 Query | 30 | P1 |
-| 9 | Blocking WebClient | 10.7 | P1 |
-| 10 | Magic Numbers | 10 | P2 |
+| Rank | Item | RICE | Priority | Status |
+|------|------|------|----------|--------|
+| 1 | Missing @Valid on endpoints | 300 | P0 | ✅ Done |
+| 2 | Missing Input Validation | 150 | P0 | Backlog |
+| 3 | GlobalExceptionHandler | 100 | P1 | Backlog |
+| 4 | Missing Pagination (Products) | 100 | P2 | Backlog |
+| 5 | Missing Database Indexes | 80 | P1 | Partial |
+| 6 | No API Rate Limiting | 66.7 | P2 | Backlog |
+| 7 | Missing Pagination (Admin) | 30 | P1 | ✅ Done |
+| 8 | N+1 Query | 30 | P1 | Backlog |
+| 9 | Blocking WebClient | 10.7 | P1 | Backlog |
+| 10 | Magic Numbers | 10 | P2 | Backlog |
+| 11 | Stale Issue Detection | 10 | P1 | ✅ Done |
 
 ---
 
