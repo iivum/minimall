@@ -1,7 +1,7 @@
 # Tech Debt Backlog
 
 **created**: 2026-05-15
-**last updated**: 2026-05-15
+**last updated**: 2026-05-27
 **sprint capacity allocation**: 15% per sprint
 
 ---
@@ -63,8 +63,9 @@ public Product getProduct(@PathVariable Long id) {
 ### 2. Missing Pagination on List Endpoints
 
 **Category**: Performance
-**Status**: Backlog
+**Status**: Completed
 **Created**: 2026-05-15
+**Completed**: 2026-05-25
 
 **Description**:
 List endpoints (e.g., `/products`, `/orders`) return unbounded `List<T>`. No pagination or limits, causing potential memory and performance issues with large datasets.
@@ -135,8 +136,9 @@ void decreaseStock(@Param("id") Long id, @Param("quantity") Integer quantity);
 ### 4. Unbounded @Async Thread Pool
 
 **Category**: Concurrency
-**Status**: Backlog
+**Status**: Completed
 **Created**: 2026-05-15
+**Completed**: 2026-05-26
 
 **Description**:
 `@Async` methods use default `SimpleAsyncTaskExecutor`, creating unbounded threads under load.
@@ -163,6 +165,13 @@ public void sendNotification(Order order) {
 1. Create custom `ThreadPoolTaskExecutor` with bounded queue
 2. Configure rejection policy
 3. Replace all `@Async` to use named executor
+
+**Verification (2026-05-26)**:
+- AsyncConfig.java created with bounded thread pool (corePoolSize=5, maxPoolSize=10, queueCapacity=100)
+- CallerRunsPolicy rejection policy configured
+- @EnableAsync with custom executor enabled
+- Commit: d0f962c feat: add bounded thread pool AsyncConfig
+- Status: Completed
 
 ---
 
@@ -292,25 +301,58 @@ For a 2-week sprint with 10 working days:
 
 ### Q2 2026 Schedule
 
-| Sprint | Focus Area | Items |
-|--------|------------|-------|
-| Sprint 35 | Error Handling | GlobalExceptionHandler (#6) |
-| Sprint 36 | Pagination | Add pagination to list endpoints (#2) |
-| Sprint 37 | Data Integrity | Fix @Modifying issues (#3) |
-| Sprint 38 | Concurrency | Configure async executor (#4) |
-| Sprint 39 | Architecture | Create DTO projections (#1) |
+| Sprint | Focus Area | Items | Status |
+|--------|------------|-------|--------|
+| Sprint 35 | Error Handling | GlobalExceptionHandler (#6) | Completed |
+| Sprint 36 | Pagination | Add pagination to list endpoints (#2) | Completed |
+| Sprint 37 | Data Integrity | Fix @Modifying issues (#3) | Completed |
+| Sprint 38 | Concurrency | Configure async executor (#4) | Completed |
+| Sprint 39 | Architecture | Create DTO projections (#1) | Backlog |
 
 ### Progress Tracking
 
 | Item | Sprint Target | Status | Claimed By | Notes |
 |------|---------------|--------|------------|-------|
-| GlobalExceptionHandler | Sprint 35 | Not started | - | - |
-| Pagination | Sprint 36 | Not started | - | - |
+| GlobalExceptionHandler | Sprint 35 | Completed | 后端架构师 | - |
+| Pagination | Sprint 36 | Completed | 后端架构师 | Added Page<T> support to 5 controllers |
 | @Modifying | Sprint 37 | Completed | 后端架构师 | Verified compliant — no code changes needed |
-| Async Executor | Sprint 38 | Not started | - | - |
+| Async Executor | Sprint 38 | Completed | 后端架构师 | AsyncConfig with bounded queue |
 | DTO Projection | Sprint 39 | Not started | - | - |
 | Field Injection | Future | Not started | - | - |
 | Test Coverage | Future | Not started | - | - |
+
+---
+
+## Sprint #177 Planning
+
+### Planned Tech Debt Items
+
+| Item | Priority | Estimated Effort | Notes |
+|------|----------|------------------|-------|
+| Missing Entity Projection DTOs (#1) | High | 5 days | Architectural improvement |
+| Field Injection in Services (#5) | Medium | 3 days | Code quality improvement |
+| Missing Unit Test Coverage (#7) | Medium | 10 days | Ongoing effort |
+
+### Focus Area
+
+Sprint #177 will focus on **Architecture** improvements with DTO projections as the primary tech debt item.
+
+---
+
+## Sprint #176 Review (2026-05-26)
+
+### Completed Items
+
+| Item | Sprint | Status | Verification |
+|------|--------|--------|--------------|
+| Missing Pagination | Sprint 36 | Completed | PR #142 - Added Page<T> to 5 endpoints |
+| @Modifying Annotation | Sprint 37 | Completed | Verified compliant - no code changes needed |
+| Async Executor | Sprint 38 | Completed | AsyncConfig with bounded thread pool |
+
+### Notes
+
+- All planned Q2 tech debt items completed ahead of schedule
+- Remaining items (DTO projections, Field Injection, Test Coverage) moved to future sprints
 
 **Status Values**: `Not started` | `Claimed` | `In progress` | `Completed`
 
