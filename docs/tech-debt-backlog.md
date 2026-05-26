@@ -317,35 +317,41 @@ For a 2-week sprint with 10 working days:
 | Pagination | Sprint 36 | Completed | 后端架构师 | Added Page<T> support to 5 controllers |
 | @Modifying | Sprint 37 | Completed | 后端架构师 | Verified compliant — no code changes needed |
 | Async Executor | Sprint 38 | Completed | 后端架构师 | AsyncConfig with bounded queue |
-| DTO Projection | Sprint 182 | Not started | - | Carried from Sprint #179/#180/#181 |
-| Test Coverage | Sprint 182 | Not started | - | Carried from Sprint #181 |
+| DTO Projection | Sprint 183 | Not started | - | Carried from Sprint #179/#180/#181/#182 |
+| Test Coverage | Sprint 183 | Not started | - | Carried from Sprint #181/#182 |
 
 ---
 
-## Sprint #180 Review (2026-05-27)
+## Sprint #182 Review (2026-05-27)
 
-### Acceptance Failed
+### Completed Items
 
-| Item | Sprint Target | Reason |
-|------|---------------|--------|
-| DTO Projection (#1) | Sprint 39 | **FALSE DELIVERY** — No code merged to main |
-| Field Injection (#5) | Sprint 39 | **FALSE DELIVERY** — No code merged to main |
+| Item | Sprint | Status | Verification |
+|------|--------|--------|--------------|
+| - | - | - | No items completed in Sprint #182 |
 
-### False Delivery Case
+### Notes
 
-**Issue**: All issues marked as "Completed" in Sprint #179 were not actually delivered to main branch.
+- Sprint #182 did not complete any tech debt items
+- DTO Projection (#1) and Test Coverage (#7) carried forward to Sprint #183
+- Capacity was consumed by concurrent feature work
 
-**Detection**: Verification command `git show origin/main:docs/tech-debt-backlog.md | grep "Sprint #180"` returned no results, confirming Sprint #180 Planning was never merged.
+**Status Values**: `Not started` | `Claimed` | `In progress` | `Completed`
 
-**Root Cause**: Sprint capacity was insufficient due to concurrent feature work. Tech debt items were claimed but implementation was not completed or merged.
+---
 
-**Corrective Action**:
-- Re-mark Sprint #179 items as `Not started` or `Claimed`
-- Move DTO Projection to Sprint #180
-- Field Injection moved to Future backlog
-- Increase sprint capacity planning to avoid over-commitment
+## Sprint #183 Planning
 
-**Status**: `Not started` | `Claimed` | `In progress` | `Completed`
+### Planned Tech Debt Items
+
+| Item | Priority | Estimated Effort | Notes |
+|------|----------|------------------|-------|
+| Missing Entity Projection DTOs (#1) | High | 5 days | Architectural improvement — carried from Sprint #179/#180/#181/#182 |
+| Missing Unit Test Coverage (#7) | Medium | 10 days | Ongoing effort — carried from Sprint #181/#182 |
+
+### Focus Area
+
+Sprint #183 will focus on **Architecture** improvements with DTO projections as the primary tech debt item. Unit test coverage will be addressed concurrently.
 
 ---
 
@@ -382,33 +388,6 @@ Sprint #182 will focus on **Architecture** improvements with DTO projections as 
 
 ---
 
-## Sprint #180 Review (2026-05-27)
-
-### Acceptance Failed
-
-| Item | Sprint Target | Reason |
-|------|---------------|--------|
-| DTO Projection (#1) | Sprint 180 | **FALSE DELIVERY** — No code merged to main |
-| Test Coverage (#7) | Sprint 180 | **FALSE DELIVERY** — No code merged to main |
-
-### False Delivery Case
-
-**Issue**: All issues marked as "In progress" in Sprint #180 were not actually delivered to main branch.
-
-**Detection**: Verification command `git show origin/main:docs/tech-debt-backlog.md | grep "Sprint #180"` returned no results, confirming Sprint #180 Planning was never merged.
-
-**Root Cause**: Sprint capacity was insufficient due to concurrent feature work. Tech debt items were claimed but implementation was not completed or merged.
-
-**Corrective Action**:
-- Re-mark Sprint #180 items as `Not started` or `Claimed`
-- Move DTO Projection to Sprint #181
-- Test Coverage moved to future backlog
-- Increase sprint capacity planning to avoid over-commitment
-
-**Status**: `Not started` | `Claimed` | `In progress` | `Completed`
-
----
-
 ## Sprint #179 Planning
 
 ### Planned Tech Debt Items
@@ -421,7 +400,7 @@ Sprint #182 will focus on **Architecture** improvements with DTO projections as 
 
 ### Focus Area
 
-Sprint #177 will focus on **Architecture** improvements with DTO projections as the primary tech debt item.
+Sprint #179 will focus on **Architecture** improvements with DTO projections as the primary tech debt item.
 
 ---
 
