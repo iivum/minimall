@@ -308,6 +308,8 @@ For a 2-week sprint with 10 working days:
 | Sprint 37 | Data Integrity | Fix @Modifying issues (#3) | Completed |
 | Sprint 38 | Concurrency | Configure async executor (#4) | Completed |
 | Sprint 39 | Architecture | Create DTO projections (#1) | Backlog |
+| Sprint 40 | Architecture | Create DTO projections (#1) + Field Injection (#5) | Planned |
+| Sprint 41 | Testing & Error Handling | Unit Test Coverage (#7) + @RestControllerAdvice (#6) | Planned |
 
 ### Progress Tracking
 
@@ -317,9 +319,10 @@ For a 2-week sprint with 10 working days:
 | Pagination | Sprint 36 | Completed | 后端架构师 | Added Page<T> support to 5 controllers |
 | @Modifying | Sprint 37 | Completed | 后端架构师 | Verified compliant — no code changes needed |
 | Async Executor | Sprint 38 | Completed | 后端架构师 | AsyncConfig with bounded queue |
-| DTO Projection | Sprint 39 | Not started | - | - |
-| Field Injection | Future | Not started | - | - |
-| Test Coverage | Future | Not started | - | - |
+| DTO Projection | Sprint 39-40 | Not started | - | Failed Sprint #177, rescheduled to Sprint #40 |
+| Field Injection | Sprint 40 | Not started | - | - |
+| Test Coverage | Sprint 41 | Not started | - | - |
+| @RestControllerAdvice | Sprint 41 | Not started | - | - |
 
 ---
 
@@ -339,7 +342,9 @@ Sprint #177 will focus on **Architecture** improvements with DTO projections as 
 
 ---
 
-## Sprint #176 Review (2026-05-26)
+## Sprint #177 Review (2026-05-27)
+
+### Acceptance Status: FAILED
 
 ### Completed Items
 
@@ -354,7 +359,46 @@ Sprint #177 will focus on **Architecture** improvements with DTO projections as 
 - All planned Q2 tech debt items completed ahead of schedule
 - Remaining items (DTO projections, Field Injection, Test Coverage) moved to future sprints
 
-**Status Values**: `Not started` | `Claimed` | `In progress` | `Completed`
+### Acceptance Failure Details
+
+Sprint #177 focused on **Architecture** improvements (DTO projections #1) but did not complete the planned work. The tech debt items remain in Backlog status.
+
+**Status Values**: `Not started` | `Claimed` | `In progress` | `Completed` | `Failed`
+
+---
+
+## Sprint #178 Planning
+
+### Planned Tech Debt Items
+
+| Item | Priority | Estimated Effort | Notes |
+|------|----------|------------------|-------|
+| Missing Entity Projection DTOs (#1) | High | 5 days | Architectural improvement |
+| Field Injection in Services (#5) | Medium | 3 days | Code quality improvement |
+
+### Focus Area
+
+Sprint #178 will focus on **Architecture** improvements with DTO projections as the primary tech debt item, continuing from Sprint #177.
+
+### Capacity Allocation
+
+- 15% of sprint capacity dedicated to tech debt (same as previous sprints)
+- Primary focus: Item #1 (Missing Entity Projection DTOs)
+
+---
+
+## Sprint #179 Planning
+
+### Planned Tech Debt Items
+
+| Item | Priority | Estimated Effort | Notes |
+|------|----------|------------------|-------|
+| Missing Unit Test Coverage (#7) | Medium | 10 days | Ongoing effort |
+| Missing @RestControllerAdvice (#6) | Medium | 2 days | Error handling standardization |
+
+### Focus Area
+
+Sprint #179 will focus on **Testing** and **Error Handling** improvements.
 
 ---
 
