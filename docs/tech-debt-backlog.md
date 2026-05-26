@@ -307,7 +307,8 @@ For a 2-week sprint with 10 working days:
 | Sprint 36 | Pagination | Add pagination to list endpoints (#2) | Completed |
 | Sprint 37 | Data Integrity | Fix @Modifying issues (#3) | Completed |
 | Sprint 38 | Concurrency | Configure async executor (#4) | Completed |
-| Sprint 39 | Architecture | Create DTO projections (#1) | Backlog |
+| Sprint #178 | Architecture | Create DTO projections (#1) | Failed |
+| Sprint #179 | TBD | TBD | Planning |
 
 ### Progress Tracking
 
@@ -317,7 +318,7 @@ For a 2-week sprint with 10 working days:
 | Pagination | Sprint 36 | Completed | 后端架构师 | Added Page<T> support to 5 controllers |
 | @Modifying | Sprint 37 | Completed | 后端架构师 | Verified compliant — no code changes needed |
 | Async Executor | Sprint 38 | Completed | 后端架构师 | AsyncConfig with bounded queue |
-| DTO Projection | Sprint 39 | Not started | - | - |
+| DTO Projection | Sprint #178 | Failed | - | Acceptance failed - deferred to Sprint #179 |
 | Field Injection | Future | Not started | - | - |
 | Test Coverage | Future | Not started | - | - |
 
@@ -336,6 +337,40 @@ For a 2-week sprint with 10 working days:
 ### Focus Area
 
 Sprint #177 will focus on **Architecture** improvements with DTO projections as the primary tech debt item.
+
+---
+
+## Sprint #178 Review (2026-05-27)
+
+### Acceptance Failed
+
+| Item | Sprint Target | Status | Verification |
+|------|--------------|--------|--------------|
+| DTO Projection | Sprint #178 | Failed | Acceptance criteria not met |
+
+### Notes
+
+- DTO投影实现未通过验收
+- 问题定位：实现方案存在缺陷，需要重新设计
+- 后续行动：推迟到Sprint #179重新规划
+
+**Status Values**: `Not started` | `Claimed` | `In progress` | `Completed`
+
+---
+
+## Sprint #179 Planning
+
+### Planned Tech Debt Items
+
+| Item | Priority | Estimated Effort | Notes |
+|------|----------|------------------|-------|
+| Missing Entity Projection DTOs (#1) | High | 5 days | Re-implement after fixing design issues |
+| Field Injection in Services (#5) | Medium | 3 days | Code quality improvement |
+| Missing Unit Test Coverage (#7) | Medium | 10 days | Ongoing effort |
+
+### Focus Area
+
+Sprint #179 will focus on **Architecture** improvements with DTO projections as the primary tech debt item, addressing the design issues identified in Sprint #178.
 
 ---
 
