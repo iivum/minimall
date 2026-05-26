@@ -114,4 +114,9 @@ public class OrderService {
 
         return savedOrder;
     }
+
+    public Page<Order> findByFilters(Order.Status status, Order.PayStatus payStatus, String userId,
+                                     Instant startDate, Instant endDate, Pageable pageable) {
+        return orderRepository.findByFilters(status, payStatus, userId, startDate, endDate, pageable);
+    }
 }
