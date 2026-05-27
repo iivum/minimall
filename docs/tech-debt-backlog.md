@@ -317,7 +317,7 @@ For a 2-week sprint with 10 working days:
 | Pagination | Sprint 36 | Completed | 后端架构师 | Added Page<T> support to 5 controllers |
 | @Modifying | Sprint 37 | Completed | 后端架构师 | Verified compliant — no code changes needed |
 | Async Executor | Sprint 38 | Completed | 后端架构师 | AsyncConfig with bounded queue |
-| DTO Projection | Sprint 183 | Not started | - | Carried from Sprint #179/#180/#181/#182 |
+| DTO Projection | Sprint 183 | Completed (Phase 2: UserDTO) | 后端架构师 | Phase 1: Product/Order/Category; Phase 2: User |
 | Test Coverage | Sprint 183 | Not started | - | Carried from Sprint #181/#182 |
 
 ---
@@ -336,7 +336,61 @@ For a 2-week sprint with 10 working days:
 - DTO Projection (#1) and Test Coverage (#7) carried forward to Sprint #183
 - Capacity was consumed by concurrent feature work
 
-**Status Values**: `Not started` | `Claimed` | `In progress` | `Completed`
+### MIN-3628 数据库索引验证 (Sprint #163)
+
+**Category**: Performance
+**Status**: Completed
+**Created**: 2026-05-25
+**Completed**: 2026-05-27
+**Closed by**: Orion
+
+**Verification (2026-05-27)**:
+- Coupon.java: `idx_coupon_type_active` (coupon_type, is_active) 复合索引已存在 ✓
+- Category.java: `idx_category_parent_active` (parent_id, active) 复合索引已存在 ✓
+- 历史重复 issue MIN-3525, MIN-3544, MIN-3566 均已关闭或覆盖
+- **Status**: Compliant — 索引已正确添加，关闭重复 issue
+
+### MIN-3627 @Valid 注解统一修复 (Sprint #163)
+
+**Category**: Data Integrity
+**Status**: Cancelled (无执行者)
+**Created**: 2026-05-25
+**Cancelled**: 2026-05-27
+**Cancelled by**: Orion
+
+**Description**:
+@Valid 注解缺失问题已在 sprints 137, 147, 150 重复出现但未解决。
+
+**Issue 现状**:
+- 已有 @Valid 的 Controller: AuthController, CategoryController, CouponController, OrderController, PointController, ProductController, ShareController (7个)
+- **缺失 @Valid 的 Controller** (需要修复): AdminAuthController, AdminController, AdminOrderController, AdminProductController, CustomerServiceController, ImageUploadController, LiveController, MembershipController, PayController, UserController (11个)
+- 历史重复 issue MIN-3491, MIN-3545, MIN-3564 均未完成
+
+**Cancellation Reason**:
+无后端架构师执行者，需团队人手充足时重新开启。
+
+**Remediation** (供后续参考):
+1. 为以下 POST/PUT/DELETE 端点添加 @Valid 注解:
+   - CustomerServiceController (4个端点)
+   - UserController (1个端点)
+   - MembershipController (1个端点)
+   - AdminAuthController (2个端点)
+   - PayController (2个端点)
+   - LiveController (1个端点)
+   - ImageUploadController (2个端点)
+2. 验证 DTO 有 proper validation annotations
+3. 编写集成测试验证
+
+**RICE Scoring**:
+| Factor | Value | Rationale |
+|--------|-------|-----------|
+| Reach | 30 | All API consumers |
+| Impact | 2 | Data validation gap |
+| Confidence | 1.0 | Confirmed via code review |
+| Effort | 1 | Add @Valid annotations |
+| **RICE** | **60** | High priority |
+
+**Status Values**: `Not started` | `Claimed` | `In progress` | `Completed` | `Cancelled`
 
 ---
 
