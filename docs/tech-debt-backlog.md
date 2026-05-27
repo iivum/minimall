@@ -353,6 +353,39 @@ For a 2-week sprint with 10 working days:
 
 ---
 
+## Sprint #201 Review (2026-05-28)
+
+### Completed Items
+
+| Item | Sprint | Status | Verification |
+|------|--------|--------|--------------|
+| - | - | - | Sprint in progress |
+
+### Notes
+
+- Sprint #201 Planning meeting held on 2026-05-28
+- E2E Test Infrastructure fix (MIN-3862 continuation) is P0 priority
+- Controller Unit Test Coverage improvement (MIN-3870) is P1 priority
+
+**Status Values**: `Not started` | `Claimed` | `In progress` | `Completed` | `Backlog`
+
+---
+
+## Sprint #201 Planning
+
+### Planned Tech Debt Items
+
+| Item | Priority | Estimated Effort | Notes |
+|------|----------|------------------|-------|
+| E2E Test Infrastructure (#8) | P0 | 0.5 days | Continuation from Sprint #200 — application-test.yml needs customer-service.auto-reply config |
+| Controller Unit Test Coverage (#7) | P1 | 1 day | Coverage target: 20%+ for Controller layer |
+
+### Focus Area
+
+Sprint #201 will focus on **Testing** infrastructure improvements. E2E test fixes are P0 priority to unblock other work.
+
+---
+
 ## Sprint #184 Review (2026-05-28)
 
 ### Completed Items
