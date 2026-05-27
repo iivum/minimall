@@ -25,6 +25,9 @@ public class UserSubscription {
     @Column(name = "order_completed_enabled", nullable = false)
     private boolean orderCompletedEnabled = false;
 
+    @Column(name = "order_refunded_enabled", nullable = false)
+    private boolean orderRefundedEnabled = false;
+
     @Column(nullable = false)
     private Instant createdAt;
 
@@ -54,6 +57,8 @@ public class UserSubscription {
     public void setOrderShippedEnabled(boolean orderShippedEnabled) { this.orderShippedEnabled = orderShippedEnabled; }
     public boolean isOrderCompletedEnabled() { return orderCompletedEnabled; }
     public void setOrderCompletedEnabled(boolean orderCompletedEnabled) { this.orderCompletedEnabled = orderCompletedEnabled; }
+    public boolean isOrderRefundedEnabled() { return orderRefundedEnabled; }
+    public void setOrderRefundedEnabled(boolean orderRefundedEnabled) { this.orderRefundedEnabled = orderRefundedEnabled; }
     public Instant getCreatedAt() { return createdAt; }
     public Instant getUpdatedAt() { return updatedAt; }
 }

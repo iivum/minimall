@@ -43,6 +43,9 @@ public class Order {
     @Column(name = "trade_no")
     private String tradeNo;
 
+    @Column(name = "refund_time")
+    private Instant refundTime;
+
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> items = new ArrayList<>();
 
@@ -89,6 +92,8 @@ public class Order {
     public void setTradeNo(String tradeNo) { this.tradeNo = tradeNo; }
     public List<OrderItem> getItems() { return items; }
     public void setItems(List<OrderItem> items) { this.items = items; }
+    public Instant getRefundTime() { return refundTime; }
+    public void setRefundTime(Instant refundTime) { this.refundTime = refundTime; }
     public Instant getCreatedAt() { return createdAt; }
     public Instant getUpdatedAt() { return updatedAt; }
 }

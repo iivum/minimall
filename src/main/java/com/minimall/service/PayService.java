@@ -3,10 +3,16 @@ package com.minimall.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.minimall.config.WeChatPayConfig;
 import com.minimall.model.Order;
+import com.wechat.pay.java.core.RSAAutoCertificateConfig;
+import com.wechat.pay.java.service.refund.RefundService;
+import com.wechat.pay.java.service.refund.model.AmountReq;
+import com.wechat.pay.java.service.refund.model.CreateRequest;
+import com.wechat.pay.java.service.refund.model.Refund;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.Signature;
@@ -21,12 +27,23 @@ public class PayService {
 
     private final WeChatPayConfig weChatPayConfig;
     private final OrderService orderService;
+    private final RSAAutoCertificateConfig rsaConfig;
+    private RefundService refundService;
     private final ObjectMapper objectMapper;
 
-    public PayService(WeChatPayConfig weChatPayConfig, OrderService orderService) {
+    public PayService(WeChatPayConfig weChatPayConfig, OrderService orderService,
+                      RSAAutoCertificateConfig rsaConfig) {
         this.weChatPayConfig = weChatPayConfig;
         this.orderService = orderService;
+        this.rsaConfig = rsaConfig;
         this.objectMapper = new ObjectMapper();
+    }
+
+    private RefundService getRefundService() {
+        if (refundService == null && rsaConfig != null) {
+            refundService = new RefundService.Builder().config(rsaConfig).build();
+        }
+        return refundService;
     }
 
     public String createUnifiedOrder(Order order, String openid) {
@@ -95,6 +112,25 @@ public class PayService {
         byte[] certBytes = Base64.getDecoder().decode(certPem);
         return (java.security.cert.X509Certificate) java.security.cert.CertificateFactory.getInstance("X.509")
             .generateCertificate(new java.io.ByteArrayInputStream(certBytes));
+    }
+
+    public Refund refund(Order order, BigDecimal refundAmount) {
+        log.info("Processing refund for order: {}, amount: {}", order.getOrderNo(), refundAmount);
+
+        CreateRequest request = new CreateRequest();
+        request.setOutTradeNo(order.getTradeNo());
+        request.setOutRefundNo("REFUND_" + UUID.randomUUID().toString().replace("-", ""));
+
+        AmountReq amountReq = new AmountReq();
+        amountReq.setTotal(order.getTotalAmount().multiply(BigDecimal.valueOf(100)).longValue());
+        amountReq.setRefund(refundAmount.multiply(BigDecimal.valueOf(100)).longValue());
+        amountReq.setCurrency("CNY");
+        request.setAmount(amountReq);
+
+        Refund result = getRefundService().create(request);
+        log.info("Refund result for order {}: status={}", order.getOrderNo(), result.getStatus());
+
+        return result;
     }
 
     @SuppressWarnings("unchecked")

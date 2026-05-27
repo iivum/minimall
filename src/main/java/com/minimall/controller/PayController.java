@@ -3,10 +3,12 @@ package com.minimall.controller;
 import com.minimall.model.Order;
 import com.minimall.service.OrderService;
 import com.minimall.service.PayService;
+import com.wechat.pay.java.service.refund.model.Refund;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -41,6 +43,38 @@ public class PayController {
         result.put("paySign", sign);
 
         return ResponseEntity.ok(result);
+    }
+
+    @PostMapping("/refund")
+    @Operation(summary = "Process refund for a paid order")
+    public ResponseEntity<Map<String, Object>> refund(@RequestParam String orderId,
+                                                        @RequestParam BigDecimal refundAmount) {
+        Order order = orderService.findById(orderId);
+
+        if (order.getPayStatus() != Order.PayStatus.PAID) {
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", "ORDER_NOT_PAID");
+            error.put("message", "Only paid orders can be refunded");
+            return ResponseEntity.badRequest().body(error);
+        }
+
+        if (refundAmount.compareTo(order.getTotalAmount()) > 0) {
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", "REFUND_AMOUNT_EXCEEDED");
+            error.put("message", "Refund amount cannot exceed order total amount");
+            return ResponseEntity.badRequest().body(error);
+        }
+
+        Refund result = payService.refund(order, refundAmount);
+        orderService.refund(orderId);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("orderId", orderId);
+        response.put("refundAmount", refundAmount);
+        response.put("refundId", result.getRefundId());
+        response.put("status", result.getStatus());
+
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/callback")

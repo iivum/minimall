@@ -63,6 +63,11 @@ public class WeChatSubscribeService {
             () -> buildOrderCompletedData(order), config.getOrderCompletedTemplateId());
     }
 
+    public void sendOrderRefundedMessage(Order order, User user) {
+        sendMessageIfSubscribed(user, UserSubscription::isOrderRefundedEnabled,
+            () -> buildOrderRefundedData(order), config.getOrderRefundedTemplateId());
+    }
+
     private void sendMessageIfSubscribed(User user,
                                         java.util.function.Predicate<UserSubscription> isEnabled,
                                         java.util.function.Supplier<Map<String, Object>> dataBuilder,
@@ -104,6 +109,13 @@ public class WeChatSubscribeService {
     private Map<String, Object> buildOrderCompletedData(Order order) {
         Map<String, Object> data = new HashMap<>();
         data.put("order_no", new TemplateData(order.getOrderNo()));
+        return data;
+    }
+
+    private Map<String, Object> buildOrderRefundedData(Order order) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("order_no", new TemplateData(order.getOrderNo()));
+        data.put("amount", new TemplateData(order.getTotalAmount().toString() + "元"));
         return data;
     }
 

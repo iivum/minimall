@@ -2,6 +2,7 @@ package com.minimall.service;
 
 import com.minimall.config.WeChatPayConfig;
 import com.minimall.model.Order;
+import com.wechat.pay.java.core.RSAAutoCertificateConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,12 +21,14 @@ class PaymentServiceTest {
     private WeChatPayConfig weChatPayConfig;
     @Mock
     private OrderService orderService;
+    @Mock
+    private RSAAutoCertificateConfig rsaConfig;
 
     private PayService payService;
 
     @BeforeEach
     void setUp() {
-        payService = new PayService(weChatPayConfig, orderService);
+        payService = new PayService(weChatPayConfig, orderService, rsaConfig);
     }
 
     @Test

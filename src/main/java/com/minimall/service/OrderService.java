@@ -119,4 +119,17 @@ public class OrderService {
                                      Instant startDate, Instant endDate, Pageable pageable) {
         return orderRepository.findByFilters(status, payStatus, userId, startDate, endDate, pageable);
     }
+
+    @Transactional
+    public Order refund(String id) {
+        Order order = findById(id);
+        order.setPayStatus(Order.PayStatus.REFUNDED);
+        order.setStatus(Order.Status.CANCELLED);
+        order.setRefundTime(Instant.now());
+        Order savedOrder = orderRepository.save(order);
+
+        subscribeService.sendOrderRefundedMessage(savedOrder, order.getUser());
+
+        return savedOrder;
+    }
 }

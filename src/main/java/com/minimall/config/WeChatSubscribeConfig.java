@@ -12,6 +12,7 @@ public class WeChatSubscribeConfig {
     private String orderPaidTemplateId;
     private String orderShippedTemplateId;
     private String orderCompletedTemplateId;
+    private String orderRefundedTemplateId;
 
     public String getAppId() { return appId; }
     public void setAppId(String appId) { this.appId = appId; }
@@ -25,4 +26,6 @@ public class WeChatSubscribeConfig {
     public void setOrderShippedTemplateId(String id) { this.orderShippedTemplateId = id; }
     public String getOrderCompletedTemplateId() { return orderCompletedTemplateId; }
     public void setOrderCompletedTemplateId(String id) { this.orderCompletedTemplateId = id; }
+    public String getOrderRefundedTemplateId() { return orderRefundedTemplateId; }
+    public void setOrderRefundedTemplateId(String id) { this.orderRefundedTemplateId = id; }
 }
