@@ -22,4 +22,4 @@
     <button class="btn-primary" bindtap="buyNow">立即购买</button>
   </view>
 </view>
-<view class="loading" wx:if="{{loading}}"><text>加载中...</text></view>
+<skeleton type="product-detail" loading="{{loading}}" />
