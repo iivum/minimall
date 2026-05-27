@@ -1,5 +1,7 @@
 package com.minimall.dto;
 
+import com.minimall.model.User;
+
 public class UserDTO {
     private String id;
     private String openid;
@@ -7,6 +9,17 @@ public class UserDTO {
     private String avatarUrl;
     private String phone;
     private String role;
+
+    public static UserDTO from(User user) {
+        UserDTO dto = new UserDTO();
+        dto.setId(user.getId());
+        dto.setOpenid(user.getOpenid());
+        dto.setNickname(user.getNickname());
+        dto.setAvatarUrl(user.getAvatarUrl());
+        dto.setPhone(user.getPhone());
+        dto.setRole(user.getRole().name());
+        return dto;
+    }
 
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
