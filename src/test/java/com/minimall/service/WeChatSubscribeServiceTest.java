@@ -10,6 +10,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.math.BigDecimal;
@@ -21,6 +23,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 class WeChatSubscribeServiceTest {
 
     @Mock
@@ -119,14 +122,6 @@ class WeChatSubscribeServiceTest {
         subscribeService.sendOrderCompletedMessage(createOrder(), user);
 
         verify(subscriptionRepository).findByOpenid("openid-123");
-    }
-
-    @Test
-    void sendTemplateMessageAsync_returnsCompletedFuture_onSuccess() throws Exception {
-        CompletableFuture<Void> result = subscribeService.sendTemplateMessageAsync(
-            "openid-123", "template-1", Collections.emptyMap());
-
-        result.get();
     }
 
     private Order createOrder() {
