@@ -270,6 +270,37 @@ Current test coverage is estimated at ~40% for service layer.
 
 ---
 
+### 8. E2E Test Infrastructure
+
+**Category**: Testing
+**Status**: Backlog
+**Created**: 2026-05-28
+
+**Description**:
+E2E 测试（OrderFlowE2ETest、PaymentFlowE2ETest）持续失败，AuthFlowE2ETest 虽然已修复但其他两个测试仍有问题。根因是 Spring Boot Test 配置问题，需要 mock WebClient 和正确的测试环境配置。
+
+**Evidence**:
+```java
+// E2E tests return 400/500 errors
+// ApplicationContext fails to load for OrderFlowE2ETest and PaymentFlowE2ETest
+```
+
+**RICE Scoring**:
+| Factor | Value | Rationale |
+|--------|-------|-----------|
+| Reach | 10 | All E2E test users |
+| Impact | 2 | Cannot verify E2E flows |
+| Confidence | 0.8 | Confirmed via多次尝试 |
+| Effort | 3 | Debug and fix test config |
+| **RICE** | **5.3** | Low priority |
+
+**Remediation**:
+1. Debug OrderFlowE2ETest 和 PaymentFlowE2ETest
+2. Consider removing unstable E2E tests if they cannot be fixed
+3. Ensure mvn test passes all tests
+
+---
+
 ## Repayment Plan
 
 ### Tech Debt Claiming Mechanism
@@ -318,11 +349,35 @@ For a 2-week sprint with 10 working days:
 | @Modifying | Sprint 37 | Completed | 后端架构师 | Verified compliant — no code changes needed |
 | Async Executor | Sprint 38 | Completed | 后端架构师 | AsyncConfig with bounded queue |
 | DTO Projection | Sprint 183 | Not started | - | Carried from Sprint #179/#180/#181/#182 |
-| Test Coverage | Sprint 183 | Not started | - | Carried from Sprint #181/#182 |
+| Test Coverage | Sprint 183 | Not started | - | Carried from Sprint #181/#182; blocked by E2E infrastructure issue |
 
 ---
 
-## Sprint #182 Review (2026-05-27)
+## Sprint #184 Review (2026-05-28)
+
+### Completed Items
+
+| Item | Sprint | Status | Verification |
+|------|--------|--------|--------------|
+| - | - | - | No items completed in Sprint #184 |
+
+### Notes
+
+- MIN-3818 (测试覆盖率提升) 降级到 backlog - 执行者多次声称完成但代码未合并到 main
+- MIN-3816 (E2E 测试 ApplicationContext) 降级到 backlog - Sprint #191/#192/#193 连续三次未完成
+- 两个 blocked issue 都与后端架构师执行能力相关，需要独立的问题解决者
+
+### New Tech Debt Identified
+
+| Item | Category | RICE | Reason |
+|------|----------|------|--------|
+| E2E Test Infrastructure (#8) | Testing | 20 | AuthFlowE2ETest 已修复，但 OrderFlowE2ETest 和 PaymentFlowE2ETest 仍有问题；需要深度调试或重构测试架构 |
+
+**Status Values**: `Not started` | `Claimed` | `In progress` | `Completed` | `Backlog`
+
+---
+
+## Sprint #183 Review (2026-05-27)
 
 ### Completed Items
 
