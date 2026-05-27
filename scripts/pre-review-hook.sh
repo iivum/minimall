@@ -20,6 +20,9 @@ SKIP_FAKE_DETECTION=0
 SKIP_INDEX_CHECK=0
 SKIP_DEPENDENCY_CHECK=0
 
+SKIP_UNTRACKED_CHECK=0
+SKIP_UNPUSHED_CHECK=0
+
 usage() {
     echo "用法: $0 [--files file1 file2 ...] [--verbose] [--skip-fake-detection]"
     echo "  --files                指定要验证的关键文件列表（相对于仓库根目录）"
@@ -72,6 +75,14 @@ while [ $# -gt 0 ]; do
             ;;
         --skip-dependency-check)
             SKIP_DEPENDENCY_CHECK=1
+            shift
+            ;;
+        --skip-untracked-check)
+            SKIP_UNTRACKED_CHECK=1
+            shift
+            ;;
+        --skip-unpushed-check)
+            SKIP_UNPUSHED_CHECK=1
             shift
             ;;
         *)
@@ -308,6 +319,53 @@ verify_pom_dependencies() {
     fi
 }
 
+# untracked files 检查
+check_untracked_files() {
+    echo ""
+    echo "=== Untracked Files 检查 ==="
+    echo ""
+
+    if [ -n "$(git status --porcelain)" ]; then
+        log_error "检测到未提交的更改:"
+        git status --short
+        return 1
+    else
+        log_info "无未提交的更改 ✅"
+        return 0
+    fi
+}
+
+# 未推送 commits 检查
+check_unpushed_commits() {
+    echo ""
+    echo "=== 未推送 Commits 检查 ==="
+    echo ""
+
+    local current_branch=$(git branch --show-current)
+    local upstream_branch="origin/$current_branch"
+
+    if [ -z "$current_branch" ]; then
+        log_warn "无法获取当前分支名，跳过未推送 commits 检查"
+        return 0
+    fi
+
+    if ! git rev-parse "$upstream_branch" > /dev/null 2>&1; then
+        log_warn "上游分支 $upstream_branch 不存在，跳过未推送 commits 检查"
+        return 0
+    fi
+
+    local unpushed=$(git log "$upstream_branch"..HEAD --oneline 2>/dev/null || echo "")
+
+    if [ -n "$unpushed" ]; then
+        log_error "检测到未推送的 commits:"
+        echo "$unpushed"
+        return 1
+    else
+        log_info "所有 commits 已推送到 $upstream_branch ✅"
+        return 0
+    fi
+}
+
 # 主检测逻辑
 main() {
     echo "=========================================="
@@ -317,6 +375,30 @@ main() {
     echo ""
 
     check_git_repo
+
+    # untracked files 检查
+    if [ $SKIP_UNTRACKED_CHECK -eq 0 ]; then
+        if ! check_untracked_files; then
+            echo ""
+            log_error "Untracked files 检查失败"
+            FAILED=$((FAILED + 1))
+        fi
+    else
+        echo ""
+        log_info "已跳过 untracked files 检查 (--skip-untracked-check)"
+    fi
+
+    # 未推送 commits 检查
+    if [ $SKIP_UNPUSHED_CHECK -eq 0 ]; then
+        if ! check_unpushed_commits; then
+            echo ""
+            log_error "未推送 commits 检查失败"
+            FAILED=$((FAILED + 1))
+        fi
+    else
+        echo ""
+        log_info "已跳过未推送 commits 检查 (--skip-unpushed-check)"
+    fi
 
     # 确保 main 分支可用
     log_info "同步 main 分支..."
