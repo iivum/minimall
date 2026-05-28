@@ -7,10 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -24,22 +26,26 @@ class OrderFlowE2ETest {
     private MockMvc mockMvc;
 
     @Test
+    @WithMockUser
     void createOrderFlow_withValidData_returnsSuccess() throws Exception {
         mockMvc.perform(post("/api/orders")
+                .param("userId", "testuser")
                 .param("productId", "PROD-001")
                 .param("quantity", "2"))
                 .andExpect(status().isOk());
     }
 
     @Test
+    @WithMockUser
     void getOrderFlow_whenOrderExists_returnsOrder() throws Exception {
         mockMvc.perform(get("/api/orders/ORD-001"))
                 .andExpect(status().isOk());
     }
 
     @Test
+    @WithMockUser
     void listOrdersFlow_returnsOrderList() throws Exception {
-        mockMvc.perform(get("/api/orders"))
+        mockMvc.perform(get("/api/orders/user/testuser"))
                 .andExpect(status().isOk());
     }
 }
