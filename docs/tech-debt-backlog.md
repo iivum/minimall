@@ -354,6 +354,51 @@ For a 2-week sprint with 10 working days:
 
 ---
 
+## Sprint #221 Review (2026-05-29)
+
+### Completed Items
+
+| Item | Sprint | Status | Verification |
+|------|--------|--------|--------------|
+| E2E 测试最终修复 (MIN-4023) | Sprint 221 | Completed | ApplicationContext 可启动，Resilience4j 问题已解决 |
+| E2E 测试业务逻辑修复 (MIN-4029) | Sprint 221 | In Review | E2E 测试仍有 400/500 错误，需进一步修复 |
+| 测试覆盖率提升（第二轮）(MIN-4030) | Sprint 221 | Completed | 覆盖率 36%，目标 50%+ |
+| 订单创建 N+1 查询优化 (MIN-4027) | Sprint 221 | Completed | 使用 JOIN FETCH 优化关联查询 |
+| 逾期任务收尾 (MIN-4024) | Sprint 221 | Completed | - |
+
+### Notes
+
+- E2E 测试基础设施问题（Resilience4j 配置绑定）已在 Sprint #221 解决
+- E2E 测试业务逻辑错误（400/500）仍在修复中，MIN-4029 in_review
+- 测试覆盖率 36%，距离 80% 目标仍有差距，需第三轮提升（MIN-4033）
+- 订单 N+1 查询优化已完成，使用 JOIN FETCH 减少查询数量
+
+### Sprint #221 遗留问题
+
+| Issue | 标题 | 状态 | 说明 |
+|-------|------|------|------|
+| MIN-4029 | E2E 测试业务逻辑修复 | In Review | 8 个 E2E 测试中有部分返回 400/500 错误 |
+
+**Status Values**: `Not started` | `Claimed` | `In progress` | `Completed` | `Backlog`
+
+---
+
+## Sprint #221 Planning
+
+### Planned Tech Debt Items
+
+| Item | Priority | Estimated Effort | Notes |
+|------|----------|------------------|-------|
+| E2E Test Infrastructure (#8) | P0 | 3 days | Resolve Resilience4j configuration binding issues |
+| Test Coverage Improvement (#7) | P1 | 6 days | Target: 80% coverage |
+| E2E Test Business Logic Fix | P0 | 3 days | Fix 400/500 errors in E2E tests |
+
+### Focus Area
+
+Sprint #221 focused on **Testing** infrastructure and coverage improvements. E2E test infrastructure was the primary blocker.
+
+---
+
 ## Sprint #210 Review (2026-05-28)
 
 ### Completed Items
@@ -899,6 +944,45 @@ Sprint #216 continues focus on **Testing & API Security** improvements. E2E test
 - Sprint #216 planning update completed
 - Audit of current tech debt entries performed
 - All completed items status verified and up-to-date
+
+---
+
+## Sprint #222 Review (2026-05-29)
+
+### Completed Items
+
+| Item | Sprint | Status | Verification |
+|------|--------|--------|--------------|
+| - | - | - | Sprint in progress |
+
+### Notes
+
+- Sprint #222 planning in progress
+- Focus areas to be determined based on ongoing priorities
+
+**Status Values**: `Not started` | `Claimed` | `In progress` | `Completed` | `Backlog`
+
+---
+
+## Sprint #222 Planning
+
+### Planned Tech Debt Items
+
+| Item | Priority | Estimated Effort | Notes |
+|------|----------|------------------|-------|
+| E2E Test Business Logic Final Fix (MIN-4032) | P0 | 3 days | Resolve remaining 400/500 errors in E2E tests |
+| Test Coverage Improvement - Round 3 (MIN-4033) | P1 | 3 days | Target: 50%+ coverage |
+| tech-debt-backlog.md Update | P2 | 0.5 days | MIN-4035 - Update document with Sprint #221 results and #222 plan |
+
+### Focus Area
+
+Sprint #222 continues focus on **Testing** improvements. E2E test business logic fixes and test coverage increase are primary objectives.
+
+### Notes
+
+- E2E 测试业务逻辑错误（400/500）仍在修复中，MIN-4032 进行中
+- 测试覆盖率 36%，目标 50%+（MIN-4033）
+- 订单 N+1 查询优化（第二轮）MIN-4034 已规划
 
 ---
 
