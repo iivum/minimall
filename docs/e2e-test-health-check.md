@@ -30,10 +30,31 @@
 ## 相关文档
 
 - [CI 配置](../.github/workflows/ci.yml)
-- [交付验证](../delivery-verification.md)
+- [交付验证](../docs/delivery-verification.md)
 
 ## 更新记录
 
 | 日期 | 更新内容 | 操作者 |
 |------|---------|--------|
+| 2026-05-29 | 修复 E2E 测试基础设施问题：添加 TestMetricsConfig、修复 WeChatPayConfig setAppId、添加 RSAAutoCertificateConfig MockBean | Orion |
 | 2026-05-25 | 初始创建，修复 MIN-3470 虚假交付 | Orion |
+
+## 问题诊断
+
+### 常见错误
+
+**ApplicationContext 加载失败**
+- 检查 `application.properties` 中的 `customer-service.auto-reply.rules` 配置
+- 确保 `@Import(TestMetricsConfig.class)` 包含在所有 E2E 测试类中
+- 使用 `@MockBean RSAAutoCertificateConfig` 避免微信支付 API 调用
+
+**MeterRegistry Bean 不存在**
+- 添加 `TestMetricsConfig` 配置类提供 `SimpleMeterRegistry`
+- 或在测试配置中禁用 metrics
+
+**PasswordEncoder Bean 不存在**
+- 在 `TestMetricsConfig` 中添加 `BCryptPasswordEncoder` Bean
+
+**微信支付 API 401 错误**
+- 使用 `@MockBean RSAAutoCertificateConfig` 模拟微信支付配置
+- 不要尝试连接真实的微信支付 API
