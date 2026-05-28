@@ -3,9 +3,11 @@ package com.minimall.controller;
 import com.minimall.config.SecurityUtils;
 import com.minimall.dto.DtoMapper;
 import com.minimall.dto.OrderDTO;
+import com.minimall.dto.OrderItemRequest;
 import com.minimall.exception.UnauthorizedException;
 import com.minimall.model.Order;
 import com.minimall.model.OrderItem;
+import com.minimall.model.Product;
 import com.minimall.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -63,7 +65,18 @@ public class OrderController {
         if (!securityUtils.isCurrentUser(request.userId)) {
             throw new UnauthorizedException("You can only create orders for yourself");
         }
-        return ResponseEntity.ok(DtoMapper.from(orderService.create(request.userId, request.items)));
+        List<OrderItem> orderItems = request.items.stream()
+            .map(item -> {
+                OrderItem orderItem = new OrderItem();
+                Product product = new Product();
+                product.setId(item.getProductId());
+                orderItem.setProduct(product);
+                orderItem.setQuantity(item.getQuantity());
+                orderItem.setPrice(item.getPrice());
+                return orderItem;
+            })
+            .toList();
+        return ResponseEntity.ok(DtoMapper.from(orderService.create(request.userId, orderItems)));
     }
 
     @PatchMapping("/{id}/status")
@@ -90,6 +103,6 @@ public class OrderController {
         @NotNull
         public String userId;
         @NotEmpty
-        public List<OrderItem> items;
+        public List<OrderItemRequest> items;
     }
 }
