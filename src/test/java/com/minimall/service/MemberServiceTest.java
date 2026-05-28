@@ -104,6 +104,32 @@ class MemberServiceTest {
     }
 
     @Test
+    @DisplayName("getBenefits throws when grade not found")
+    void getBenefits_throwsWhenGradeNotFound() {
+        User user = new User();
+        user.setId("user-1");
+        user.setMemberGrade("UNKNOWN");
+
+        when(userService.findById("user-1")).thenReturn(user);
+        when(memberGradeRepository.findByCode("UNKNOWN")).thenReturn(Optional.empty());
+
+        assertThrows(RuntimeException.class, () -> memberService.getBenefits("user-1"));
+    }
+
+    @Test
+    @DisplayName("redeem executes without error")
+    void redeem_executesWithoutError() {
+        User user = new User();
+        user.setId("user-1");
+
+        when(userService.findById("user-1")).thenReturn(user);
+
+        memberService.redeem("user-1", "discount", new BigDecimal("50"));
+
+        verify(userService).findById("user-1");
+    }
+
+    @Test
     @DisplayName("updateTotalSpent does not demote user")
     void updateTotalSpent_noDemotion() {
         User user = new User();
