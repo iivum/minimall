@@ -25,6 +25,7 @@ public class WeChatPayConfig {
 
     public String getAppid() { return appid; }
     public void setAppid(String appid) { this.appid = appid; }
+    public void setAppId(String appid) { this.appid = appid; }
     public String getAppId() { return appid; }
 
     @Bean
