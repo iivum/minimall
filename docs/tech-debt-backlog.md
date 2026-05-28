@@ -862,6 +862,46 @@ Sprint #215 continues focus on **API Security** improvements. Adding proper inpu
 
 ---
 
+## Sprint #216 Review (2026-05-29)
+
+### Completed Items
+
+| Item | Sprint | Status | Verification |
+|------|--------|--------|--------------|
+| - | - | - | Sprint in progress |
+
+### Notes
+
+- Sprint #216 planning in progress
+- Focus areas to be determined based on ongoing priorities
+
+**Status Values**: `Not started` | `Claimed` | `In progress` | `Completed` | `Backlog`
+
+---
+
+## Sprint #216 Planning
+
+### Planned Tech Debt Items
+
+| Item | Priority | Estimated Effort | Notes |
+|------|----------|------------------|-------|
+| E2E Test Infrastructure | P1 | 2 days | MIN-3891 - Resolve Resilience4j configuration binding issues |
+| Missing Input Validation DTO | P1 | 2 days | Add Jakarta Validation annotations to all Request DTOs |
+| Missing @Valid Annotation Fix | P1 | 2 days | Add @Valid to Controller endpoints for DTO validation |
+| Test Coverage Improvement | P2 | 4 days | Target: 80% coverage for service layer |
+
+### Focus Area
+
+Sprint #216 continues focus on **Testing & API Security** improvements. E2E test infrastructure remains P1 priority, along with input validation DTOs and @Valid annotations.
+
+### Notes
+
+- Sprint #216 planning update completed
+- Audit of current tech debt entries performed
+- All completed items status verified and up-to-date
+
+---
+
 ## References
 
 - [Spring Boot JPA Best Practices](https://docs.spring.io/spring-boot/docs/current/reference/html/data.html#data.jpa)
