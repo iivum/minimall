@@ -12,7 +12,10 @@ import java.util.List;
 import java.util.Optional;
 
 public interface OrderRepository extends JpaRepository<Order, String> {
+    @Query("SELECT o FROM Order o LEFT JOIN FETCH o.user LEFT JOIN FETCH o.items WHERE o.orderNo = :orderNo")
     Optional<Order> findByOrderNo(String orderNo);
+    @Query("SELECT o FROM Order o LEFT JOIN FETCH o.user LEFT JOIN FETCH o.items WHERE o.id = :id")
+    Optional<Order> findById(String id);
     List<Order> findByUserIdOrderByCreatedAtDesc(String userId);
     List<Order> findByStatus(Order.Status status);
     List<Order> findByPayStatus(Order.PayStatus payStatus);

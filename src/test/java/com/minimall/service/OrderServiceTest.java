@@ -126,7 +126,7 @@ class OrderServiceTest {
         item.setProduct(product);
         item.setQuantity(2);
         when(userService.findById("user-1")).thenReturn(user);
-        when(productService.findById("prod-1")).thenReturn(product);
+        when(productService.findByIds(List.of("prod-1"))).thenReturn(List.of(product));
         when(orderRepository.save(any(Order.class))).thenAnswer(invocation -> {
             Order o = invocation.getArgument(0);
             o.setId("new-order-id");

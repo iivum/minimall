@@ -2,6 +2,7 @@ package com.minimall.service;
 
 import com.minimall.model.Order;
 import com.minimall.model.OrderItem;
+import com.minimall.model.Product;
 import com.minimall.model.User;
 import com.minimall.repository.OrderRepository;
 import org.springframework.data.domain.Page;
@@ -11,7 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderService {
@@ -65,11 +68,18 @@ public class OrderService {
         order.setOrderNo(UUID.randomUUID().toString());
         order.setUser(user);
 
+        List<String> productIds = items.stream()
+            .map(item -> item.getProduct().getId())
+            .toList();
+        Map<String, BigDecimal> productPrices = productService.findByIds(productIds).stream()
+            .collect(Collectors.toMap(Product::getId, Product::getPrice));
+
         BigDecimal total = BigDecimal.ZERO;
         for (OrderItem item : items) {
             item.setOrder(order);
-            item.setPrice(productService.findById(item.getProduct().getId()).getPrice());
-            total = total.add(item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())));
+            BigDecimal price = productPrices.get(item.getProduct().getId());
+            item.setPrice(price);
+            total = total.add(price.multiply(BigDecimal.valueOf(item.getQuantity())));
         }
         order.setItems(items);
         order.setTotalAmount(total);

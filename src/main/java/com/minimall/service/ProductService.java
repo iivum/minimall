@@ -48,6 +48,10 @@ public class ProductService {
             .orElseThrow(() -> new RuntimeException("Product not found: " + id));
     }
 
+    public List<Product> findByIds(List<String> ids) {
+        return productRepository.findByIdIn(ids);
+    }
+
     @CacheEvict(value = CaffeineCacheConfig.PRODUCTS_CACHE, allEntries = true)
     public Product create(Product product) {
         return productRepository.save(product);
