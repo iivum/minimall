@@ -350,11 +350,12 @@ For a 2-week sprint with 10 working days:
 | Async Executor | Sprint 38 | Completed | 后端架构师 | AsyncConfig with bounded queue |
 | DTO Projection | Sprint 183 | Backlog | - | Carried from Sprint #179/#180/#181/#182/#207/#208 |
 | Test Coverage | Sprint 183 | Backlog | - | Carried from Sprint #181/#182/#207/#208; blocked by E2E infrastructure issue |
-| E2E Test Infrastructure | Sprint 208 | In progress | 后端架构师 | MIN-3891 - P0 priority |
+| E2E Test Infrastructure | Sprint 210 | In progress | 后端架构师 | MIN-3954 - Resilience4j config class solution |
+| Tech Debt Monthly Report | Sprint 210 | In progress | 后端架构师 | MIN-3955 - Re-execution, must commit to main |
 
 ---
 
-## Sprint #209 Review (2026-05-28)
+## Sprint #210 Review (2026-05-28)
 
 ### Completed Items
 
@@ -364,9 +365,54 @@ For a 2-week sprint with 10 working days:
 
 ### Notes
 
+- Phase 31 Sprint Review and Planning meeting held on 2026-05-28
+- Sprint #210 focus areas: E2E test infrastructure fix, tech debt monthly report mechanism, miniapp test coverage improvement
+- E2E tests have Resilience4j configuration issues (MIN-3954) - needs dedicated config class solution
+- Backend architect is handling E2E test fix (MIN-3954), monthly report (MIN-3955), and controller @Valid annotation (MIN-3960)
+- Miniapp developer is handling test coverage improvement (MIN-3956)
+
+### New Tech Debt Identified
+
+| Item | Category | RICE | Reason |
+|------|----------|------|--------|
+| Resilience4j Configuration Binding | Testing | 8 | Nested configuration properties fail to bind in Spring Boot test context; blocks OrderFlowE2ETest and PaymentFlowE2ETest |
+| Monthly Report Mechanism Missing | Process | 5 | Previous execution (MIN-3952) claimed completion but files not committed to main |
+
+**Status Values**: `Not started` | `Claimed` | `In progress` | `Completed` | `Backlog`
+
+---
+
+## Sprint #210 Planning
+
+### Planned Tech Debt Items
+
+| Item | Priority | Estimated Effort | Notes |
+|------|----------|------------------|-------|
+| E2E Test Infrastructure Final Fix (#8) | P0 | 3 days | MIN-3954 - Recommended: dedicated @Bean config class |
+| Tech Debt Monthly Report Mechanism | P1 | 1 day | MIN-3955 - Re-execution, files must be committed to main |
+| Controller @Valid Annotation | P0 | 2 days | MIN-3960 - Backend security enhancement |
+| Miniapp Test Coverage +10% | P1 | 2 days | MIN-3956 -小程序端测试覆盖率提升 |
+
+### Focus Area
+
+Sprint #210 will focus on **Testing** infrastructure and security improvements. E2E test fix is P0 priority to unblock other work and ensure CI pipeline reliability.
+
+---
+
+## Sprint #209 Review (2026-05-28)
+
+### Completed Items
+
+| Item | Sprint | Status | Verification |
+|------|--------|--------|--------------|
+| E2E Test Compilation Fix (#8) | Sprint 209 | Carried to 210 | Package name issue resolved (#157) but Resilience4j config remains |
+| Test Coverage Improvement (#7) | Sprint 209 | Carried to 210 | 27.5% baseline, target 80% not reached |
+
+### Notes
+
 - Phase 30 Sprint Review and Planning meeting held on 2026-05-28
 - Sprint #209 focus areas: E2E test infrastructure, test coverage improvement
-- E2E tests have compilation errors due to `com.minimall.miniapp` package name issue
+- E2E tests have compilation errors due to `com.minimall.miniapp` package name issue - FIXED in commit #157
 - Test coverage at 27.5%, target is 80% — significant gap
 - Backend architect overloaded with multiple concurrent tasks
 
@@ -374,7 +420,7 @@ For a 2-week sprint with 10 working days:
 
 | Item | Category | RICE | Reason |
 |------|----------|------|--------|
-| E2E Test Compilation Error | Testing | 10 | `com.minimall.miniapp` package name causing compilation failure; blocks all E2E tests |
+| E2E Test Configuration (Resilience4j) | Testing | 8 | `com.minimall.miniapp` package fixed, but Resilience4j nested config binding still fails |
 | Backend Architect Overload | Process | 5 | Single point of failure for backend tasks; need to distribute work |
 
 **Status Values**: `Not started` | `Claimed` | `In progress` | `Completed` | `Backlog`
