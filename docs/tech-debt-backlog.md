@@ -969,6 +969,69 @@ Sprint #225 focus on **Testing & API Security** improvements. E2E test infrastru
 
 ---
 
+## Sprint #230 Review (2026-05-29)
+
+### Completed Items
+
+| Item | Sprint | Status | Verification |
+|------|--------|--------|--------------|
+| - | - | - | Sprint in progress |
+
+### Notes
+
+- Sprint #230 verification in progress
+- Tech debt items being tracked and updated
+- Current focus on API security improvements
+
+**Status Values**: `Not started` | `Claimed` | `In progress` | `Completed` | `Backlog`
+
+---
+
+## Sprint #230 Planning
+
+### Planned Tech Debt Items
+
+| Item | Priority | Estimated Effort | Notes |
+|------|----------|------------------|-------|
+| - | - | - | Planning in progress |
+
+### Focus Area
+
+Sprint #230 focus area to be determined.
+
+---
+
+## Sprint #231 Review (2026-05-29)
+
+### Completed Items
+
+| Item | Sprint | Status | Verification |
+|------|--------|--------|--------------|
+| - | - | - | Sprint in progress |
+
+### Notes
+
+- Sprint #231 planning in progress
+- Tech debt items being tracked for upcoming sprint
+
+**Status Values**: `Not started` | `Claimed` | `In progress` | `Completed` | `Backlog`
+
+---
+
+## Sprint #231 Planning
+
+### Planned Tech Debt Items
+
+| Item | Priority | Estimated Effort | Notes |
+|------|----------|------------------|-------|
+| - | - | - | Planning in progress |
+
+### Focus Area
+
+Sprint #231 focus area to be determined.
+
+---
+
 ## References
 
 - [Spring Boot JPA Best Practices](https://docs.spring.io/spring-boot/docs/current/reference/html/data.html#data.jpa)
