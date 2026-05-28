@@ -902,6 +902,59 @@ Sprint #216 continues focus on **Testing & API Security** improvements. E2E test
 
 ---
 
+## Sprint #223 Review (2026-05-29)
+
+### Completed Items
+
+| Item | Sprint | Status | Verification |
+|------|--------|--------|--------------|
+| Resilience4j 配置绑定问题解决 | Sprint #223 | Completed | MIN-4011 - sliding-window-type 配置问题已修复 |
+| WeChatPayConfig 属性绑定问题解决 | Sprint #223 | Completed | MIN-4020 - 属性绑定配置已完善 |
+| E2E 测试基础设施修复 | Sprint #223 | Completed | 8 个 E2E 测试已通过 ApplicationContext 验证 |
+
+### Notes
+
+- Sprint #223 完成了 E2E 测试基础设施的修复工作
+- Resilience4j sliding-window-type 配置问题已解决（改用百分比模式）
+- WeChatPayConfig 属性绑定问题已修复
+- 所有 8 个 E2E 测试现已通过
+
+**Status Values**: `Not started` | `Claimed` | `In progress` | `Completed` | `Backlog`
+
+---
+
+## Sprint #223 Planning
+
+### Planned Tech Debt Items
+
+| Item | Priority | Estimated Effort | Notes |
+|------|----------|------------------|-------|
+| Resilience4j 配置绑定问题解决 | P0 | 2 days | MIN-4011 - 解决 sliding-window-type 绑定失败问题 |
+| WeChatPayConfig 属性绑定问题解决 | P1 | 1 day | 属性配置完善 |
+
+### Focus Area
+
+Sprint #223 聚焦于 **E2E 测试基础设施修复**，解决 Resilience4j 和 WeChatPayConfig 配置问题。
+
+---
+
+## Sprint #224 Planning
+
+### Planned Tech Debt Items
+
+| Item | Priority | Estimated Effort | Notes |
+|------|----------|------------------|-------|
+| Missing Entity Projection DTOs (#1) | High | 5 days | Architectural improvement — 持续 carried |
+| Missing Unit Test Coverage (#7) | Medium | 10 days | Target: 80% coverage — 持续 carried |
+| Field Injection in Services (#5) | Medium | 3 days | Code quality improvement |
+| Missing @RestControllerAdvice (#6) | Medium | 2 days | Error handling centralization |
+
+### Focus Area
+
+Sprint #224 将聚焦于 **架构改进**，特别是 DTO 投影层的实现，同时继续推进测试覆盖率提升。
+
+---
+
 ## References
 
 - [Spring Boot JPA Best Practices](https://docs.spring.io/spring-boot/docs/current/reference/html/data.html#data.jpa)
