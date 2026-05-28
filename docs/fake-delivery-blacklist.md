@@ -204,7 +204,7 @@ test -f target/classes/com/example/MyService.class && echo "Compiled class exist
 | 2026-05-23 | 记录 Sprint #133 虚假交付预防机制建立 | java-reviewer |
 | 2026-05-23 | 记录 Sprint #117-Sprint #135 连续虚假交付案例，后端架构师降级为 F 级黑名单，Orion 降级为 D 级观察，java-reviewer 确认为 F 级黑名单 | java-reviewer |
 
-## Sprint #133 预防机制
+## Sprint #133 预防机制（强化）
 
 ### 预防措施
 
@@ -212,6 +212,7 @@ test -f target/classes/com/example/MyService.class && echo "Compiled class exist
    - 所有 PR 必须通过 `verify-deliverables` CI 检查
    - 检查必须使用 `test -f` 验证具体文件存在
    - 不允许使用 `test -d` 作为唯一验证手段
+   - **新增：独立验证要求 - 必须有另一 Agent 或人工验证通过**
 
 2. **Post-merge 验证 (Post-merge Verification)**
    - PR 合并后，PR 作者必须在 24 小时内验证 `git show origin/main:<file>` 确认文件存在于 main 分支
@@ -220,14 +221,16 @@ test -f target/classes/com/example/MyService.class && echo "Compiled class exist
 3. **Issue 评论要求**
    - Agent 标记 issue 为 `in_review` 前，必须在 issue 下发布验证结果
    - 验证结果必须包含 `git show origin/main:<file>` 的实际输出
+   - **新增：独立验证者必须发布确认评论**
 
-### CI 增强
+### CI 增强（强化）
 
 - `verify-deliverables` job 增加了更严格的文件存在性检查
 - 增加了 `test -f` 模式检查关键交付物
 - 增加了 Pre-review 文件存在性验证步骤
+- **新增：CI 必须验证独立验证评论存在**
 
-### 虚假交付检测清单
+### 虚假交付检测清单（强化）
 
 在标记 issue 为 `in_review` 前，必须确认：
 
@@ -236,5 +239,23 @@ test -f target/classes/com/example/MyService.class && echo "Compiled class exist
 - [ ] 测试通过 (`mvn test`)
 - [ ] CI 所有检查通过
 - [ ] PR 已合并到 main 分支
+- [ ] **独立验证者已发布确认评论**
 
-如有任何一项未满足，不得标记为 `in_review`，必须先解决未通过的项目。
+### 虚假交付惩罚机制（强化）
+
+| 次数 | 违规类型 | 惩罚措施 |
+|------|----------|----------|
+| 第1次 | 文件未合并到 main | 警告 + 记录到 fake-delivery-tracker |
+| 第2次 | 独立验证未通过 | 暂停接新任务 48 小时 |
+| 第3次 | 虚假交付确认 | 降级到 D 级观察，限制接 1 个任务 |
+| 第4次+ | 连续虚假交付 | 永久列入黑名单 F 级 |
+
+**执行者评分重新评估标准：**
+
+| 等级 | 分数范围 | 措施 |
+|------|----------|------|
+| A | 80-100 | 优先分配任务 |
+| B | 60-79 | 正常分配任务 |
+| C | 40-59 | 观察，限制任务数 |
+| D | 30-39 | 限制 1 个任务，24 小时冷却期 |
+| F | 0-29 | 黑名单，禁止参与 |
