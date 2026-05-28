@@ -13,7 +13,7 @@ import java.nio.charset.StandardCharsets;
 @Configuration
 @ConfigurationProperties(prefix = "wechatpay")
 public class WeChatPayConfig {
-    private String appid;
+    private String appId;
     private String mchid;
     private String serialNo;
     private String privateKeyPath;
@@ -23,13 +23,19 @@ public class WeChatPayConfig {
     private String privateKeyContent;
     private String platformCertificateContent;
 
-    public String getAppid() { return appid; }
-    public void setAppid(String appid) { this.appid = appid; }
-    public String getAppId() { return appid; }
+    public String getAppid() { return appId; }
+    public void setAppid(String appid) { this.appId = appid; }
 
     @Bean
     public RSAAutoCertificateConfig rsaAutoCertificateConfig() throws IOException {
-        ClassPathResource resource = new ClassPathResource(privateKeyPath.replace("classpath:", "cert/"));
+        if (privateKeyPath == null || privateKeyPath.isEmpty()) {
+            return null;
+        }
+        String privateKeyPathToUse = privateKeyPath;
+        ClassPathResource resource = new ClassPathResource(privateKeyPathToUse.replace("classpath:", "cert/"));
+        if (!resource.exists()) {
+            return null;
+        }
         String privateKeyContent;
         try (InputStream is = resource.getInputStream()) {
             privateKeyContent = new String(is.readAllBytes(), StandardCharsets.UTF_8);
