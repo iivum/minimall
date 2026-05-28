@@ -969,6 +969,74 @@ Sprint #225 focus on **Testing & API Security** improvements. E2E test infrastru
 
 ---
 
+## Sprint #229 Review
+
+### Completed Items
+
+| Item | Sprint | Status | Verification |
+|------|--------|--------|--------------|
+| - | - | - | Sprint in progress |
+
+### Notes
+
+- Sprint #229 verification in progress
+- Tech debt items being tracked and updated
+
+**Status Values**: `Not started` | `Claimed` | `In progress` | `Completed` | `Backlog`
+
+---
+
+## Sprint #229 Planning
+
+### Planned Tech Debt Items
+
+| Item | Priority | Estimated Effort | Notes |
+|------|----------|------------------|-------|
+| E2E Test Infrastructure Final Fix (#8) | P0 | 2 days | MIN-3891 - Resolve Resilience4j configuration binding issues |
+| Missing Input Validation DTO | P1 | 2 days | Add Jakarta Validation annotations to all Request DTOs |
+| Missing @Valid Annotation Fix | P1 | 2 days | Add @Valid to Controller endpoints for DTO validation |
+| Test Coverage Improvement (#7) | P2 | 4 days | Target: 80% coverage for service layer |
+
+### Focus Area
+
+Sprint #229 continues focus on **Testing & API Security** improvements. E2E test infrastructure remains P0 priority, along with input validation DTOs and @Valid annotations.
+
+---
+
+## Sprint #230 Review
+
+### Completed Items
+
+| Item | Sprint | Status | Verification |
+|------|--------|--------|--------------|
+| - | - | - | Sprint in progress |
+
+### Notes
+
+- Sprint #230 verification in progress
+- Tech debt items being tracked and updated
+
+**Status Values**: `Not started` | `Claimed` | `In progress` | `Completed` | `Backlog`
+
+---
+
+## Sprint #230 Planning
+
+### Planned Tech Debt Items
+
+| Item | Priority | Estimated Effort | Notes |
+|------|----------|------------------|-------|
+| E2E Test Infrastructure Final Fix (#8) | P0 | 2 days | MIN-3891 - Resolve Resilience4j configuration binding issues |
+| Missing Input Validation DTO | P1 | 2 days | Add Jakarta Validation annotations to all Request DTOs |
+| Missing @Valid Annotation Fix | P1 | 2 days | Add @Valid to Controller endpoints for DTO validation |
+| Test Coverage Improvement (#7) | P2 | 4 days | Target: 80% coverage for service layer |
+
+### Focus Area
+
+Sprint #230 continues focus on **Testing & API Security** improvements. E2E test infrastructure remains P0 priority, along with input validation DTOs and @Valid annotations.
+
+---
+
 ## References
 
 - [Spring Boot JPA Best Practices](https://docs.spring.io/spring-boot/docs/current/reference/html/data.html#data.jpa)
