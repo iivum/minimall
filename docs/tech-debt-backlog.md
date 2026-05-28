@@ -1,7 +1,7 @@
 # Tech Debt Backlog
 
 **created**: 2026-05-15
-**last updated**: 2026-05-27
+**last updated**: 2026-05-28
 **sprint capacity allocation**: 15% per sprint
 
 ---
@@ -348,8 +348,42 @@ For a 2-week sprint with 10 working days:
 | Pagination | Sprint 36 | Completed | 后端架构师 | Added Page<T> support to 5 controllers |
 | @Modifying | Sprint 37 | Completed | 后端架构师 | Verified compliant — no code changes needed |
 | Async Executor | Sprint 38 | Completed | 后端架构师 | AsyncConfig with bounded queue |
-| DTO Projection | Sprint 183 | Not started | - | Carried from Sprint #179/#180/#181/#182 |
-| Test Coverage | Sprint 183 | Not started | - | Carried from Sprint #181/#182; blocked by E2E infrastructure issue |
+| DTO Projection | Sprint 183 | Backlog | - | Carried from Sprint #179/#180/#181/#182/#207/#208 |
+| Test Coverage | Sprint 183 | Backlog | - | Carried from Sprint #181/#182/#207/#208; blocked by E2E infrastructure issue |
+| E2E Test Infrastructure | Sprint 208 | In progress | 后端架构师 | MIN-3891 - P0 priority |
+
+---
+
+## Sprint #208 Review (2026-05-28)
+
+### Completed Items
+
+| Item | Sprint | Status | Verification |
+|------|--------|--------|--------------|
+| - | - | - | Sprint in progress |
+
+### Notes
+
+- Phase 27 Sprint Review and Planning meeting held on 2026-05-28
+- Sprint #208 focus areas: E2E test infrastructure final fix, refund API implementation, skeleton screen component development
+- Tech debt items remain in Backlog due to resource constraints
+
+**Status Values**: `Not started` | `Claimed` | `In progress` | `Completed` | `Backlog`
+
+---
+
+## Sprint #208 Planning
+
+### Planned Tech Debt Items
+
+| Item | Priority | Estimated Effort | Notes |
+|------|----------|------------------|-------|
+| E2E Test Infrastructure Final Fix (#8) | P0 | 3 days | MIN-3891 - mvn test must pass |
+| Controller Unit Test Coverage (#7) | P1 | 1 day | Coverage target: 20%+ for Controller layer |
+
+### Focus Area
+
+Sprint #208 will focus on **Testing** infrastructure improvements. E2E test fixes remain P0 priority to unblock other work and ensure CI pipeline reliability.
 
 ---
 
