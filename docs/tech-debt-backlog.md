@@ -862,6 +862,65 @@ Sprint #215 continues focus on **API Security** improvements. Adding proper inpu
 
 ---
 
+## Sprint #218 Planning
+
+### Planned Tech Debt Items
+
+| Item | Priority | Estimated Effort | Notes |
+|------|----------|------------------|-------|
+| E2E Test Infrastructure Final Fix | P0 | 3 days | MIN-3891 - Resolve Resilience4j configuration binding issues |
+| Missing Input Validation DTO | P1 | 2 days | Add Jakarta Validation annotations to all Request DTOs |
+| Missing @Valid Annotation Fix | P1 | 2 days | Add @Valid to Controller endpoints for DTO validation |
+| Test Coverage Improvement | P2 | 4 days | Target: 80% coverage for service layer |
+
+### Focus Area
+
+Sprint #218 continues focus on **Testing & API Security** improvements. E2E test infrastructure remains P0 priority, along with input validation DTOs and @Valid annotations.
+
+---
+
+## Sprint #217 Review (2026-05-29)
+
+### Completed Items
+
+| Item | Sprint | Status | Verification |
+|------|--------|--------|--------------|
+| - | - | - | Sprint in progress |
+
+### Notes
+
+**⚠️ 虚假交付警告**: Sprint #217 出现交付问题 - 部分声称完成的项目未合并到 main 分支或未通过验证：
+- 后端架构师声称完成的项目存在执行能力问题
+- 需要独立验证机制确保交付真实发生
+- MIN-3891 (E2E Test Infrastructure) 连续多次未能完成
+
+### New Tech Debt Identified
+
+| Item | Category | RICE | Reason |
+|------|----------|------|--------|
+| False Delivery Pattern | Process | 15 | 多次 sprint 声称完成但代码未合并；需要更强的验收机制 |
+| Single Point of Failure | Process | 10 | 后端架构师承担过多并发任务导致阻塞 |
+
+**Status Values**: `Not started` | `Claimed` | `In progress` | `Completed` | `Backlog`
+
+---
+
+## Sprint #217 Planning
+
+### Planned Tech Debt Items
+
+| Item | Priority | Estimated Effort | Notes |
+|------|----------|------------------|-------|
+| E2E Test Infrastructure Final Fix | P0 | 3 days | MIN-3891 - Must pass mvn test |
+| Missing Input Validation DTO | P1 | 2 days | Add Jakarta Validation annotations to all Request DTOs |
+| Missing @Valid Annotation Fix | P1 | 2 days | Add @Valid to Controller endpoints for DTO validation |
+
+### Focus Area
+
+Sprint #217 focuses on **Testing & API Security** improvements with independent verification to prevent false deliveries.
+
+---
+
 ## Sprint #216 Review (2026-05-29)
 
 ### Completed Items
@@ -872,33 +931,11 @@ Sprint #215 continues focus on **API Security** improvements. Adding proper inpu
 
 ### Notes
 
-- Sprint #216 planning in progress
-- Focus areas to be determined based on ongoing priorities
-
-**Status Values**: `Not started` | `Claimed` | `In progress` | `Completed` | `Backlog`
-
----
-
-## Sprint #216 Planning
-
-### Planned Tech Debt Items
-
-| Item | Priority | Estimated Effort | Notes |
-|------|----------|------------------|-------|
-| E2E Test Infrastructure | P1 | 2 days | MIN-3891 - Resolve Resilience4j configuration binding issues |
-| Missing Input Validation DTO | P1 | 2 days | Add Jakarta Validation annotations to all Request DTOs |
-| Missing @Valid Annotation Fix | P1 | 2 days | Add @Valid to Controller endpoints for DTO validation |
-| Test Coverage Improvement | P2 | 4 days | Target: 80% coverage for service layer |
-
-### Focus Area
-
-Sprint #216 continues focus on **Testing & API Security** improvements. E2E test infrastructure remains P1 priority, along with input validation DTOs and @Valid annotations.
-
-### Notes
-
 - Sprint #216 planning update completed
 - Audit of current tech debt entries performed
 - All completed items status verified and up-to-date
+
+**Status Values**: `Not started` | `Claimed` | `In progress` | `Completed` | `Backlog`
 
 ---
 
