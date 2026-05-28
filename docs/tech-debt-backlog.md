@@ -902,6 +902,43 @@ Sprint #216 continues focus on **Testing & API Security** improvements. E2E test
 
 ---
 
+## Sprint #224 Review (2026-05-28)
+
+### Completed Items
+
+| Item | Sprint | Status | Verification |
+|------|--------|--------|--------------|
+| E2E Test ApplicationContext 修复 | Sprint #224 | Completed | MIN-4044 - PR #197 已合并 |
+| 测试覆盖率提升（第七轮）| Sprint #224 | Partial | 47%，未达 50% 目标 |
+
+### Notes
+
+- E2E 测试 ApplicationContext 问题已解决（PR #197）
+- 测试覆盖率从之前提升至 47%，但未达到 50% 目标
+- 遗留问题：E2E 测试 HTTP 401/403/500 错误（测试数据准备问题）
+- 遗留问题：部分 PR 待合并到 main
+
+**Status Values**: `Not started` | `Claimed` | `In progress` | `Completed` | `Backlog`
+
+---
+
+## Sprint #225 Planning
+
+### Planned Tech Debt Items
+
+| Item | Priority | Estimated Effort | Notes |
+|------|----------|------------------|-------|
+| E2E 测试业务逻辑修复 | P0 | 3 days | MIN-4052 - 解决 HTTP 401/403/500 错误 |
+| 测试覆盖率提升（第八轮）| P1 | 3 days | MIN-4053 - 目标 50%+ |
+| Sprint #224 PR 合并确保 | P0 | 1 day | MIN-4051 - 后端架构师负责 |
+| 技术债务清理 | P2 | 0.5 days | MIN-4054 - 更新本文档 |
+
+### Focus Area
+
+Sprint #225 聚焦于 **E2E 测试业务逻辑修复**，解决测试数据准备问题，确保 8 个 E2E 测试全部通过。
+
+---
+
 ## References
 
 - [Spring Boot JPA Best Practices](https://docs.spring.io/spring-boot/docs/current/reference/html/data.html#data.jpa)
