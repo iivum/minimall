@@ -193,13 +193,13 @@ mvn verify -Dcheckstyle.skip=false
 
 1. **文件存在性验证**
    ```bash
-   ./scripts/verify-merge.sh <issue-id> <file-path>
+   ./scripts/verify-merge.sh --file <file-path>
    ```
    - 使用 `git ls-tree origin/main <file>` 验证文件存在于 main 分支
 
 2. **Commit 存在性验证**
    ```bash
-   ./scripts/verify-merge.sh <issue-id> "" <commit-hash>
+   ./scripts/verify-merge.sh --commit <commit-hash>
    ```
    - 使用 `git log --oneline origin/main | grep <commit>` 验证 commit 存在
 
@@ -207,12 +207,36 @@ mvn verify -Dcheckstyle.skip=false
    - 脚本自动检查 origin/main 是否为最新状态
    - 如非最新状态，会自动执行 `git fetch origin main`
 
-4. **CI 集成**
+4. **严格模式（推荐）**
+   ```bash
+   ./scripts/verify-merge.sh --strict --file <file-path>
+   ```
+   - 严格模式下必须提供文件或 commit 参数
+
+5. **CI 集成**
    ```bash
    # 在 CI pipeline 中添加合并验证
    - name: Verify merge
-     run: ./scripts/verify-merge.sh ${{ env.ISSUE_ID }} ${{ env.FILE_PATH }}
+     run: ./scripts/verify-merge.sh --file ${{ env.FILE_PATH }}
    ```
+
+### CI/CD 合并验证 (MIN-3993)
+
+CI/CD Pipeline 现在包含自动化的合并验证 job (`merge-verification`)：
+
+- 验证 PR tip commit 是否在 origin/main 中
+- 检查是否有未合并的 commits
+- 生成合并验证报告
+
+**merge-gate job 现在包含 merge-verification 作为必需检查项：**
+
+```yaml
+needs: [merge-conflict-check, build, security, quality, semgrep-sast,
+        trivy-scan, gitleaks-scan, verify-deliverables, tech-debt-sync,
+        merge-verification]
+```
+
+如果代码未合并到 main，merge gate 将失败并阻止 PR 合并。
 
 ---
 
@@ -228,6 +252,7 @@ mvn verify -Dcheckstyle.skip=false
 
 | 版本 | 日期 | 修改内容 |
 |------|------|----------|
+| 1.2 | 2026-05-29 | 添加 CI/CD 合并验证 job 和 merge-verification 强制检查项（MIN-3993） |
 | 1.1 | 2026-05-23 | 添加 worktree→main 核心原则和 Post-Merge 验证清单（MIN-3202） |
 | 1.0 | 2026-05-09 | 初始版本 |
 

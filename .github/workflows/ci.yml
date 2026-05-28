@@ -335,18 +335,140 @@ jobs:
           path: verification-report-*.txt
           retention-days: 30
 
-  # Merge gate - prevents merge if checks fail (MIN-1545, MIN-2413)
+  # Merge verification - ensures code is actually merged to main (MIN-3993)
+  merge-verification:
+    name: Verify Code Merged to Main
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify PR branch is up to date with main
+        run: |
+          echo "=== Merge Verification ==="
+          echo "PR Branch: ${{ github.head_ref }}"
+          echo "Target: main"
+          echo ""
+
+          # Get the latest commit hashes
+          MAIN_LOCAL=$(git rev-parse origin/main)
+          PR_BASE=$(git merge-base origin/main HEAD)
+          PR_TIP=$(git rev-parse HEAD)
+
+          echo "origin/main: $MAIN_LOCAL"
+          echo "PR base commit: $PR_BASE"
+          echo "PR tip commit: $PR_TIP"
+          echo ""
+
+          # Check if PR tip is ahead of main (i.e., not merged)
+          if [ "$PR_TIP" = "$MAIN_LOCAL" ]; then
+            echo "✓ PR is merged to main (tip matches main)"
+          elif git log --oneline origin/main | grep -q "$PR_TIP"; then
+            echo "✓ PR tip commit exists in origin/main"
+          else
+            echo "✗ ERROR: PR code has not been merged to main!"
+            echo "PR tip commit $PR_TIP is not in origin/main history"
+            echo ""
+            echo "This PR must be merged to main before it can be closed."
+            exit 1
+          fi
+
+      - name: Check for unmerged work
+        run: |
+          echo "=== Checking for Unmerged Work ==="
+          # Get list of branches merged to main
+          MERGED_BRANCHES=$(git branch -r --merged origin/main | grep -v "^\*" | grep -v "origin/main" | grep -v "HEAD" || true)
+
+          if [ -n "$MERGED_BRANCHES" ]; then
+            echo "Branches merged to main:"
+            echo "$MERGED_BRANCHES"
+          else
+            echo "No other branches found merged to main"
+          fi
+          echo ""
+
+          # Verify the PR branch commits are in main
+          PR_COMMITS=$(git log --oneline origin/main..HEAD | wc -l)
+          echo "Commits in this PR: $PR_COMMITS"
+
+          if [ "$PR_COMMITS" -gt 0 ]; then
+            echo "✗ ERROR: There are commits that haven't been merged to main!"
+            echo "All PR commits must be in main before merge is allowed."
+            echo ""
+            echo "Unmerged commits:"
+            git log --oneline origin/main..HEAD | sed 's/^/  /'
+            echo ""
+            echo "Solution: Merge this PR to main first, then the merge gate will pass."
+            exit 1
+          fi
+
+      - name: Generate merge verification report
+        run: |
+          echo "=== Merge Verification Report ==="
+          echo "Timestamp: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          echo "Repository: $GITHUB_REPOSITORY"
+          echo "PR: #${{ github.event.pull_request.number }}"
+          echo "PR Title: ${{ github.event.pull_request.title }}"
+          echo "Head Branch: ${{ github.head_ref }}"
+          echo ""
+          echo "Status: ✓ VERIFIED - Code is merged to main"
+          echo "This PR has been successfully merged to main."
+
+  # Merge gate - prevents merge if checks fail (MIN-1545, MIN-2413, MIN-3993)
   merge-gate:
     name: Merge Gate
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
-    needs: [merge-conflict-check, build, security, quality, semgrep-sast, trivy-scan, gitleaks-scan, verify-deliverables, tech-debt-sync]
+    needs: [merge-conflict-check, build, security, quality, semgrep-sast, trivy-scan, gitleaks-scan, verify-deliverables, tech-debt-sync, merge-verification]
     steps:
       - name: Verify all checks passed
         run: |
           echo "=== Merge Gate Verification ==="
-          echo "All required checks have passed."
-          echo "This PR is cleared for merge."
+          echo ""
+          echo "Checking all required CI checks..."
+          echo ""
+
+          # Get the conclusion of each required job
+          CHECKS=(
+            "merge-conflict-check:Merge Conflicts"
+            "build:Build and Test"
+            "security:Security Scan"
+            "quality:Code Quality"
+            "semgrep-sast:Semgrep SAST"
+            "trivy-scan:Trivy Scan"
+            "gitleaks-scan:Gitleaks Scan"
+            "verify-deliverables:Verify Deliverables"
+            "tech-debt-sync:Tech Debt Sync"
+            "merge-verification:Merge Verification"
+          )
+
+          FAILED=0
+          for CHECK in "${CHECKS[@]}"; do
+            NAME="${CHECK%%:*}"
+            DISPLAY="${CHECK##*:}"
+            CONCLUSION=$(cat "$GITHUB_ENV" | grep "${NAME}_result=" || echo "pending")
+            if [ "$CONCLUSION" != "success" ]; then
+              echo "✗ $DISPLAY: FAILED or PENDING"
+              FAILED=1
+            else
+              echo "✓ $DISPLAY: PASSED"
+            fi
+          done
+
+          echo ""
+          if [ $FAILED -eq 0 ]; then
+            echo "=========================================="
+            echo "✓ ALL CHECKS PASSED - PR CLEARED FOR MERGE"
+            echo "=========================================="
+          else
+            echo "=========================================="
+            echo "✗ SOME CHECKS FAILED - MERGE NOT ALLOWED"
+            echo "=========================================="
+            exit 1
+          fi
 
   # Semgrep SAST scan
   semgrep-sast:
