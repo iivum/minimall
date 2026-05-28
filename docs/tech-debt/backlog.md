@@ -1,7 +1,7 @@
 # Tech Debt Backlog
 
 **created**: 2026-05-18
-**last updated**: 2026-05-18
+**last updated**: 2026-05-28
 **sprint capacity allocation**: 15% per sprint
 
 ---
@@ -528,3 +528,43 @@ Template:
 - [Jakarta Validation](https://jakarta.ee/specifications/validation/3.0/)
 - [Spring Boot JPA Best Practices](https://docs.spring.io/spring-boot/docs/current/reference/html/data.html#data.jpa)
 - [RICE Scoring Method](https://www.productplan.com/rice-scoring/)
+
+---
+
+## Sprint #210 验收结果 (2026-05-28)
+
+| Issue | 标题 | 状态 | 结果 |
+|-------|------|------|------|
+| MIN-3955 | 技术债月报机制建立 | ✅ 部分通过 | 文件已创建，待合并到 main |
+| MIN-3957 | 更新 tech-debt-backlog.md | ❌ 未通过 | 未执行，将重新执行 |
+
+**关键发现**:
+- E2E 测试发现根因：测试环境与生产环境配置不一致
+- 技术债月报模板已创建：`docs/tech-debt/monthly-report-template.md`
+- 2026-05 月报已创建：`docs/tech-debt/2026-05-monthly-report.md`
+
+---
+
+## Sprint #211 规划 (2026-05-28)
+
+**目标**: 完成 Sprint #210 遗留工作 + 推进 P0 安全技术债
+
+**容量分配**:
+- 遗留任务: 20%
+- 技术债 (P0): 15%
+- 新功能: 65%
+
+**Issue**:
+
+| Issue | 标题 | 负责人 | 优先级 |
+|-------|------|--------|--------|
+| MIN-3963 | 合并技术债月报到 main | 后端架构师 | P0 |
+| MIN-3964 | 更新 tech-debt-backlog.md | Orion | P1 |
+| MIN-3965 | 修复 Missing @Valid 安全漏洞 | 后端架构师 | P0 |
+| MIN-3966 | 修复 Missing Input Validation DTO | 后端架构师 | P0 |
+
+**验收标准**:
+1. `git show origin/main:docs/tech-debt/monthly-report-template.md` 可访问
+2. `git show origin/main:docs/tech-debt/2026-05-monthly-report.md` 可访问
+3. backlog.md 包含 Sprint #211 规划
+4. Missing @Valid 修复方案已评审
