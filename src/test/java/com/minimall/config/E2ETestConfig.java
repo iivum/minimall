@@ -2,6 +2,7 @@ package com.minimall.config;
 
 import com.minimall.model.User;
 import com.minimall.repository.UserRepository;
+import com.minimall.service.JwtService;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -32,7 +33,17 @@ public class E2ETestConfig {
             testUser.setOpenid("testuser");
             testUser.setNickname("Test User");
             testUser.setPhone("13800138000");
+            testUser.setId("test-user-id");
             userRepository.save(testUser);
         };
+    }
+
+    @Bean
+    @Primary
+    public JwtService jwtService() {
+        return new JwtService(
+            "TEST_JWT_SECRET_KEY_AT_LEAST_32_CHARS_LONG_FOR_TESTING",
+            86400000L
+        );
     }
 }

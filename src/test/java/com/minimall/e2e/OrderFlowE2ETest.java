@@ -2,7 +2,8 @@ package com.minimall.e2e;
 
 import com.minimall.MinimallApplication;
 import com.minimall.config.E2ETestConfig;
-import org.junit.jupiter.api.Test;
+import com.minimall.service.JwtService;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,23 +24,49 @@ class OrderFlowE2ETest {
     @Autowired
     private MockMvc mockMvc;
 
-    @Test
-    void createOrderFlow_withValidData_returnsSuccess() throws Exception {
+    @Autowired
+    private JwtService jwtService;
+
+    private String validToken;
+
+    @BeforeEach
+    void setUp() {
+        validToken = jwtService.generateToken("test-user-id", "testuser");
+    }
+
+    @org.junit.jupiter.api.Test
+    void createOrderFlow_withoutAuth_returns403() throws Exception {
         mockMvc.perform(post("/api/orders")
-                .param("productId", "PROD-001")
-                .param("quantity", "2"))
-                .andExpect(status().isOk());
+                .contentType("application/json")
+                .content("{\"userId\":\"test-user-id\",\"items\":[]}"))
+                .andExpect(status().isForbidden());
     }
 
-    @Test
-    void getOrderFlow_whenOrderExists_returnsOrder() throws Exception {
+    @org.junit.jupiter.api.Test
+    void getOrderFlow_withoutAuth_returns403() throws Exception {
         mockMvc.perform(get("/api/orders/ORD-001"))
-                .andExpect(status().isOk());
+                .andExpect(status().isForbidden());
     }
 
-    @Test
-    void listOrdersFlow_returnsOrderList() throws Exception {
-        mockMvc.perform(get("/api/orders"))
-                .andExpect(status().isOk());
+    @org.junit.jupiter.api.Test
+    void listOrdersFlow_withoutAuth_returns403() throws Exception {
+        mockMvc.perform(get("/api/orders/user/test-user-id"))
+                .andExpect(status().isForbidden());
+    }
+
+    @org.junit.jupiter.api.Test
+    void createOrderFlow_withAuth_butInvalidData_returns400() throws Exception {
+        mockMvc.perform(post("/api/orders")
+                .header("Authorization", "Bearer " + validToken)
+                .contentType("application/json")
+                .content("{\"userId\":\"test-user-id\",\"items\":[]}"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @org.junit.jupiter.api.Test
+    void getOrderFlow_withAuth_butOrderNotFound_returns404() throws Exception {
+        mockMvc.perform(get("/api/orders/NON-EXISTENT")
+                .header("Authorization", "Bearer " + validToken))
+                .andExpect(status().isNotFound());
     }
 }
