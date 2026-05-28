@@ -902,6 +902,73 @@ Sprint #216 continues focus on **Testing & API Security** improvements. E2E test
 
 ---
 
+## Sprint #226 Review
+
+### Completed Items
+
+| Item | Sprint | Status | Verification |
+|------|--------|--------|--------------|
+| - | - | - | Sprint in progress |
+
+### Notes
+
+- Sprint #226 verification in progress
+- Tech debt items being tracked and updated
+
+**Status Values**: `Not started` | `Claimed` | `In progress` | `Completed` | `Backlog`
+
+---
+
+## Sprint #226 Planning
+
+### Planned Tech Debt Items
+
+| Item | Priority | Estimated Effort | Notes |
+|------|----------|------------------|-------|
+| E2E Test Infrastructure Final Fix (#8) | P0 | 2 days | MIN-3891 - Resolve Resilience4j configuration binding issues |
+| Missing Input Validation DTO | P1 | 2 days | Add Jakarta Validation annotations to all Request DTOs |
+| Missing @Valid Annotation Fix | P1 | 2 days | Add @Valid to Controller endpoints for DTO validation |
+| Test Coverage Improvement (#7) | P2 | 4 days | Target: 80% coverage for service layer |
+
+### Focus Area
+
+Sprint #226 continues focus on **Testing & API Security** improvements. E2E test infrastructure remains P0 priority, along with input validation DTOs and @Valid annotations.
+
+---
+
+## Sprint #225 Review
+
+### Completed Items
+
+| Item | Sprint | Status | Verification |
+|------|--------|--------|--------------|
+| - | - | - | Sprint in progress |
+
+### Notes
+
+- Sprint #225 verification completed
+- Tech debt items updated and documented
+
+**Status Values**: `Not started` | `Claimed` | `In progress` | `Completed` | `Backlog`
+
+---
+
+## Sprint #225 Planning
+
+### Planned Tech Debt Items
+
+| Item | Priority | Estimated Effort | Notes |
+|------|----------|------------------|-------|
+| E2E Test Infrastructure (#8) | P1 | 2 days | Resolve Resilience4j configuration binding issues |
+| Missing Input Validation DTO | P1 | 2 days | Add Jakarta Validation annotations to all Request DTOs |
+| Missing @Valid Annotation Fix | P1 | 2 days | Add @Valid to Controller endpoints for DTO validation |
+
+### Focus Area
+
+Sprint #225 focus on **Testing & API Security** improvements. E2E test infrastructure and input validation are primary objectives.
+
+---
+
 ## References
 
 - [Spring Boot JPA Best Practices](https://docs.spring.io/spring-boot/docs/current/reference/html/data.html#data.jpa)
