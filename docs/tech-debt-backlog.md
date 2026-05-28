@@ -1,7 +1,7 @@
 # Tech Debt Backlog
 
 **created**: 2026-05-15
-**last updated**: 2026-05-28
+**last updated**: 2026-05-29
 **sprint capacity allocation**: 15% per sprint
 
 ---
@@ -730,6 +730,135 @@ Sprint #211 will focus on **API Security** improvements. Adding proper input val
 - **Root Cause**: Resilience4j configuration property binding issues in test environment
 - **Analysis**: Spring Boot Test context caching conflicts with dynamic configuration updates
 - **Recommended Solution**: Dedicated configuration class to isolate test-specific Resilience4j config
+
+---
+
+## Sprint #214 Review (2026-05-29)
+
+### Completed Items
+
+| Item | Sprint | Status | Verification |
+|------|--------|--------|--------------|
+| - | - | - | Sprint in progress |
+
+### Notes
+
+- Sprint #214 planning in progress
+- Focus areas to be determined based on ongoing priorities
+
+**Status Values**: `Not started` | `Claimed` | `In progress` | `Completed` | `Backlog`
+
+---
+
+## Sprint #214 Planning
+
+### Planned Tech Debt Items
+
+| Item | Priority | Estimated Effort | Notes |
+|------|----------|------------------|-------|
+| - | - | - | Planning in progress |
+
+### Focus Area
+
+Sprint #214 focus area to be determined.
+
+---
+
+## Sprint #213 Review (2026-05-29)
+
+### Completed Items
+
+| Item | Sprint | Status | Verification |
+|------|--------|--------|--------------|
+| - | - | - | Sprint in progress |
+
+### Notes
+
+- Sprint #213 planning in progress
+- Focus areas to be determined based on ongoing priorities
+
+**Status Values**: `Not started` | `Claimed` | `In progress` | `Completed` | `Backlog`
+
+---
+
+## Sprint #213 Planning
+
+### Planned Tech Debt Items
+
+| Item | Priority | Estimated Effort | Notes |
+|------|----------|------------------|-------|
+| - | - | - | Planning in progress |
+
+### Focus Area
+
+Sprint #213 focus area to be determined.
+
+---
+
+## Sprint #212 Review (2026-05-29)
+
+### Completed Items
+
+| Item | Sprint | Status | Verification |
+|------|--------|--------|--------------|
+| - | - | - | Sprint in progress |
+
+### Notes
+
+- Sprint #212 planning in progress
+- Focus areas to be determined based on ongoing priorities
+
+**Status Values**: `Not started` | `Claimed` | `In progress` | `Completed` | `Backlog`
+
+---
+
+## Sprint #212 Planning
+
+### Planned Tech Debt Items
+
+| Item | Priority | Estimated Effort | Notes |
+|------|----------|------------------|-------|
+| - | - | - | Planning in progress |
+
+### Focus Area
+
+Sprint #212 focus area to be determined.
+
+---
+
+## Sprint #215 Review (2026-05-29)
+
+### Completed Items
+
+| Item | Sprint | Status | Verification |
+|------|--------|--------|--------------|
+| tech-debt-backlog.md Planning Update | Sprint #215 | Completed | MIN-3994 - Document updated for Sprint #215 |
+
+### Notes
+
+- Sprint #215 planning update completed
+- Audit of current tech debt entries performed
+- All completed items status verified and up-to-date
+- Sprint #215 tech debt items added to backlog
+
+**Status Values**: `Not started` | `Claimed` | `In progress` | `Completed` | `Backlog`
+
+---
+
+## Sprint #215 Planning
+
+### Planned Tech Debt Items
+
+| Item | Priority | Estimated Effort | Notes |
+|------|----------|------------------|-------|
+| Missing Input Validation DTO | P0 | 2 days | Add Jakarta Validation annotations to all Request DTOs |
+| Missing @Valid Annotation Fix | P0 | 2 days | Add @Valid to Controller endpoints for DTO validation |
+| E2E Test Infrastructure | P1 | 2 days | Resolve Resilience4j configuration binding issues |
+| Backend API Security Enhancement | P1 | 2 days | Comprehensive @Valid and input validation |
+
+### Focus Area
+
+Sprint #215 continues focus on **API Security** improvements. Adding proper input validation and @Valid annotations is P0 priority to prevent invalid data from entering the system.
 
 ---
 
