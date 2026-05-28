@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PayService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">minimall</a> &gt; <a href="index.source.html" class="el_package">com.minimall.service</a> &gt; <span class="el_source">PayService.java</span></div><h1>PayService.java</h1><pre class="source lang-java linenums">package com.minimall.service;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.minimall.config.WeChatPayConfig;
+import com.minimall.model.Order;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.Signature;
+import java.util.Base64;
+import java.util.Map;
+import java.util.UUID;
+
+@Service
+public class PayService {
+<span class="nc" id="L19">    private static final Logger log = LoggerFactory.getLogger(PayService.class);</span>
+    private static final String SIGN_ALGORITHM = &quot;SHA256withRSA&quot;;
+
+    private final WeChatPayConfig weChatPayConfig;
+    private final OrderService orderService;
+    private final ObjectMapper objectMapper;
+
+<span class="nc" id="L26">    public PayService(WeChatPayConfig weChatPayConfig, OrderService orderService) {</span>
+<span class="nc" id="L27">        this.weChatPayConfig = weChatPayConfig;</span>
+<span class="nc" id="L28">        this.orderService = orderService;</span>
+<span class="nc" id="L29">        this.objectMapper = new ObjectMapper();</span>
+<span class="nc" id="L30">    }</span>
+
+    public String createUnifiedOrder(Order order, String openid) {
+<span class="nc" id="L33">        String prepayId = &quot;prepay_&quot; + UUID.randomUUID().toString().replace(&quot;-&quot;, &quot;&quot;);</span>
+<span class="nc" id="L34">        log.info(&quot;Created prepay order: {} for order: {}&quot;, prepayId, order.getOrderNo());</span>
+<span class="nc" id="L35">        return prepayId;</span>
+    }
+
+    public String getJsApiSign(String prepayId, long timestamp, String nonceStr) {
+<span class="nc" id="L39">        String message = weChatPayConfig.getMchid() + &quot;\n&quot; + timestamp + &quot;\n&quot; + nonceStr + &quot;\n&quot; + prepayId + &quot;\n&quot;;</span>
+        try {
+<span class="nc" id="L41">            Signature signature = Signature.getInstance(SIGN_ALGORITHM);</span>
+<span class="nc" id="L42">            signature.initSign(getPrivateKey());</span>
+<span class="nc" id="L43">            signature.update(message.getBytes(StandardCharsets.UTF_8));</span>
+<span class="nc" id="L44">            return Base64.getEncoder().encodeToString(signature.sign());</span>
+<span class="nc" id="L45">        } catch (Exception e) {</span>
+<span class="nc" id="L46">            log.error(&quot;Failed to sign JSAPI request&quot;, e);</span>
+<span class="nc" id="L47">            throw new RuntimeException(&quot;Failed to sign JSAPI request&quot;, e);</span>
+        }
+    }
+
+    public boolean verifyCallback(String body, String signature, String serialNo) {
+        try {
+<span class="nc bnc" id="L53" title="All 4 branches missed.">            if (serialNo == null || !serialNo.equals(weChatPayConfig.getSerialNo())) {</span>
+<span class="nc" id="L54">                log.warn(&quot;Callback serial number mismatch: expected={}, actual={}&quot;,</span>
+<span class="nc" id="L55">                    weChatPayConfig.getSerialNo(), serialNo);</span>
+<span class="nc" id="L56">                return false;</span>
+            }
+
+<span class="nc" id="L59">            MessageDigest digest = MessageDigest.getInstance(&quot;SHA-256&quot;);</span>
+<span class="nc" id="L60">            byte[] hash = digest.digest(body.getBytes(StandardCharsets.UTF_8));</span>
+
+<span class="nc" id="L62">            Signature verifier = Signature.getInstance(SIGN_ALGORITHM);</span>
+<span class="nc" id="L63">            verifier.initVerify(getWeChatPayCertificate());</span>
+<span class="nc" id="L64">            verifier.update(hash);</span>
+<span class="nc" id="L65">            return verifier.verify(Base64.getDecoder().decode(signature));</span>
+<span class="nc" id="L66">        } catch (Exception e) {</span>
+<span class="nc" id="L67">            log.error(&quot;Callback verification failed&quot;, e);</span>
+<span class="nc" id="L68">            return false;</span>
+        }
+    }
+
+    private java.security.PrivateKey getPrivateKey() throws Exception {
+<span class="nc" id="L73">        String privateKeyContent = weChatPayConfig.getPrivateKeyContent();</span>
+<span class="nc bnc" id="L74" title="All 4 branches missed.">        if (privateKeyContent == null || privateKeyContent.isEmpty()) {</span>
+<span class="nc" id="L75">            throw new IllegalStateException(&quot;WeChat Pay private key not configured&quot;);</span>
+        }
+<span class="nc" id="L77">        String keyPem = privateKeyContent</span>
+<span class="nc" id="L78">            .replace(&quot;-----BEGIN PRIVATE KEY-----&quot;, &quot;&quot;)</span>
+<span class="nc" id="L79">            .replace(&quot;-----END PRIVATE KEY-----&quot;, &quot;&quot;)</span>
+<span class="nc" id="L80">            .replaceAll(&quot;\\s&quot;, &quot;&quot;);</span>
+<span class="nc" id="L81">        byte[] keyBytes = Base64.getDecoder().decode(keyPem);</span>
+<span class="nc" id="L82">        return java.security.KeyFactory.getInstance(&quot;RSA&quot;).generatePrivate(</span>
+            new java.security.spec.PKCS8EncodedKeySpec(keyBytes));
+    }
+
+    private java.security.cert.X509Certificate getWeChatPayCertificate() throws Exception {
+<span class="nc" id="L87">        String certContent = weChatPayConfig.getPlatformCertificateContent();</span>
+<span class="nc bnc" id="L88" title="All 4 branches missed.">        if (certContent == null || certContent.isEmpty()) {</span>
+<span class="nc" id="L89">            throw new IllegalStateException(&quot;WeChat Pay platform certificate not configured&quot;);</span>
+        }
+<span class="nc" id="L91">        String certPem = certContent</span>
+<span class="nc" id="L92">            .replace(&quot;-----BEGIN CERTIFICATE-----&quot;, &quot;&quot;)</span>
+<span class="nc" id="L93">            .replace(&quot;-----END CERTIFICATE-----&quot;, &quot;&quot;)</span>
+<span class="nc" id="L94">            .replaceAll(&quot;\\s&quot;, &quot;&quot;);</span>
+<span class="nc" id="L95">        byte[] certBytes = Base64.getDecoder().decode(certPem);</span>
+<span class="nc" id="L96">        return (java.security.cert.X509Certificate) java.security.cert.CertificateFactory.getInstance(&quot;X.509&quot;)</span>
+<span class="nc" id="L97">            .generateCertificate(new java.io.ByteArrayInputStream(certBytes));</span>
+    }
+
+    @SuppressWarnings(&quot;unchecked&quot;)
+    public void processCallback(String body) {
+        try {
+<span class="nc" id="L103">            Map&lt;String, Object&gt; notification = objectMapper.readValue(body, Map.class);</span>
+<span class="nc" id="L104">            Map&lt;String, Object&gt; payload = (Map&lt;String, Object&gt;) notification.get(&quot;resource&quot;);</span>
+<span class="nc" id="L105">            String outTradeNo = (String) payload.get(&quot;out_trade_no&quot;);</span>
+<span class="nc" id="L106">            String tradeNo = (String) payload.get(&quot;transaction_id&quot;);</span>
+<span class="nc" id="L107">            String tradeStatus = (String) ((Map&lt;String, Object&gt;) payload.get(&quot;amount&quot;)).get(&quot;state&quot;);</span>
+
+<span class="nc" id="L109">            Order order = orderService.findByOrderNo(outTradeNo);</span>
+<span class="nc bnc" id="L110" title="All 2 branches missed.">            if (&quot;SUCCESS&quot;.equals(tradeStatus)) {</span>
+<span class="nc" id="L111">                orderService.pay(order.getId(), tradeNo);</span>
+<span class="nc" id="L112">                log.info(&quot;Order paid successfully: {}&quot;, outTradeNo);</span>
+            } else {
+<span class="nc" id="L114">                log.warn(&quot;Payment failed for order: {}, status: {}&quot;, outTradeNo, tradeStatus);</span>
+            }
+<span class="nc" id="L116">        } catch (Exception e) {</span>
+<span class="nc" id="L117">            log.error(&quot;Failed to process callback&quot;, e);</span>
+<span class="nc" id="L118">            throw new RuntimeException(&quot;Failed to process callback&quot;, e);</span>
+<span class="nc" id="L119">        }</span>
+<span class="nc" id="L120">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

@@ -33,8 +33,10 @@ com/minimall/model/CustomerServiceMessage$MessageType.class
 com/minimall/model/OrderItem.class
 com/minimall/service/OrderService.class
 com/minimall/config/CaffeineCacheConfig.class
+com/minimall/config/AsyncConfig.class
 com/minimall/dto/ProductDTO.class
 com/minimall/controller/UserController.class
+com/minimall/dto/CategoryDTO.class
 com/minimall/model/AdminUser.class
 com/minimall/repository/OrderItemRepository.class
 com/minimall/config/JwtAuthenticationFilter.class
@@ -74,6 +76,7 @@ com/minimall/repository/AdminUserRepository.class
 com/minimall/controller/AuthController.class
 com/minimall/dto/LiveRoomResponse.class
 com/minimall/exception/OrderException.class
+com/minimall/exception/GlobalExceptionHandler$ErrorResponse.class
 com/minimall/service/CouponService.class
 com/minimall/repository/LiveCommentRepository.class
 com/minimall/controller/CouponController.class
@@ -103,6 +106,7 @@ com/minimall/repository/LiveGoodsRepository.class
 com/minimall/model/LiveRoom.class
 com/minimall/model/ShareReward$RewardType.class
 com/minimall/service/StatsService.class
+com/minimall/dto/DtoMapper.class
 com/minimall/repository/OrderRepository.class
 com/minimall/exception/ValidationException.class
 com/minimall/model/LiveComment.class
@@ -123,6 +127,8 @@ com/minimall/controller/HealthController.class
 com/minimall/repository/ShareRewardRepository.class
 com/minimall/controller/PointController.class
 com/minimall/exception/GlobalExceptionHandler.class
+com/minimall/controller/PaymentController.class
 com/minimall/dto/CouponResponse.class
+com/minimall/service/PaymentService.class
 com/minimall/config/WebSocketConfig.class
 com/minimall/service/LiveService.class

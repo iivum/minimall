@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CustomerServiceController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">minimall</a> &gt; <a href="index.source.html" class="el_package">com.minimall.controller</a> &gt; <span class="el_source">CustomerServiceController.java</span></div><h1>CustomerServiceController.java</h1><pre class="source lang-java linenums">package com.minimall.controller;
+
+import com.minimall.model.CustomerServiceMessage;
+import com.minimall.service.CustomerServiceService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping(&quot;/api/customer-service&quot;)
+@Tag(name = &quot;Customer Service&quot;, description = &quot;WeChat customer service message APIs&quot;)
+public class CustomerServiceController {
+    private final CustomerServiceService customerService;
+
+<span class="nc" id="L18">    public CustomerServiceController(CustomerServiceService customerService) {</span>
+<span class="nc" id="L19">        this.customerService = customerService;</span>
+<span class="nc" id="L20">    }</span>
+
+    @PostMapping(&quot;/receive&quot;)
+    @Operation(summary = &quot;Receive customer message from WeChat&quot;)
+    public ResponseEntity&lt;CustomerServiceMessage&gt; receiveMessage(
+            @RequestParam String openid,
+            @RequestParam String content,
+            @RequestParam(required = false, defaultValue = &quot;TEXT&quot;) CustomerServiceMessage.MessageType type) {
+<span class="nc" id="L28">        CustomerServiceMessage message = customerService.receiveMessage(openid, content, type);</span>
+<span class="nc" id="L29">        return ResponseEntity.ok(message);</span>
+    }
+
+    @GetMapping(&quot;/messages/{openid}&quot;)
+    @Operation(summary = &quot;Get user's message history&quot;)
+    public ResponseEntity&lt;List&lt;CustomerServiceMessage&gt;&gt; getUserMessages(@PathVariable String openid) {
+<span class="nc" id="L35">        return ResponseEntity.ok(customerService.getUserMessages(openid));</span>
+    }
+
+    @GetMapping(&quot;/pending&quot;)
+    @Operation(summary = &quot;Get all pending messages (for handler dashboard)&quot;)
+    public ResponseEntity&lt;List&lt;CustomerServiceMessage&gt;&gt; getPendingMessages() {
+<span class="nc" id="L41">        return ResponseEntity.ok(customerService.getPendingMessages());</span>
+    }
+
+    @PostMapping(&quot;/{messageId}/read&quot;)
+    @Operation(summary = &quot;Mark message as read&quot;)
+    public ResponseEntity&lt;CustomerServiceMessage&gt; markAsRead(@PathVariable String messageId) {
+<span class="nc" id="L47">        return ResponseEntity.ok(customerService.markAsRead(messageId));</span>
+    }
+
+    @PostMapping(&quot;/{messageId}/complete&quot;)
+    @Operation(summary = &quot;Mark message as completed&quot;)
+    public ResponseEntity&lt;CustomerServiceMessage&gt; completeMessage(@PathVariable String messageId) {
+<span class="nc" id="L53">        return ResponseEntity.ok(customerService.completeMessage(messageId));</span>
+    }
+
+    @PostMapping(&quot;/{messageId}/transfer&quot;)
+    @Operation(summary = &quot;Transfer message to human handler&quot;)
+    public ResponseEntity&lt;CustomerServiceMessage&gt; transferToHuman(
+            @PathVariable String messageId,
+            @RequestParam String handlerId) {
+<span class="nc" id="L61">        return ResponseEntity.ok(customerService.transferToHuman(messageId, handlerId));</span>
+    }
+
+    @GetMapping(&quot;/stats/pending-count&quot;)
+    @Operation(summary = &quot;Get pending message count&quot;)
+    public ResponseEntity&lt;Long&gt; getPendingCount() {
+<span class="nc" id="L67">        return ResponseEntity.ok(customerService.getPendingCount());</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

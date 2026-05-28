@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CategoryDTO.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">minimall</a> &gt; <a href="index.source.html" class="el_package">com.minimall.dto</a> &gt; <span class="el_source">CategoryDTO.java</span></div><h1>CategoryDTO.java</h1><pre class="source lang-java linenums">package com.minimall.dto;
+
+import com.minimall.model.Category;
+
+<span class="nc" id="L5">public class CategoryDTO {</span>
+    private String id;
+    private String name;
+    private Integer sortOrder;
+    private Boolean active;
+    private String parentId;
+
+<span class="nc" id="L12">    public String getId() { return id; }</span>
+<span class="nc" id="L13">    public void setId(String id) { this.id = id; }</span>
+<span class="nc" id="L14">    public String getName() { return name; }</span>
+<span class="nc" id="L15">    public void setName(String name) { this.name = name; }</span>
+<span class="nc" id="L16">    public Integer getSortOrder() { return sortOrder; }</span>
+<span class="nc" id="L17">    public void setSortOrder(Integer sortOrder) { this.sortOrder = sortOrder; }</span>
+<span class="nc" id="L18">    public Boolean getActive() { return active; }</span>
+<span class="nc" id="L19">    public void setActive(Boolean active) { this.active = active; }</span>
+<span class="nc" id="L20">    public String getParentId() { return parentId; }</span>
+<span class="nc" id="L21">    public void setParentId(String parentId) { this.parentId = parentId; }</span>
+
+    public static CategoryDTO from(Category category) {
+<span class="nc" id="L24">        CategoryDTO dto = new CategoryDTO();</span>
+<span class="nc" id="L25">        dto.setId(category.getId());</span>
+<span class="nc" id="L26">        dto.setName(category.getName());</span>
+<span class="nc" id="L27">        dto.setSortOrder(category.getSortOrder());</span>
+<span class="nc" id="L28">        dto.setActive(category.getActive());</span>
+<span class="nc bnc" id="L29" title="All 2 branches missed.">        dto.setParentId(category.getParent() != null ? category.getParent().getId() : null);</span>
+<span class="nc" id="L30">        return dto;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>
