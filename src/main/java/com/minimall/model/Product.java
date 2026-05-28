@@ -1,6 +1,7 @@
 package com.minimall.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
 import java.time.Instant;
 
@@ -16,21 +17,28 @@ public class Product {
     private String id;
 
     @Column(nullable = false)
+    @NotBlank
+    @Size(max = 255)
     private String name;
 
     @Column(columnDefinition = "TEXT")
     private String description;
 
     @Column(nullable = false, precision = 10, scale = 2)
+    @NotNull
+    @DecimalMin(value = "0.00", inclusive = true)
     private BigDecimal price;
 
     @Column(nullable = false)
+    @NotNull
+    @Min(0)
     private Integer stock = 0;
 
     @Column(name = "image_url")
     private String imageUrl;
 
     @Column(nullable = false)
+    @NotNull
     private Boolean active = true;
 
     @Column(name = "created_at", nullable = false, updatable = false)
