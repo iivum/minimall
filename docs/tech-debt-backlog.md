@@ -354,6 +354,49 @@ For a 2-week sprint with 10 working days:
 
 ---
 
+## Sprint #210 Review (2026-05-28)
+
+### Completed Items
+
+| Item | Sprint | Status | Verification |
+|------|--------|--------|--------------|
+| E2E Test Compilation Fix (#8) | Sprint 210 | Completed | MIN-3951 - `com.minimall.miniapp` 包名问题已修复 |
+| Test Coverage Improvement | Sprint 210 | Completed | MIN-3948 - 测试覆盖率专项推进 |
+| Tech Debt Monthly Report | Sprint 210 | Completed | MIN-3955 - 月报机制已建立 |
+| Tech Debt Monthly Report | Sprint 210 | Completed | MIN-3952 - 月报模板和首月报告已创建 |
+
+### Notes
+
+- Sprint #210 completed multiple testing infrastructure items
+- E2E test compilation issue (MIN-3951) resolved — `com.minimall.miniapp` package renamed
+- Test coverage improvement (MIN-3948) ongoing — from 27.5% target 80%
+- Monthly tech debt report mechanism established (MIN-3952, MIN-3955)
+
+**Status Values**: `Not started` | `Claimed` | `In progress` | `Completed` | `Backlog`
+
+---
+
+## Sprint #210 Planning
+
+### Planned Tech Debt Items
+
+| Item | Priority | Estimated Effort | Notes |
+|------|----------|------------------|-------|
+| E2E Test Infrastructure Final Fix (#8) | P0 | 3 days | MIN-3891 - ApplicationContext configuration |
+| Test Coverage Improvement (#7) | P1 | 6 days | Target: 80% coverage |
+| Controller Unit Test Coverage (#7) | P1 | 1 day | Coverage target: 20%+ for Controller layer |
+
+### Focus Area
+
+Sprint #210 continued focus on **Testing** infrastructure improvements. E2E test fixes and coverage increase were primary objectives.
+
+**E2E Test Root Cause Analysis**:
+- OrderFlowE2ETest and PaymentFlowE2ETest fail due to Resilience4j configuration binding issues
+- Spring Boot Test context caching conflicts with dynamic configuration updates
+- Recommended Solution A: Dedicated configuration class to isolate test config
+
+---
+
 ## Sprint #209 Review (2026-05-28)
 
 ### Completed Items
@@ -662,6 +705,31 @@ Template:
 **Remediation**:
 [Steps to fix]
 ```
+
+---
+
+## Sprint #211 Planning
+
+### Planned Tech Debt Items
+
+| Item | Priority | Estimated Effort | Notes |
+|------|----------|------------------|-------|
+| Missing Input Validation DTO | P0 | 2 days | MIN-3966 - Add Jakarta Validation annotations to all Request DTOs |
+| Missing @Valid Annotation Fix | P0 | 2 days | MIN-3965 - Add @Valid to Controller endpoints for DTO validation |
+| Merge Tech Debt Monthly Report | High | 0.5 days | MIN-3963 - Merge monthly report to main |
+| E2E Test Infrastructure | P1 | 2 days | MIN-3961 - Resolve Resilience4j configuration binding issues |
+| Backend API Security Enhancement | P1 | 2 days | MIN-3960 - Comprehensive @Valid and input validation |
+
+### Focus Area
+
+Sprint #211 will focus on **API Security** improvements. Adding proper input validation and @Valid annotations is P0 priority to prevent invalid data from entering the system.
+
+### E2E Test Infrastructure Root Cause (for Sprint #211 tracking)
+
+- **Problem**: OrderFlowE2ETest and PaymentFlowE2ETest fail to load ApplicationContext
+- **Root Cause**: Resilience4j configuration property binding issues in test environment
+- **Analysis**: Spring Boot Test context caching conflicts with dynamic configuration updates
+- **Recommended Solution**: Dedicated configuration class to isolate test-specific Resilience4j config
 
 ---
 
