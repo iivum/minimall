@@ -23,6 +23,8 @@ import org.springframework.data.domain.Pageable;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -223,5 +225,21 @@ class CouponServiceTest {
         assertNotNull(result);
         assertEquals("SAVE20", result.code());
         assertEquals(100, result.remainingQuantity());
+    }
+
+    @Test
+    @DisplayName("getNewUserCoupons returns new user coupons")
+    void getNewUserCoupons_returnsNewUserCoupons() {
+        Coupon coupon = new Coupon();
+        coupon.setId("coupon-1");
+        coupon.setCode("NEWUSER");
+        coupon.setCouponType(Coupon.CouponType.NEW_USER);
+
+        when(couponRepository.findByCouponType(Coupon.CouponType.NEW_USER)).thenReturn(List.of(coupon));
+
+        List<CouponResponse> result = couponService.getNewUserCoupons();
+
+        assertEquals(1, result.size());
+        assertEquals("NEW_USER", result.get(0).couponType());
     }
 }

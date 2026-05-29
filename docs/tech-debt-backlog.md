@@ -902,6 +902,114 @@ Sprint #216 continues focus on **Testing & API Security** improvements. E2E test
 
 ---
 
+## Sprint #235 Planning
+
+### Planned Tech Debt Items
+
+| Item | Priority | Estimated Effort | Notes |
+|------|----------|------------------|-------|
+| E2E Test Infrastructure Final Fix (#8) | P0 | 2 days | MIN-3891 - Resolve Resilience4j configuration binding issues |
+| Missing Input Validation DTO | P1 | 2 days | Add Jakarta Validation annotations to all Request DTOs |
+| Missing @Valid Annotation Fix | P1 | 2 days | Add @Valid to Controller endpoints for DTO validation |
+| Test Coverage Improvement (#7) | P2 | 4 days | Target: 80% coverage for service layer |
+
+### Focus Area
+
+Sprint #235 continues focus on **Testing & API Security** improvements. E2E test infrastructure remains P0 priority to resolve persistent Resilience4j configuration binding issues, along with input validation DTOs and @Valid annotations.
+
+---
+
+## Sprint #234 Planning
+
+### Planned Tech Debt Items
+
+| Item | Priority | Estimated Effort | Notes |
+|------|----------|------------------|-------|
+| Missing Entity Projection DTOs (#1) | P2 | 5 days | Architecture - carried from multiple sprints |
+| Field Injection in Services (#5) | P2 | 3 days | Code quality - constructor injection |
+| E2E Test Infrastructure Final Fix (#8) | P1 | 2 days | MIN-3891 - Resolve Resilience4j configuration binding issues |
+| Missing Input Validation DTO | P1 | 2 days | Add Jakarta Validation annotations to all Request DTOs |
+| Missing @Valid Annotation Fix | P1 | 2 days | Add @Valid to Controller endpoints for DTO validation |
+| Test Coverage Improvement (#7) | P2 | 4 days | Target: 80% coverage for service layer |
+
+### Focus Area
+
+Sprint #234 will focus on **Architecture & Testing** improvements. DTO projections and field injection refactoring are P2 priority, while E2E test infrastructure and input validation remain P1 priority from previous sprints.
+
+---
+
+## Sprint #233 Review (2026-05-29)
+
+### Completed Items
+
+| Item | Sprint | Status | Verification |
+|------|--------|--------|--------------|
+| - | - | - | Sprint in progress |
+
+### Notes
+
+- Sprint #233 acceptance review in progress
+- Tech debt items being tracked and updated
+
+**Status Values**: `Not started` | `Claimed` | `In progress` | `Completed` | `Backlog`
+
+---
+
+## Sprint #233 Planning
+
+### Planned Tech Debt Items
+
+| Item | Priority | Estimated Effort | Notes |
+|------|----------|------------------|-------|
+| E2E Test Infrastructure Final Fix (#8) | P0 | 2 days | MIN-3891 - Resolve Resilience4j configuration binding issues |
+| Missing Input Validation DTO | P1 | 2 days | Add Jakarta Validation annotations to all Request DTOs |
+| Missing @Valid Annotation Fix | P1 | 2 days | Add @Valid to Controller endpoints for DTO validation |
+| Test Coverage Improvement (#7) | P2 | 4 days | Target: 80% coverage for service layer |
+
+### Focus Area
+
+Sprint #233 continues focus on **Testing & API Security** improvements. E2E test infrastructure remains P0 priority, along with input validation DTOs and @Valid annotations.
+
+---
+
+## Sprint #232 Planning
+
+### Planned Tech Debt Items
+
+| Item | Priority | Estimated Effort | Notes |
+|------|----------|------------------|-------|
+| Missing Entity Projection DTOs (#1) | P2 | 5 days | Architecture - carried from multiple sprints |
+| Field Injection in Services (#5) | P2 | 3 days | Code quality - constructor injection |
+| E2E Test Infrastructure Final Fix (#8) | P1 | 2 days | MIN-3891 - Resolve Resilience4j configuration binding issues |
+| Missing Input Validation DTO | P1 | 2 days | Add Jakarta Validation annotations to all Request DTOs |
+| Missing @Valid Annotation Fix | P1 | 2 days | Add @Valid to Controller endpoints for DTO validation |
+
+### Focus Area
+
+Sprint #232 will focus on **Architecture & Testing** improvements. DTO projections and field injection refactoring are P2 priority, while E2E test infrastructure and input validation remain P1 priority from previous sprints.
+
+---
+
+## Sprint #231 Review (2026-05-29)
+
+### Completed Items
+
+| Item | Sprint | Status | Verification |
+|------|--------|--------|--------------|
+| E2E Test Infrastructure (#8) | Sprint #231 | In Progress | MIN-3891 - Resilience4j configuration binding issues identified |
+| Input Validation DTO | Sprint #231 | In Progress | MIN-3966 - Jakarta Validation annotations in progress |
+
+### Notes
+
+- Sprint #231 acceptance results being recorded
+- E2E test infrastructure issues (MIN-3891) remain unresolved - Resilience4j configuration binding causing ApplicationContext load failures
+- Input validation DTO work (MIN-3966) ongoing
+- Sprint #232 planning documented above
+
+**Status Values**: `Not started` | `Claimed` | `In progress` | `Completed` | `Backlog`
+
+---
+
 ## Sprint #226 Review
 
 ### Completed Items
