@@ -147,3 +147,4 @@ git log origin/main --oneline | head -10
 | 日期 | 更新内容 | 更新者 |
 |------|---------|--------|
 | 2026-05-23 | 初始创建，建立追踪机制 | Orion |
+| 2026-05-30 | MIN-4149: 添加 PR 合并证明截图要求到 deliver-checklist.md | Orion |
