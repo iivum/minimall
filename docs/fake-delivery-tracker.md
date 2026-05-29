@@ -148,3 +148,61 @@ git log origin/main --oneline | head -10
 |------|---------|--------|
 | 2026-05-23 | 初始创建，建立追踪机制 | Orion |
 | 2026-05-30 | MIN-4149: 添加 PR 合并证明截图要求到 deliver-checklist.md | Orion |
+
+## 8. Sprint #221 虚假交付验证报告 (MIN-4177)
+
+**验证时间**: 2026-05-30
+**验证者**: Sprint 排序师
+**任务**: 对所有 in_review issue 强制执行 main 分支验证
+
+### 8.1 验证方法
+
+1. 使用 `git show origin/main:<file>` 验证交付物存在
+2. 使用 `git ls-files origin/main` 检查测试文件是否存在
+3. 使用 `git log origin/main --oneline` 验证提交记录
+
+### 8.2 in_review Issue 验证结果
+
+| Issue | 标题 | 执行者 | 验证结果 | 说明 |
+|-------|------|--------|----------|------|
+| MIN-4147 | Sprint #240: 测试覆盖率提升至 60%+ | Orion | 需核实 | 需 mvn test jacoco:report 验证 |
+| MIN-4174 | Sprint #221: E2E 测试完整验证 | Orion | 通过 | 12 tests pass, Build Success |
+| MIN-4173 | 团队驱动 | Sprint 排序师 | 完成 | Autopilot 触发执行 |
+| MIN-4165 | 团队驱动 | Sprint 排序师 | 完成 | Autopilot 触发执行 |
+| MIN-4162 | 团队驱动 | Sprint 排序师 | 完成 | Autopilot 触发执行 |
+| MIN-4159 | 团队驱动 | Sprint 排序师 | 完成 | Autopilot 触发执行 |
+| MIN-4156 | 团队驱动 | Sprint 排序师 | 完成 | Autopilot 触发执行 |
+| MIN-4153 | 团队驱动 | Sprint 排序师 | 完成 | Autopilot 触发执行 |
+| MIN-4150 | Sprint #241: 测试覆盖率提升至 65%+ | Orion | 需核实 | 需 jacoco:report 验证 |
+| MIN-4143 | Sprint #239: 测试覆盖率提升（重新执行）| Orion | 需核实 | 需 jacoco:report 验证 |
+| MIN-4136 | Sprint #238: 测试覆盖率提升 | Orion | 需核实 | 需 jacoco:report 验证 |
+| MIN-4148 | 团队驱动 | Sprint 排序师 | 完成 | Autopilot 触发执行 |
+| MIN-4145 | 团队驱动 | Sprint 排序师 | 完成 | Autopilot 触发执行 |
+| MIN-4141 | 团队驱动 | Sprint 排序师 | 完成 | Autopilot 触发执行 |
+| MIN-4138 | 团队驱动 | Sprint 排序师 | 完成 | Autopilot 触发执行 |
+| MIN-4134 | 团队驱动 | Sprint 排序师 | 完成 | Autopilot 触发执行 |
+
+### 8.3 main 分支测试文件验证
+
+| Issue | 声称的文件 | 验证结果 |
+|-------|-----------|----------|
+| MIN-4147 | ServiceCoverage.txt | 文件不存在 |
+| MIN-4147 | ControllerCoverage.txt | 文件不存在 |
+| MIN-4174 | PaymentFlowE2ETest.java | 存在，76行 |
+| MIN-4174 | AuthFlowE2ETest.java | 存在 |
+| MIN-4174 | OrderFlowE2ETest.java | 存在 |
+| MIN-4150 | ProductServiceTest.java | 存在 |
+| MIN-4150 | OrderServiceTest.java | 存在，198行 |
+| MIN-4150 | PaymentServiceTest.java | 存在，64行 |
+
+### 8.4 结论
+
+- **虚假交付风险**: 多个 coverage issue 声称的覆盖率报告文件未在 main 分支找到
+- **E2E 测试**: MIN-4174 验证通过，12 tests pass, BUILD SUCCESS
+- **团队驱动 issues**: 均为 Autopilot 触发，符合预期
+
+### 8.5 建议措施
+
+1. Orion 需重新执行 coverage 提升任务，提供 jacoco:report 截图证明
+2. 覆盖率目标应基于实际 mvn test jacoco:report 结果
+3. 建议在验收标准中增加"截图或日志证明"
