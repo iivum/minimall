@@ -2,6 +2,7 @@ package com.minimall.controller;
 
 import com.minimall.dto.DtoMapper;
 import com.minimall.dto.ProductDTO;
+import com.minimall.dto.ProductResponseDTO;
 import com.minimall.model.Product;
 import com.minimall.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,7 +28,7 @@ public class ProductController {
 
     @GetMapping
     @Operation(summary = "Get all active products (paginated)")
-    public ResponseEntity<Page<ProductDTO>> getProducts(
+    public ResponseEntity<Page<ProductResponseDTO>> getProducts(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String search,
@@ -39,39 +40,39 @@ public class ProductController {
         else if ("stock-desc".equals(sort)) sortOrder = Sort.by(Sort.Direction.DESC, "stock");
         Pageable pageable = PageRequest.of(page, size, sortOrder);
         if (search != null && !search.isBlank()) {
-            return ResponseEntity.ok(productService.searchByName(search.trim(), pageable).map(DtoMapper::from));
+            return ResponseEntity.ok(productService.searchByName(search.trim(), pageable).map(ProductResponseDTO::from));
         }
-        return ResponseEntity.ok(productService.findAllActive(pageable).map(DtoMapper::from));
+        return ResponseEntity.ok(productService.findAllActive(pageable).map(ProductResponseDTO::from));
     }
 
     @GetMapping("/all")
     @Operation(summary = "Get all active products (non-paginated)")
-    public ResponseEntity<List<ProductDTO>> getAllProducts() {
-        return ResponseEntity.ok(DtoMapper.fromProducts(productService.findAllActive()));
+    public ResponseEntity<List<ProductResponseDTO>> getAllProducts() {
+        return ResponseEntity.ok(productService.findAllActive().stream().map(ProductResponseDTO::from).toList());
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Get product by ID")
-    public ResponseEntity<ProductDTO> getProduct(@PathVariable String id) {
-        return ResponseEntity.ok(DtoMapper.from(productService.findById(id)));
+    public ResponseEntity<ProductResponseDTO> getProduct(@PathVariable String id) {
+        return ResponseEntity.ok(ProductResponseDTO.from(productService.findById(id)));
     }
 
     @GetMapping("/search")
     @Operation(summary = "Search products by name (non-paginated)")
-    public ResponseEntity<List<ProductDTO>> searchProducts(@RequestParam String name) {
-        return ResponseEntity.ok(DtoMapper.fromProducts(productService.searchByName(name)));
+    public ResponseEntity<List<ProductResponseDTO>> searchProducts(@RequestParam String name) {
+        return ResponseEntity.ok(productService.searchByName(name).stream().map(ProductResponseDTO::from).toList());
     }
 
     @PostMapping
     @Operation(summary = "Create a new product")
-    public ResponseEntity<ProductDTO> createProduct(@Valid @RequestBody Product product) {
-        return ResponseEntity.ok(DtoMapper.from(productService.create(product)));
+    public ResponseEntity<ProductResponseDTO> createProduct(@Valid @RequestBody Product product) {
+        return ResponseEntity.ok(ProductResponseDTO.from(productService.create(product)));
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Update a product")
-    public ResponseEntity<ProductDTO> updateProduct(@PathVariable String id, @Valid @RequestBody Product product) {
-        return ResponseEntity.ok(DtoMapper.from(productService.update(id, product)));
+    public ResponseEntity<ProductResponseDTO> updateProduct(@PathVariable String id, @Valid @RequestBody Product product) {
+        return ResponseEntity.ok(ProductResponseDTO.from(productService.update(id, product)));
     }
 
     @DeleteMapping("/{id}")
