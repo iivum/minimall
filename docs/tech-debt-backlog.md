@@ -902,6 +902,40 @@ Sprint #216 continues focus on **Testing & API Security** improvements. E2E test
 
 ---
 
+## Sprint #233 Planning
+
+### Planned Tech Debt Items
+
+| Item | Priority | Estimated Effort | Notes |
+|------|----------|------------------|-------|
+| Missing Entity Projection DTOs (#1) | P2 | 5 days | Architecture - carried from multiple sprints |
+| Field Injection in Services (#5) | P2 | 3 days | Code quality - constructor injection |
+| Missing Unit Test Coverage (#7) | P2 | 4 days | Target: 80% coverage for service layer |
+
+### Focus Area
+
+Sprint #233 will focus on **Architecture & Code Quality** improvements. DTO projections, field injection refactoring, and test coverage are the planned tech debt items for this sprint.
+
+---
+
+## Sprint #232 Review (2026-05-29)
+
+### Completed Items
+
+| Item | Sprint | Status | Verification |
+|------|--------|--------|--------------|
+| - | - | - | Sprint in progress |
+
+### Notes
+
+- Sprint #232 acceptance results being recorded
+- Tech debt items from Sprint #232 planning being tracked
+- Sprint #233 planning documented above
+
+**Status Values**: `Not started` | `Claimed` | `In progress` | `Completed` | `Backlog`
+
+---
+
 ## Sprint #232 Planning
 
 ### Planned Tech Debt Items
