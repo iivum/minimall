@@ -1077,6 +1077,77 @@ Sprint #225 focus on **Testing & API Security** improvements. E2E test infrastru
 
 ---
 
+## Sprint #220 Review (2026-05-29)
+
+### Completed Items
+
+| Item | Sprint | Status | Verification |
+|------|--------|--------|--------------|
+| - | - | - | Sprint in progress |
+
+### Notes
+
+- Sprint #220 acceptance review in progress
+- E2E test infrastructure issues (MIN-3891) remain unresolved - Resilience4j sliding-window-type configuration binding causing ApplicationContext load failures
+- TestMetricsConfig and E2ETestConfig beans added but not yet merged to main
+- Sprint #220 focus areas: E2E test infrastructure final fix, tech debt cleanup
+
+### P0 Remaining Issues
+
+**E2E Test Infrastructure (#8)** - P0 Priority
+
+| Aspect | Details |
+|--------|---------|
+| Issue | Resilience4j sliding-window-type configuration binding failure |
+| Error | `Failed to bind properties under 'resilience4j.circuitbreaker.instances.wechatapi.sliding-window-type'` |
+| Root Cause | Resilience4j 2.2.0 enum value binding issue - `count` cannot be converted to `SlidingWindowType.COUNT` |
+| Impact | 8 E2E tests cannot start ApplicationContext |
+| Evidence | TestMetricsConfig.java and E2ETestConfig.java exist in worktree but not merged to main |
+
+**Status Values**: `Not started` | `Claimed` | `In progress` | `Completed` | `Backlog`
+
+---
+
+## Sprint #220 Planning
+
+### Planned Tech Debt Items
+
+| Item | Priority | Estimated Effort | Notes |
+|------|----------|------------------|-------|
+| E2E Test Infrastructure Final Fix (#8) | P0 | 4 days | MIN-3891/MIN-4011 - Resolve Resilience4j configuration binding issues |
+| E2E Test Configuration Merge (#8) | P0 | 2 days | Merge TestMetricsConfig and E2ETestConfig to main |
+| Order N+1 Query Optimization | P1 | 3 days | MIN-3973 - JOIN FETCH optimization for OrderService |
+
+### Focus Area
+
+Sprint #220 focused on **Testing Infrastructure** improvements. E2E test infrastructure resolution is P0 priority with 6 days allocated across two issues.
+
+### E2E Test Root Cause (for Sprint #220 tracking)
+
+- **Problem**: OrderFlowE2ETest and PaymentFlowE2ETest fail to load ApplicationContext
+- **Root Cause**: Resilience4j configuration property binding issues in test environment
+- **Analysis**: Spring Boot Test context caching conflicts with dynamic configuration updates
+- **Recommended Solution**: Dedicated configuration class to isolate test-specific Resilience4j config
+
+---
+
+## Sprint #221 Planning
+
+### Planned Tech Debt Items
+
+| Item | Priority | Estimated Effort | Notes |
+|------|----------|------------------|-------|
+| E2E Test Infrastructure Final Fix (#8) | P0 | 3 days | MIN-3891 - Resolve Resilience4j configuration binding, merge TestMetricsConfig |
+| Missing Input Validation DTO | P1 | 2 days | Add Jakarta Validation annotations to all Request DTOs |
+| Missing @Valid Annotation Fix | P1 | 2 days | Add @Valid to Controller endpoints for DTO validation |
+| Test Coverage Improvement (#7) | P2 | 4 days | Target: 80% coverage for service layer |
+
+### Focus Area
+
+Sprint #221 continues focus on **Testing & API Security** improvements. E2E test infrastructure remains P0 priority, along with input validation DTOs and @Valid annotations.
+
+---
+
 ## References
 
 - [Spring Boot JPA Best Practices](https://docs.spring.io/spring-boot/docs/current/reference/html/data.html#data.jpa)
