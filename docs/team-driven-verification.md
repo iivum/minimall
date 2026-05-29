@@ -6,7 +6,66 @@
 
 Sprint #179 验收失败，所有 issue 均未真正交付到 main 分支。需要建立强制验证机制防止虚假交付再次发生。
 
-## main 分支验证流程
+---
+
+## 一、重复 Issue 预防机制 (Sprint #248 新增)
+
+### 问题描述
+
+团队驱动 autopilot 每 15 分钟创建一次 issue，形成无限循环。无实际交付物产生。
+
+### 根因分析
+
+1. Autopilot 在创建新 issue 前未检查是否存在 open/in_progress 状态的团队驱动 issue
+2. 即使 description 中添加了 Precondition 检查要求，也未被执行
+3. 多个 Sprint 并行执行同一任务，导致重复 issue 堆积
+
+### 预防流程
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                    团队驱动 Issue 创建检查流程                        │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│   1. [必做] 检查是否存在 open/in_progress 状态的团队驱动 issue         │
+│      └─ 命令: multica issue list --status open,in_progress          │
+│      └─ 筛选: title 包含 "团队驱动" 的 issue                         │
+│                                                                     │
+│   2. [决策] 如果存在 open/in_progress 状态的团队驱动 issue            │
+│      └─ 选项 A: 贡献到已有 issue（评论加入当前 Sprint 进度）          │
+│      └─ 选项 B: 关闭已有 issue，重新创建                              │
+│      └─ 选项 C: 等待已有 issue 完成                                  │
+│                                                                     │
+│   3. [执行] 仅当没有 open/in_progress 状态的团队驱动 issue 时         │
+│      └─ 才能创建新的团队驱动 issue                                    │
+│                                                                     │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+### 验证命令
+
+```bash
+# 检查当前是否存在 open/in_progress 状态的团队驱动 issue
+multica issue list --status open,in_progress --limit 50 --output json | \
+  jq '.issues[] | select(.title | contains("团队驱动"))'
+
+# 检查特定 Sprint 的团队驱动 issue 状态
+multica issue list --limit 100 --output json | \
+  jq '.issues[] | select(.title | test("Sprint #[0-9]+: 团队驱动"))'
+```
+
+### 重复 issue 清理流程
+
+当发现重复的团队驱动 issue 时：
+
+1. **识别重复**: 检查 title 相同的 issue
+2. **保留最新**: 保留最近创建的 issue (用于当前 Sprint)
+3. **关闭重复**: 将旧的重复 issue 状态改为 `done` 或 `cancelled`
+4. **记录原因**: 在关闭的 issue 下评论说明关闭原因和保留的 issue ID
+
+---
+
+## 二、main 分支验证流程
 
 ### 强制验证命令
 
@@ -85,3 +144,4 @@ git show origin/main:.github/workflows/ci.yml
 | 日期 | 更新内容 | 更新者 |
 |------|---------|-------|
 | 2026-05-27 | 初始创建，记录 Sprint #179 虚假交付案例和 main 分支验证流程 | Orion |
+| 2026-05-30 | Sprint #248: 添加重复 Issue 预防机制（团队驱动 issue 创建前状态检查） | Orion |
