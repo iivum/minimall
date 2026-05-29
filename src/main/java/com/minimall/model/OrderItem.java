@@ -1,6 +1,7 @@
 package com.minimall.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
 
 @Entity
@@ -15,16 +16,22 @@ public class OrderItem {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id", nullable = false)
+    @NotNull
     private Order order;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
+    @NotNull
     private Product product;
 
     @Column(nullable = false)
+    @NotNull
+    @Min(1)
     private Integer quantity;
 
     @Column(nullable = false, precision = 10, scale = 2)
+    @NotNull
+    @DecimalMin(value = "0.00", inclusive = true)
     private BigDecimal price;
 
     public String getId() { return id; }
