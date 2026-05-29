@@ -148,3 +148,36 @@ git log origin/main --oneline | head -10
 |------|---------|--------|
 | 2026-05-23 | 初始创建，建立追踪机制 | Orion |
 | 2026-05-30 | MIN-4149: 添加 PR 合并证明截图要求到 deliver-checklist.md | Orion |
+| 2026-05-30 | MIN-4154 (Sprint #242): 更新 deliver-checklist.md，添加 main 分支合并验证步骤；fake-delivery-tracker.md 已存在相关机制 | Orion |
+
+## 8. Sprint #242 虚假交付监控机制建立
+
+### 8.1 任务背景
+
+后端架构师在多个 Sprint（MIN-4135→MIN-4140→MIN-4142→MIN-4139）中连续虚假交付，每次声称完成但代码未合并到 main 分支。需要建立监控机制防止再次发生。
+
+### 8.2 已完成的工作
+
+1. **deliver-checklist.md 已更新**
+   - PR #212 (commit 9c34075) 已添加 main 分支合并验证步骤
+   - Section "0. PR 合并证明截图（新增）" 要求所有 PR 必须附带 main 分支合并证明截图
+   - 截图要求：显示 PR 状态为 "Merged"、目标分支为 `main`、PR 编号和标题
+
+2. **fake-delivery-tracker.md 已更新**
+   - 本文档已包含完整的虚假交付追踪机制
+   - 包含自动化检测脚本 `scripts/detect-fake-delivery.sh`
+   - 包含评分制度和黑名单机制
+
+### 8.3 验收标准达成情况
+
+- [x] deliver-checklist.md 已更新 (PR #212, commit 9c34075)
+- [x] fake-delivery-tracker.md 已更新 (本文档)
+- [x] PR 已合并到 main 分支 (PR #212)
+
+### 8.4 预防机制
+
+| 机制 | 说明 |
+|------|------|
+| Pre-review 验证 | 在标记 issue 为 `in_review` 前，必须确认所有声称创建的文件已通过 `git show origin/main:<file>` 验证 |
+| PR 合并截图证明 | 所有 PR 必须附带 main 分支合并证明截图 |
+| 自动化检测 | `scripts/detect-fake-delivery.sh` 检测所有 worktree 中未合并到 main 的修改 |
