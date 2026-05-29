@@ -1,7 +1,7 @@
 # Tech Debt Backlog
 
 **created**: 2026-05-15
-**last updated**: 2026-05-29
+**last updated**: 2026-05-30
 **sprint capacity allocation**: 15% per sprint
 
 ---
@@ -899,6 +899,68 @@ Sprint #216 continues focus on **Testing & API Security** improvements. E2E test
 - Sprint #216 planning update completed
 - Audit of current tech debt entries performed
 - All completed items status verified and up-to-date
+
+---
+
+## Sprint #246 Planning
+
+### Planned Tech Debt Items
+
+| Item | Priority | Estimated Effort | Notes |
+|------|----------|------------------|-------|
+| Test Coverage Improvement (#7) | P0 | 4 days | Target: 80% coverage for service layer |
+| E2E Test Infrastructure Final Fix (#8) | P1 | 2 days | MIN-3891 - Resolve Resilience4j configuration binding issues |
+| Missing Entity Projection DTOs (#1) | P2 | 5 days | Architecture - carried from multiple sprints |
+| Field Injection in Services (#5) | P2 | 3 days | Code quality - constructor injection |
+
+### Focus Area
+
+Sprint #246 continues focus on **Testing & Quality** improvements. Test coverage remains P0 priority with target of 80% for service layer. E2E test infrastructure and DTO projections remain as carried items.
+
+---
+
+## Sprint #245 Review (2026-05-30)
+
+### Completed Items
+
+| Item | Sprint | Status | Verification |
+|------|--------|--------|--------------|
+| Test Coverage Improvement (#7) | Sprint #245 | Completed | PR #218 - Service and Controller layer tests added |
+| AdminAuthController Coverage | Sprint #245 | Completed | PR #217 - 100% coverage achieved |
+| Controller Integration Tests | Sprint #245 | Completed | PR #213 - Coverage improvement |
+
+### Notes
+
+- Sprint #245 completed significant test coverage improvements
+- PR #218 (test: add coverage tests for Service and Controller layers) merged to main
+- PR #217 (test: add AdminAuthController and CategoryController tests) achieved 100% coverage
+- Test coverage enforcement mechanism added (PR #215)
+- PR merge screenshot requirement added to delivery checklist (PR #212)
+- DTO projection work ongoing (PR #211, PR #210)
+
+### New Tech Debt Identified
+
+| Item | Category | RICE | Reason |
+|------|----------|------|--------|
+| - | - | - | No new tech debt identified in Sprint #245 |
+
+**Status Values**: `Not started` | `Claimed` | `In progress` | `Completed` | `Backlog`
+
+---
+
+## Sprint #245 Planning
+
+### Planned Tech Debt Items
+
+| Item | Priority | Estimated Effort | Notes |
+|------|----------|------------------|-------|
+| Test Coverage Improvement (#7) | P0 | 4 days | Target: 80% coverage for service layer |
+| E2E Test Infrastructure Final Fix (#8) | P1 | 2 days | MIN-3891 - Resolve Resilience4j configuration binding issues |
+| DTO Projection Completion | P1 | 3 days | Complete remaining DTO projections |
+
+### Focus Area
+
+Sprint #245 focused on **Testing & Architecture** improvements. Test coverage target was 80% for service layer, with E2E test infrastructure as P1 priority.
 
 ---
 
