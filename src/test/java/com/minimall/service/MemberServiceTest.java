@@ -122,4 +122,30 @@ class MemberServiceTest {
         assertEquals("L3", user.getMemberGrade());
         verify(userService).save(user);
     }
+
+    @Test
+    @DisplayName("redeem invokes userService to find user")
+    void redeem_callsUserService() {
+        User user = new User();
+        user.setId("user-1");
+        when(userService.findById("user-1")).thenReturn(user);
+
+        memberService.redeem("user-1", "DISCOUNT", new BigDecimal("100"));
+
+        verify(userService).findById("user-1");
+    }
+
+    @Test
+    @DisplayName("getBenefits throws when grade not found")
+    void getBenefits_throwsWhenGradeNotFound() {
+        User user = new User();
+        user.setId("user-1");
+        user.setMemberGrade("INVALID");
+        user.setTotalSpent(BigDecimal.ZERO);
+
+        when(userService.findById("user-1")).thenReturn(user);
+        when(memberGradeRepository.findByCode("INVALID")).thenReturn(Optional.empty());
+
+        assertThrows(RuntimeException.class, () -> memberService.getBenefits("user-1"));
+    }
 }
