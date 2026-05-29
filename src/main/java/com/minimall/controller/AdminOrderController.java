@@ -1,5 +1,6 @@
 package com.minimall.controller;
 
+import com.minimall.dto.AdminOrderDTO;
 import com.minimall.model.Order;
 import com.minimall.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,35 +34,38 @@ public class AdminOrderController {
 
     @GetMapping
     @Operation(summary = "Get all orders (admin, paginated)")
-    public ResponseEntity<Page<Order>> getAllOrders(
+    public ResponseEntity<Page<AdminOrderDTO>> getAllOrders(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-        return ResponseEntity.ok(orderService.findAll(pageable));
+        Page<Order> orders = orderService.findAll(pageable);
+        Page<AdminOrderDTO> dtoPage = orders.map(AdminOrderDTO::from);
+        return ResponseEntity.ok(dtoPage);
     }
 
     @GetMapping("/all")
     @Operation(summary = "Get all orders (admin, non-paginated)")
-    public ResponseEntity<List<Order>> getAllOrdersAll() {
-        return ResponseEntity.ok(orderService.findAll());
+    public ResponseEntity<List<AdminOrderDTO>> getAllOrdersAll() {
+        List<AdminOrderDTO> dtos = orderService.findAll().stream().map(AdminOrderDTO::from).toList();
+        return ResponseEntity.ok(dtos);
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Get order by ID (admin)")
-    public ResponseEntity<Order> getOrder(@PathVariable String id) {
-        return ResponseEntity.ok(orderService.findById(id));
+    public ResponseEntity<AdminOrderDTO> getOrder(@PathVariable String id) {
+        return ResponseEntity.ok(AdminOrderDTO.from(orderService.findById(id)));
     }
 
     @GetMapping("/no/{orderNo}")
     @Operation(summary = "Get order by order number (admin)")
-    public ResponseEntity<Order> getOrderByNo(@PathVariable String orderNo) {
-        return ResponseEntity.ok(orderService.findByOrderNo(orderNo));
+    public ResponseEntity<AdminOrderDTO> getOrderByNo(@PathVariable String orderNo) {
+        return ResponseEntity.ok(AdminOrderDTO.from(orderService.findByOrderNo(orderNo)));
     }
 
     @PatchMapping("/{id}/status")
     @Operation(summary = "Update order status (admin)")
-    public ResponseEntity<Order> updateStatus(@PathVariable String id, @RequestParam Order.Status status) {
-        return ResponseEntity.ok(orderService.updateStatus(id, status));
+    public ResponseEntity<AdminOrderDTO> updateStatus(@PathVariable String id, @RequestParam Order.Status status) {
+        return ResponseEntity.ok(AdminOrderDTO.from(orderService.updateStatus(id, status)));
     }
 
     @GetMapping("/export")
