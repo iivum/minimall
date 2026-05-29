@@ -124,6 +124,51 @@ class WeChatSubscribeServiceTest {
         verify(subscriptionRepository).findByOpenid("openid-123");
     }
 
+    @Test
+    void sendOrderShippedMessage_sendsMessage_whenSubscribed() {
+        User user = new User();
+        user.setOpenid("openid-123");
+
+        UserSubscription sub = new UserSubscription();
+        sub.setOrderShippedEnabled(true);
+
+        when(subscriptionRepository.findByOpenid("openid-123")).thenReturn(Optional.of(sub));
+
+        subscribeService.sendOrderShippedMessage(createOrder(), user, "EXPRESS-123");
+
+        verify(subscriptionRepository).findByOpenid("openid-123");
+    }
+
+    @Test
+    void sendOrderPaidMessage_sendsMessage_whenSubscribed() {
+        User user = new User();
+        user.setOpenid("openid-123");
+
+        UserSubscription sub = new UserSubscription();
+        sub.setOrderPaidEnabled(true);
+
+        when(subscriptionRepository.findByOpenid("openid-123")).thenReturn(Optional.of(sub));
+
+        subscribeService.sendOrderPaidMessage(createOrder(), user);
+
+        verify(subscriptionRepository).findByOpenid("openid-123");
+    }
+
+    @Test
+    void sendOrderCompletedMessage_sendsMessage_whenSubscribed() {
+        User user = new User();
+        user.setOpenid("openid-123");
+
+        UserSubscription sub = new UserSubscription();
+        sub.setOrderCompletedEnabled(true);
+
+        when(subscriptionRepository.findByOpenid("openid-123")).thenReturn(Optional.of(sub));
+
+        subscribeService.sendOrderCompletedMessage(createOrder(), user);
+
+        verify(subscriptionRepository).findByOpenid("openid-123");
+    }
+
     private Order createOrder() {
         Order order = new Order();
         order.setOrderNo("ORD-001");

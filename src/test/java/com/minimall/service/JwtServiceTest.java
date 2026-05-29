@@ -64,4 +64,61 @@ class JwtServiceTest {
     void validateToken_returnsFalseForEmptyToken() {
         assertFalse(jwtService.validateToken(""));
     }
+
+    @Test
+    void generateAdminToken_createsValidToken() {
+        String token = jwtService.generateAdminToken("admin123", "testadmin", "ROLE_ADMIN");
+
+        assertNotNull(token);
+        assertFalse(token.isEmpty());
+    }
+
+    @Test
+    void getAdminIdFromToken_extractsCorrectAdminId() {
+        String adminId = "admin123";
+        String token = jwtService.generateAdminToken(adminId, "testadmin", "ROLE_ADMIN");
+
+        String extractedAdminId = jwtService.getAdminIdFromToken(token);
+
+        assertEquals(adminId, extractedAdminId);
+    }
+
+    @Test
+    void getAdminUsernameFromToken_extractsCorrectUsername() {
+        String username = "testadmin";
+        String token = jwtService.generateAdminToken("admin123", username, "ROLE_ADMIN");
+
+        String extractedUsername = jwtService.getAdminUsernameFromToken(token);
+
+        assertEquals(username, extractedUsername);
+    }
+
+    @Test
+    void getAdminRoleFromToken_extractsCorrectRole() {
+        String role = "ROLE_ADMIN";
+        String token = jwtService.generateAdminToken("admin123", "testadmin", role);
+
+        String extractedRole = jwtService.getAdminRoleFromToken(token);
+
+        assertEquals(role, extractedRole);
+    }
+
+    @Test
+    void isAdminToken_returnsTrueForAdminToken() {
+        String token = jwtService.generateAdminToken("admin123", "testadmin", "ROLE_ADMIN");
+
+        assertTrue(jwtService.isAdminToken(token));
+    }
+
+    @Test
+    void isAdminToken_returnsFalseForUserToken() {
+        String token = jwtService.generateToken("user123", "openid_abc");
+
+        assertFalse(jwtService.isAdminToken(token));
+    }
+
+    @Test
+    void isAdminToken_returnsFalseForInvalidToken() {
+        assertFalse(jwtService.isAdminToken("invalid.token.here"));
+    }
 }
