@@ -25,6 +25,36 @@ gh pr list --state merged --base main --limit 100 | grep <PR编号>
 
 ---
 
+### 0.1 测试覆盖率验证（强制要求）
+
+```bash
+# 生成 JaCoCo 覆盖率报告
+mvn verify -Djacoco.destFile=target/jacoco.exec
+
+# 或在 IDE 中查看覆盖率
+# Intellij IDEA: Run → Generate Coverage Report
+# VS Code: Coverage Gutters 插件
+```
+
+**通过标准**: 必须同时满足以下条件：
+
+| 层 | 最低覆盖率 | 验证方式 |
+|----|-----------|----------|
+| Service 层 | ≥ 80% | JaCoCo 报告截图 |
+| Controller 层 | ≥ 80% | JaCoCo 报告截图 |
+
+> ⚠️ **测试覆盖率提升必须附带 JaCoCo 报告截图**
+>
+> 截图要求：
+> 1. 显示 Coverage 选项卡或 Report 视图
+> 2. 清晰显示 Service 层和 Controller 层的覆盖率数值
+> 3. 覆盖率的百分比数值必须可见
+> 4. 在 issue 下发布截图作为覆盖率提升的交付证明
+>
+> **例外**: 仅修复文档、配置、或仅涉及静态分析工具更新的 PR 无需提供覆盖率截图
+
+---
+
 ### 1. Git 状态检查
 
 ```bash
