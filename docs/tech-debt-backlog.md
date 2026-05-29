@@ -902,6 +902,23 @@ Sprint #216 continues focus on **Testing & API Security** improvements. E2E test
 
 ---
 
+## Sprint #235 Planning
+
+### Planned Tech Debt Items
+
+| Item | Priority | Estimated Effort | Notes |
+|------|----------|------------------|-------|
+| E2E Test Infrastructure Final Fix (#8) | P0 | 2 days | MIN-3891 - Resolve Resilience4j configuration binding issues |
+| Missing Input Validation DTO | P1 | 2 days | Add Jakarta Validation annotations to all Request DTOs |
+| Missing @Valid Annotation Fix | P1 | 2 days | Add @Valid to Controller endpoints for DTO validation |
+| Test Coverage Improvement (#7) | P2 | 4 days | Target: 80% coverage for service layer |
+
+### Focus Area
+
+Sprint #235 continues focus on **Testing & API Security** improvements. E2E test infrastructure remains P0 priority to resolve persistent Resilience4j configuration binding issues, along with input validation DTOs and @Valid annotations.
+
+---
+
 ## Sprint #234 Planning
 
 ### Planned Tech Debt Items
