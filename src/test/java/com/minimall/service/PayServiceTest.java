@@ -61,6 +61,24 @@ class PayServiceTest {
     }
 
     @Test
+    void getJsApiSign_throwsException_whenPrivateKeyNotConfigured() {
+        when(weChatPayConfig.getMchid()).thenReturn("mchid");
+        when(weChatPayConfig.getPrivateKeyContent()).thenReturn(null);
+
+        assertThrows(RuntimeException.class, () ->
+            payService.getJsApiSign("prepay_id", System.currentTimeMillis(), "nonce"));
+    }
+
+    @Test
+    void getJsApiSign_throwsException_whenPrivateKeyEmpty() {
+        when(weChatPayConfig.getMchid()).thenReturn("mchid");
+        when(weChatPayConfig.getPrivateKeyContent()).thenReturn("");
+
+        assertThrows(RuntimeException.class, () ->
+            payService.getJsApiSign("prepay_id", System.currentTimeMillis(), "nonce"));
+    }
+
+    @Test
     void processCallback_handlesSuccessfulPayment() {
         Order order = new Order();
         order.setId("order-id-1");
@@ -114,5 +132,19 @@ class PayServiceTest {
         } catch (Exception e) {
             fail("Exception should not be thrown: " + e.getMessage());
         }
+    }
+
+    @Test
+    void processCallback_throwsException_onInvalidJson() {
+        String invalidBody = "not valid json";
+
+        assertThrows(RuntimeException.class, () -> payService.processCallback(invalidBody));
+    }
+
+    @Test
+    void processCallback_throwsException_whenResourceIsNull() {
+        String body = "{}";
+
+        assertThrows(RuntimeException.class, () -> payService.processCallback(body));
     }
 }

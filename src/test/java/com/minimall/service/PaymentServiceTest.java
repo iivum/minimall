@@ -9,6 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -21,45 +22,50 @@ class PaymentServiceTest {
     @Mock
     private OrderService orderService;
 
-    private PayService payService;
+    private PaymentService paymentService;
 
     @BeforeEach
     void setUp() {
-        payService = new PayService(weChatPayConfig, orderService);
+        paymentService = new PaymentService(orderService);
     }
 
     @Test
-    void createUnifiedOrder_returnsPrepayId() {
+    void initiatePayment_generatesPaymentId() {
         Order order = new Order();
         order.setOrderNo("ORD-001");
         order.setTotalAmount(BigDecimal.valueOf(100.00));
 
-        String prepayId = payService.createUnifiedOrder(order, "openid-123");
+        String paymentId = paymentService.initiatePayment(order, BigDecimal.valueOf(100.00));
 
-        assertNotNull(prepayId);
-        assertTrue(prepayId.startsWith("prepay_"));
+        assertNotNull(paymentId);
+        assertTrue(paymentId.startsWith("PAY-"));
     }
 
     @Test
-    void verifyCallback_returnsFalseWhenSerialNoMismatch() {
-        when(weChatPayConfig.getSerialNo()).thenReturn("expected-serial");
+    void getPaymentStatus_returnsPendingStatus() {
+        Map<String, Object> status = paymentService.getPaymentStatus("PAY-123");
 
-        boolean result = payService.verifyCallback("{}", "sig", "wrong-serial");
-
-        assertFalse(result);
+        assertNotNull(status);
+        assertEquals("PAY-123", status.get("paymentId"));
+        assertEquals("PENDING", status.get("status"));
+        assertEquals("Payment is processing", status.get("message"));
     }
 
     @Test
-    void processCallback_doesNotPayWhenStatusNotSuccess() {
-        Order order = new Order();
-        order.setId("order-1");
-        order.setOrderNo("ORD-001");
+    void processCallback_handlesSuccessStatus() {
+        assertDoesNotThrow(() -> paymentService.processCallback("TXN-123", "SUCCESS"));
+        verify(orderService, never()).pay(any(), any());
+    }
 
-        when(orderService.findByOrderNo("ORD-001")).thenReturn(order);
+    @Test
+    void processCallback_handlesFailedStatus() {
+        assertDoesNotThrow(() -> paymentService.processCallback("TXN-123", "FAILED"));
+        verify(orderService, never()).pay(any(), any());
+    }
 
-        String callbackBody = "{\"resource\":{\"out_trade_no\":\"ORD-001\",\"transaction_id\":\"WX123456\",\"amount\":{\"state\":\"FAILED\"}}}";
-        payService.processCallback(callbackBody);
-
+    @Test
+    void processCallback_handlesUnknownStatus() {
+        assertDoesNotThrow(() -> paymentService.processCallback("TXN-123", "UNKNOWN"));
         verify(orderService, never()).pay(any(), any());
     }
 }
