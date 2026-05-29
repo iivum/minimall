@@ -54,6 +54,28 @@ Grafana Dashboard：`fake-delivery-tracker`
 | 文件存在性 | 关键文件是否存在于 main 分支 | `git ls-tree origin/main <file>` 成功 |
 | 提交记录 | worktree 的提交是否已合并 | `git log origin/main..HEAD` 为空 |
 | 未推送修改 | 是否存在未推送的提交 | local hash == remote hash |
+| 测试覆盖率 | 覆盖率提升是否附带 JaCoCo 截图 | PR 评论中包含 Service 层和 Controller 层覆盖率 ≥ 80% 的截图 |
+
+### 2.4 测试覆盖率强制验证规则
+
+当 PR 声称提升了测试覆盖率时，必须验证：
+
+1. **截图存在性**: PR 评论或 issue 下存在 JaCoCo 报告截图
+2. **覆盖率数值**: 截图清晰显示：
+   - Service 层覆盖率 ≥ 80%
+   - Controller 层覆盖率 ≥ 80%
+3. **例外放行**: 以下情况无需截图：
+   - 仅修复文档（*.md）
+   - 仅更新配置文件（*.yml, *.properties, *.json）
+   - 仅涉及静态分析工具更新（checkstyle, spotbugs 等）
+
+**通过条件**: 满足上述截图要求，或符合例外条件
+
+**检测脚本扩展**:
+```bash
+# 检测 PR 是否包含覆盖率截图
+gh pr view <PR号> --comments --json comments | grep -i "jacoco\|coverage"
+```
 
 ## 3. Sprint 开始前自动检测
 
@@ -147,4 +169,4 @@ git log origin/main --oneline | head -10
 | 日期 | 更新内容 | 更新者 |
 |------|---------|--------|
 | 2026-05-23 | 初始创建，建立追踪机制 | Orion |
-| 2026-05-30 | MIN-4149: 添加 PR 合并证明截图要求到 deliver-checklist.md | Orion |
+| 2026-05-30 | MIN-4179: 添加测试覆盖率强制验证规则到检测规则 | Orion |
