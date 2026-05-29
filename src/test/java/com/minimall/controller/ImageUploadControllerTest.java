@@ -31,7 +31,7 @@ class ImageUploadControllerTest {
 
     @Test
     void uploadImage_returnsBadRequest_whenFileExceedsMaxSize() {
-        byte[] largeContent = new byte[3 * 1024 * 1024]; // 3MB
+        byte[] largeContent = new byte[3 * 1024 * 1024];
         MockMultipartFile largeFile = new MockMultipartFile(
             "file", "test.jpg", "image/jpeg", largeContent);
 
@@ -47,6 +47,17 @@ class ImageUploadControllerTest {
             "file", "test.txt", "text/plain", "content".getBytes());
 
         ResponseEntity<Map<String, String>> response = controller.uploadImage(txtFile);
+
+        assertEquals(400, response.getStatusCode().value());
+        assertEquals("只能上传图片文件", response.getBody().get("error"));
+    }
+
+    @Test
+    void uploadImage_returnsBadRequest_whenContentTypeIsNull() {
+        MockMultipartFile noTypeFile = new MockMultipartFile(
+            "file", "test.jpg", null, "content".getBytes());
+
+        ResponseEntity<Map<String, String>> response = controller.uploadImage(noTypeFile);
 
         assertEquals(400, response.getStatusCode().value());
         assertEquals("只能上传图片文件", response.getBody().get("error"));

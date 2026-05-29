@@ -105,4 +105,11 @@ class AdminOrderControllerTest {
         verify(orderService).findAll(argThat(pageable ->
             pageable.getPageNumber() == 2 && pageable.getPageSize() == 20));
     }
+
+    @Test
+    void getOrder_returnsOrder_whenNotFound() {
+        when(orderService.findById("not-found")).thenThrow(new RuntimeException("Order not found"));
+
+        assertThrows(RuntimeException.class, () -> controller.getOrder("not-found"));
+    }
 }

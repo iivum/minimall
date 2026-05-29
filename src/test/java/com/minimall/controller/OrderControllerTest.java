@@ -6,6 +6,7 @@ import com.minimall.model.Order;
 import com.minimall.model.User;
 import com.minimall.service.JwtService;
 import com.minimall.service.OrderService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -181,6 +182,24 @@ class OrderControllerTest {
         mockMvc.perform(patch("/api/orders/order-1/pay")
                 .with(csrf())
                 .param("tradeNo", "TRADE-123"))
+            .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser
+    void getOrderByNo_returnsOrder() throws Exception {
+        User user = new User();
+        user.setId("user-1");
+        Order order = new Order();
+        order.setId("order-1");
+        order.setOrderNo("ORD-001");
+        order.setUser(user);
+        order.setTotalAmount(BigDecimal.valueOf(99.99));
+
+        when(orderService.findByOrderNo("ORD-001")).thenReturn(order);
+        when(securityUtils.isCurrentUser("user-1")).thenReturn(true);
+
+        mockMvc.perform(get("/api/orders/no/ORD-001"))
             .andExpect(status().isOk());
     }
 }

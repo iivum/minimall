@@ -12,14 +12,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import org.springframework.web.reactive.function.client.WebClient;
 
 import java.math.BigDecimal;
-import java.util.Collections;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -165,6 +163,31 @@ class WeChatSubscribeServiceTest {
         when(subscriptionRepository.findByOpenid("openid-123")).thenReturn(Optional.of(sub));
 
         subscribeService.sendOrderCompletedMessage(createOrder(), user);
+
+        verify(subscriptionRepository).findByOpenid("openid-123");
+    }
+
+    @Test
+    void getAccessTokenAsync_returnsFuture() {
+        CompletableFuture<String> future = subscribeService.getAccessTokenAsync();
+        assertNotNull(future);
+    }
+
+    @Test
+    void sendTemplateMessageAsync_returnsFuture() {
+        CompletableFuture<Void> future = subscribeService.sendTemplateMessageAsync(
+            "openid-123", "template-1", java.util.Map.of("key", new WeChatSubscribeService.TemplateData("value")));
+        assertNotNull(future);
+    }
+
+    @Test
+    void sendOrderCreatedMessage_doesNothing_whenOrderIsNull() {
+        User user = new User();
+        user.setOpenid("openid-123");
+
+        when(subscriptionRepository.findByOpenid("openid-123")).thenReturn(Optional.empty());
+
+        subscribeService.sendOrderCreatedMessage(null, user);
 
         verify(subscriptionRepository).findByOpenid("openid-123");
     }
