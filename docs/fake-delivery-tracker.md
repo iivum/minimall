@@ -160,6 +160,7 @@ git log origin/main --oneline | head -10
 | 文件 | 说明 |
 |------|------|
 | `scripts/detect-fake-delivery.sh` | 自动化检测脚本 |
+| `scripts/enforce-delivery-check.sh` | 强制交付检测脚本 (Sprint #209) |
 | `docs/monitoring/fake-delivery-dashboard.json` | Grafana Dashboard |
 | `docs/fake-delivery-blacklist.md` | 虚假交付黑名单 |
 | `docs/delivery-verification.md` | 交付物验证指南 |
@@ -170,3 +171,4 @@ git log origin/main --oneline | head -10
 |------|---------|--------|
 | 2026-05-23 | 初始创建，建立追踪机制 | Orion |
 | 2026-05-30 | MIN-4179: 添加测试覆盖率强制验证规则到检测规则 | Orion |
+| 2026-05-30 | MIN-4195: 添加 enforce-delivery-check.sh 到相关文件 | 后端架构师 |
