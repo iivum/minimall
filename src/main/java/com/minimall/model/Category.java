@@ -1,6 +1,7 @@
 package com.minimall.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import java.time.Instant;
 
 @Entity
@@ -13,6 +14,8 @@ public class Category {
     private String id;
 
     @Column(nullable = false)
+    @NotBlank
+    @Size(max = 100)
     private String name;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -20,9 +23,12 @@ public class Category {
     private Category parent;
 
     @Column(name = "sort_order", nullable = false)
+    @NotNull
+    @Min(0)
     private Integer sortOrder = 0;
 
     @Column(nullable = false)
+    @NotNull
     private Boolean active = true;
 
     @Column(name = "created_at", nullable = false, updatable = false)
